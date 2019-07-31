@@ -36,7 +36,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['daily'],
+            'channels' => ['daily','graylog2'],
         ],
 
         'single' => [
@@ -86,6 +86,15 @@ return [
         'errorlog' => [
             'driver' => 'errorlog',
             'level' => 'debug',
+        ],
+        'graylog2' => [
+            'driver' => 'monolog',
+            'tap' => [App\Logging\TapRequestInfo::class],
+            'handler' => Monolog\Handler\GelfHandler::class,
+            'handler_with' => [
+                'publisher' =>  app(\App\Services\GraylogSetup::class)->getGelfPublisher(),
+            ],
+            'formatter' => Monolog\Formatter\GelfMessageFormatter::class
         ],
     ],
 
