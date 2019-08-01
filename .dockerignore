@@ -1,6 +1,4 @@
 tests
 vendor
 storage/app/!default*
-storage/framework
-storage/logs
-storage/tinx
+storage/logs/*.*
