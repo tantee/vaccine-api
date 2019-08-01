@@ -1,7 +1,0 @@
-tests
-vendor
-storage/app/assets
-storage/app/document
-storage/app/template
-storage/app/templates
-storage/logs/*.*
