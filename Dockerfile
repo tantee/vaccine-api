@@ -19,7 +19,7 @@ RUN echo "Asia/Bangkok" > /etc/TZ && \
 ADD . /var/www/html/
 WORKDIR "/var/www/html"
 
-RUN mv .env.example .env && \
+RUN mv .env.example .env || true && \
     composer install --no-dev --working-dir=/var/www/html
 
 EXPOSE 443 80
