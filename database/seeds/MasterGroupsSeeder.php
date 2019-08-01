@@ -155,11 +155,14 @@ class MasterGroupsSeeder extends Seeder
           ],
         ];
 
-        DB::table('master_groups')->insert($defaultMasterGroups);
+        
 
         foreach($defaultMasterGroups as $MasterGroup) {
-          $filename = ltrim($MasterGroup['groupKey'],'$');
-          if (file_exists(storage_path('app/default/'.$filename.'.csv'))) $this->CSVImport($MasterGroup['groupKey'],$filename);
+          if (!\App\Models\Master\MasterGroups::find($MasterGroup['groupKey'])) {
+            DB::table('master_groups')->insert($MasterGroup);
+            $filename = ltrim($MasterGroup['groupKey'],'$');
+            if (file_exists(storage_path('app/default/'.$filename.'.csv'))) $this->CSVImport($MasterGroup['groupKey'],$filename);
+          }
         }
     }
 
