@@ -12,7 +12,7 @@ ENV SKIP_COMPOSER 1
 
 RUN echo "Asia/Bangkok" > /etc/TZ && \
     apk add --no-cache openldap-dev && \
-    docker-php-ext-install iconv ldap ext-sockets && \
+    docker-php-ext-install iconv ldap sockets && \
     sed -i "s/;decorate_workers_output = no/decorate_workers_output = no/g" ${fpm_conf} && \
     composer global require hirak/prestissimo
 
