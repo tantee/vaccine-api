@@ -1,0 +1,23 @@
+before_script:
+  - docker info
+
+stages:
+  - build
+  - tag
+  - deploy
+
+docker_build:
+  stage: build
+  script:
+    - docker build -t cah-api .
+
+docker_tag:
+  stage: tag
+  script:
+    - docker tag cah-api docker.canceralliance.co.th/cah-api:latest
+    - docker push docker.canceralliance.co.th/cah-api:latest
+    
+docker_deploy:
+  stage: deploy
+  script:
+    - docker stack deploy -c /var/local/cah/docker-compose.yml cah-his
