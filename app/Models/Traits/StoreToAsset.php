@@ -7,6 +7,7 @@ use App\Http\Controllers\Asset\AssetController;
 trait StoreToAsset {
   public static function boot() {
     static::creating(function($model) {
+      $toStores = ($toStores) ? $toStores : [];
       foreach($toStores as $toStore) {
         if (isset($model->$toStore) && \is_array($model->$toStore)) {
           if (isset($model->hn)) \array_walk($model->$toStore,['self','storeToAsset'],$model->hn);
@@ -14,6 +15,7 @@ trait StoreToAsset {
       }
     });
     static::updating(function($model) {
+      $toStores = ($toStores) ? $toStores : [];
       foreach($toStores as $toStore) {
         if (isset($model->$toStore) && \is_array($model->$toStore)) {
           if (isset($model->hn)) \array_walk($model->$toStore,['self','storeToAsset'],$model->hn);
@@ -35,6 +37,4 @@ trait StoreToAsset {
       }
     }
   }
-
-  protected $toStores = [];
 }
