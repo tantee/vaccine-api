@@ -10,6 +10,8 @@ ENV DB_PASSWORD secret
 ENV RUN_SCRIPTS 1
 ENV SKIP_COMPOSER 1
 
+VOLUME [ "/var/www/html/storage" ]
+
 RUN echo "Asia/Bangkok" > /etc/TZ && \
     apk add --no-cache openldap-dev && \
     docker-php-ext-install iconv ldap sockets && \
@@ -21,7 +23,7 @@ WORKDIR "/var/www/html"
 
 RUN mv .env.example .env || true && \
     composer install --no-dev --working-dir=/var/www/html
-    
+
 EXPOSE 443 80
 
 CMD ["/start.sh"]
