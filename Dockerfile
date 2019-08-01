@@ -21,8 +21,7 @@ WORKDIR "/var/www/html"
 
 RUN mv .env.example .env || true && \
     composer install --no-dev --working-dir=/var/www/html
-
-VOLUME [ "/var/www/html/storage" ]
+    
 EXPOSE 443 80
 
 CMD ["/start.sh"]
