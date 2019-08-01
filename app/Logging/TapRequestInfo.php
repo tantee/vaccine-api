@@ -2,6 +2,8 @@
 
 namespace App\Logging;
 
+use Illuminate\Support\Facades\Auth;
+
 class TapRequestInfo
 {
     /**
