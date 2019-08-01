@@ -1,0 +1,9 @@
+itemCode,itemValue,itemValueEN
+PO,รับประทาน,Take
+IV,ฉีดเข้าเส้นเลือดดำ,Intravenous Inject
+IM,ฉีดเข้ากล้ามเนื้อ,Intramuscular Inject
+SC,ฉีดเข้าใต้ชั้นผิวหนัง,Subcutaneous Inject
+ID,ฉีกเข้าในชั้นผิวหนัง,Intradermal Inject
+SL,อมใต้ลิ้น,Take sublingual
+SUPP,สวนทางทวารหนัก,Rectal Suppository
+DIRECT,ตามที่แพทย์สั่ง,As directed

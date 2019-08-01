@@ -1,0 +1,8 @@
+itemCode,itemValue,itemValueEN
+AMB,Ambulatory,Ambulatory
+EMER,Emergency,Emergency
+IMP,Inpatient,Inpatient
+SS,Short Stay, Short Stay
+VR,Virtual,Virtual
+MR,Medical Record,Medical Record
+NOS,No specified,No specified

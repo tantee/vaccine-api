@@ -1,0 +1,28 @@
+﻿itemCode,itemValue,ItemValueEN,filterText
+1,ค่ารักษาพยาบาล,Medical Services,
+1.1,ค่าบริการทางการแพทย์,Hospital Medical Expenses,1
+1.1.1,ค่ายาและสารอาหารทางเส้นเลือด,Drugs and Parenteral Nutrition,1.1
+1.1.2,ค่าเวชภัณฑ์,Medical Supplies,1.1
+1.1.3,ค่าบริการโลหิตและส่วนประกอบของโลหิต,Blood Transfusion Services and Blood Components,1.1
+1.1.4,ค่าตรวจวินิจฉัยทางเทคนิคการแพทย์และพยาธิวิทยา,Laboratory Investigation and Pathology,1.1
+1.1.5,ค่าตรวจวินิจฉัยและการรักษาทางรังสีวิทยา,Diagnostic Radiology and Radiotherapy,1.1
+1.1.6,ค่าตรวจวินิจฉัยโดยวิธีพิเศษอื่นๆ,Special Diagnostics,1.1
+1.1.7,ค่าอุปกรณ์ของใช้และเครื่องมือทางการแพทย์,Medical Equipment,1.1
+1.1.8,ค่าห้องผ่าตัดและห้องคลอด,Operating Theater and Delivery Room,1.1
+1.1.9,ค่าบริการทางทันตกรรม,Dental Services,1.1
+1.1.10,ค่าบริการทางกายภาพบำบัด,Physical Therapy,1.1
+1.1.11,ค่าบริการฝังเข็ม,Acupuncture,1.1
+1.1.12,ค่าบริการการพยาบาลของผู้ประกอบวิชาชีพการพยาบาลและการผดุงครรภ์,Nursing and Midwifery Charge,1.1
+1.1.13,ค่าบริการของผู้ประกอบโรคศิลปะอื่นๆ,Miscellaneous Health Professional Charges,1.1
+1.1.14,ค่าบริการเหมาจ่ายการรักษาพยาบาล,Packaged Medical Charge,1.1
+1.2,ค่าธรรมเนียมบุคลากรทางการแพทย์,Health Professional Fees,1
+1.2.1,ค่าตรวจรักษาทั่วไปของผู้ประกอบวิชาชีพ,Physician Evaluation and Management Services,1.2
+1.2.2,ค่าทำศัลยกรรมและหัตถการต่างๆ ของผู้ประกอบวิชาชีพ,Physician Procedures,1.2
+1.2.3,ค่าปฏิบัติการอื่นๆ ของผู้ประกอบวิชาชีพ,Other Health Professional Fees,1.2
+2,ค่าบริการโรงพยาบาลอื่นๆ,Other Hospital Services,
+2.1,ค่าห้องหรือค่าเตียงผู้ป่วยในประเภทต่างๆ,Standard Inpatient Accommodation,2
+2.2,ค่าห้องหรือค่าเตียง ที่ใช้สังเกตอาการ การพักฟื้น หรืออื่นๆ,Observe Room,2
+2.3,ค่าอาหารผู้ป่วยใน,Foods,2
+2.4,ค่าบริการและการรักษาศพ,Mortuary Services,2
+2.5,ค่าบริการรถพยาบาล,Ambulance Services,2
+2.6,ค่าบริการอื่นๆ,Other Hospital Charges,2

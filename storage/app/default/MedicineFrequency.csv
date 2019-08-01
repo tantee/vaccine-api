@@ -1,0 +1,11 @@
+itemCode,itemValue,itemValueEN
+1,วันละ 1 ครั้ง,once daily
+2,วันละ 2 ครั้ง,twice daily
+3,วันละ 3 ครั้ง,three times a day
+4,วันละ 4 ครั้ง,four times a day
+5,วันละ 5 ครั้ง,five times a day
+Q2H,ทุก 2 ชั่วโมง,every 2 hours
+Q4H,ทุก 4 ชั่วโมง,every 4 hours
+Q6H,ทุก 6 ชั่วโมง,every 6 hours
+Q8H,ทุก 8 ชั่วโมง,every 8 hours
+Q12H,ทุก 12 ชั่วโมง,every 12 hours

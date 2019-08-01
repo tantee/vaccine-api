@@ -1,0 +1,178 @@
+itemCode,itemValue,filterText
+01,Gastrointestinal & Hepatobiliary System,
+01A,"Antacids, Antireflux Agents & Antiulcerants",1
+01B,"GIT Regulators, Antiflatulents & Anti-Inflammatories",1
+01C,Antispasmodics,1
+01D,Antidiarrheals,1
+01E,"Laxatives, Purgatives",1
+01F,Digestives,1
+01G,"Cholagogues, Cholelitholytics & Hepatic Protectors",1
+01H,Anorectal Preparations,1
+01I,Antiemetics,1
+01J,Other Gastrointestinal Drugs,1
+02,Cardiovascular & Hematopoietic System,
+02A,Cardiac Drugs,2
+02B,Anti-Anginal Drugs,2
+02C,ACE Inhibitors/Direct Renin Inhibitors,2
+02D,Beta-Blockers,2
+02E,Calcium Antagonists,2
+02F,Angiotensin II Antagonists,2
+02G,Other Antihypertensives,2
+02H,Diuretics,2
+02I,Antidiuretics,2
+02J,Peripheral Vasodilators & Cerebral Activators,2
+02K,Vasoconstrictors,2
+02L,Dyslipidaemic Agents,2
+02M,Haemostatics,2
+02N,"Anticoagulants, Antiplatelets & Fibrinolytics (Thrombolytics)",2
+02P,Phlebitis & Varicose Preparations,2
+02Q,Haemorrheologicals,2
+02R,Haematopoietic Agents,2
+02S,Other Cardiovascular Drugs,2
+03,Respiratory System,
+03A,Respiratory Stimulants,3
+03B,Antiasthmatic & COPD Preparations,3
+03C,Cough & Cold Preparations,3
+03D,Nasal Decongestants & Other Nasal Preparations,3
+03E,Other Drugs Acting on the Respiratory System,3
+04,Central Nervous System,
+04A,Anxiolytics,4
+04B,Hypnotics & Sedatives,4
+04C,Antidepressants,4
+04D,Antipsychotics,4
+04E,Anticonvulsants,4
+04F,Other CNS Drugs & Agents for ADHD,4
+04G,Neurodegenerative Disease Drugs,4
+04H,Antiparkinsonian Drugs,4
+04I,Antivertigo Drugs,4
+04J,Analgesics (Opioid),4
+04K,Analgesics (Non-Opioid) & Antipyretics,4
+04L,Nonsteroidal Anti-Inflammatory Drugs (NSAIDs),4
+04M,Drugs for Neuropathic Pain,4
+04N,Antimigraine Preparations,4
+04P,Nootropics & Neurotonics/Neurotrophics,4
+05,Musculo-Skeletal System,
+05A,Disease-Modifying Anti-Rheumatic Drugs (DMARDs),5
+05B,Hyperuricemia & Gout Preparations,5
+05C,Muscle Relaxants,5
+05D,Anti-Inflammatory Enzymes,5
+05E,Neuromuscular Disorder Drugs,5
+05F,Other Drugs Acting on Musculo-Skeletal System,5
+06,Hormones,
+06A,Androgens & Related Synthetic Drugs,6
+06B,"Oestrogens, Progesterones & Related Synthetic Drugs",6
+06C,Combined Sex Hormones,6
+06D,Corticosteroid Hormones,6
+06E,Trophic Hormones & Related Synthetic Drugs,6
+06F,Anabolic Agents,6
+06G,Other Drugs Affecting Hormonal Regulation,6
+07,Contraceptive Agents,
+07A,Oral Contraceptives,7
+07B,Depot Contraceptives,7
+07C,Other Contraceptives,7
+08,Anti-Infectives (Systemic),
+08A,Aminoglycosides,8
+08B,Cephalosporins,8
+08C,Penicillins,8
+08D,Other Beta-Lactams,8
+08E,Chloramphenicols,8
+08F,Macrolides,8
+08G,Quinolones,8
+08H,Tetracyclines,8
+08I,Sulphonamides,8
+08J,Antibacterial Combinations,8
+08K,Other Antibiotics,8
+08L,Anti-TB Agents,8
+08M,Antileprotics,8
+08N,Antifungals,8
+08P,Antivirals,8
+08Q,Anthelmintics,8
+08R,Antimalarials,8
+08S,Antiamoebics,8
+08T,Other Antiprotozoal Agents,8
+09,Oncology,
+09A,Cytotoxic Chemotherapy,9
+09B,Cancer Hormone Therapy,9
+09C,Cancer Immunotherapy,9
+09D,Targeted Cancer Therapy,9
+09E,Supportive Care Therapy,9
+10,Genito-Urinary System,
+10A,Preparations for Vaginal Conditions,10
+10B,Urinary Antiseptics,10
+10C,Drugs Acting on the Uterus,10
+10D,Drugs for Erectile Dysfunction & Ejaculatory Disorders,10
+10E,Drugs for Bladder & Prostate Disorders,10
+10F,Other Drugs Acting on the Genito-Urinary System,10
+11,Endocrine & Metabolic System,
+11A,Insulin Preparations,11
+11B,Antidiabetic Agents,11
+11C,Thyroid Hormones,11
+11D,Antithyroid Agents,11
+11E,Anti-Obesity Agents,11
+11F,Agents Affecting Bone Metabolism,11
+11G,Other Agents Affecting Metabolism,11
+12,Allergy & Immune System,
+12A,Antihistamines & Antiallergics,12
+12B,"Vaccines, Antisera & Immunologicals",12
+12C,Immunosuppressants,12
+13,Nutrition,
+13A,Infant Nutritional Products,13
+13B,Enteral/Nutritional Products,13
+13C,Parenteral Nutritional Products,13
+13D,Electrolytes,13
+14,Eye,
+14A,Eye Anti-Infectives & Antiseptics,14
+14B,Eye Antiseptics with Corticosteroids,14
+14C,Eye Corticosteroids,14
+14D,Mydriatic Drugs,14
+14E,Miotic Drugs,14
+14F,Antiglaucoma Preparations,14
+14G,"Ophthalmic Decongestants, Anesthetics, Anti-Inflammatories",14
+14H,Ophthalmic Lubricants,14
+14I,Other Eye Preparations,14
+15,Ear & Mouth / Throat,
+15A,Ear Anti-Infectives & Antiseptics,15
+15B,Ear Antiseptics with Corticosteroids,15
+15C,Ear Corticosteroids,15
+15D,Other Ear Preparations,15
+15E,Preparations for Oral Ulceration & Inflammation,15
+15F,Oropharyngeal anti-infectives,15
+16,Dermatological Therapy,
+16A,Topical Antibiotics,16
+16B,Topical Antifungals & Antiparasites,16
+16C,Topical Antivirals,16
+16D,Topical Anti-Infectives with Corticosteroids,16
+16E,Topical Corticosteroids,16
+16F,Acne Treatment Preparations,16
+16G,Topical Antihistamines/Antipruritics,16
+16H,"Psoriasis, Seborrhea & Ichthyosis Preparations",16
+16I,Warts & Calluses Preparations,16
+16J,Skin Antiseptics & Disinfectants,16
+16K,Other Dermatologicals,16
+17,"Anaesthetics, Surgical Preparations & Wound Care",
+17A,Anaesthetics - Local & General,17
+17B,Neuromuscular Blocking Agents,17
+17C,Surgical Dressings & Wound Care,17
+18,"Antidotes, Detoxifying Agents & Drugs Used in Substance Dependence",
+18A,Antidotes & Detoxifying Agents,18
+18B,Drugs Used in Substance Dependence,18
+19,Intravenous & Other Sterile Solutions,
+20,Radiographic & Diagnostic Agents,
+21,Other Therapeutic Products,
+30,Vitamins & Minerals,
+30A,"Vitamins A, D & E",30
+30B,Vitamin B-Complex / with C,30
+30C,Vitamin C,30
+30D,Calcium/with Vitamins,30
+30E,Vitamins &/or Minerals,30
+30F,Vitamins & Minerals (Geriatric),30
+30G,Vitamins & Minerals (Paediatric),30
+30H,Vitamins & Minerals (Pre & Post Natal) / Antianemics,30
+31,Health Supplements & Food,
+31A,Appetite Enhancers,31
+31B,Supplements & Adjuvant Therapy,31
+31C,Other Complementary Health Products,31
+40,Dermatological & Personal Care,
+40A,"Emollients, Cleansers & Skin Protectives",40
+40B,Oral Care,40
+40C,Personal Care,40

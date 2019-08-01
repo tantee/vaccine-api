@@ -1,0 +1,46 @@
+﻿itemCode,itemValue,itemValueEN,filterText
+M01,ยารับประทานทั่วไป,General Oral Medicine,medicine
+M02,ยาฉีดทั่วไป,General Injection Medicine,medicine
+M03,ยารับประทานโรคมะเร็ง,Oncology Oral Medicine,medicine
+M04,ยาฉีดโรคมะเร็ง,Oncology Injection Medicine,medicine
+M05,น้ำเกลือและสารน้ำ,Saline and Other sterile solutions,medicine
+M06,ยาทาภายนอก,Topical agents,medicine
+M99,ยาอื่นๆ,Other medicines,medicine
+S01,สำลีและผ้าก๊อซ,Cotton and Gauze,supply
+S02,เข็มและกระบอกฉีกยา,Needles and Syringes,supply
+S03,อุปกรณ์ให้สายน้ำ,Infusion supply,supply
+S04,อุปกรณ์ให้อาหารทางสายยาง,Tube feeding supply,supply
+S05,อุปกรณ์ใส่สายสวนปัสสาวะ,Urine catheterization supply,supply
+S06,ชุดอุปกรณ์ปลอดเชื้อ,Sterile sets,supply
+S07,อุปกรณ์เก็บสิ่งส่งตรวจ,Specimen collection supply,supply
+S99,เวชภัณฑ์อื่นๆ,Other supplies,supply
+P01,หัตถการการตรวจ,Examination procedures,procedure
+P02,หัตถการทางวิสัญญี,Anesthetic procedures,procedure
+P03,หัตถการทางศัลยกรรม,Surgical procedures,procedure
+P04,หัตถการทางอายุรกรรม,Medical procedures,procedure
+P05,หัตถการทางรังสีรักษา,Radiation procedures,procedure
+P06,หัตถการการส่องกล้อง,Endoscopic procedures,procedure
+P07,หัตถการที่เกียวกับการให้ยาหรือสารน้ำ,Drug administration,procedure
+P08,หัตถการกู้ชีพ,Resuscitation procedures,procedure
+P09,หัตถการแพทย์แผนไทย,Thai Medicine procedures,procedure
+P10,หัตถการแพทย์แผนจีน,Chinese Medicine procedures,procedure
+P99,หัตถการอื่นๆ,Other procedures,procedure
+SV01,ค่าบริการโรงพยาบาล,Service charges,service
+SV02,ค่าบริการทางการพยาบาล,Nursing charges,service
+SV03,ค่าบริการทางการแพทย์,Medical charges,service
+SV04,ค่าธรรมเนียมแพทย์,Doctor fees,service
+SV99,ค่าบริการและค่าธรรมเนียมอื่นๆ,Other fees,service
+L01,การตรวจทางโลหิตวิทยา,Hematology,laboratory
+L02,การตรวจสารเคมีในเลือด,Blood chemistry,laboratory
+L03,การตรวจสารบ่งชี้มะเร็ง,Tumor marker,laboratory
+L04,การตรวจปัสสาวะ,Urine examination,laboratory
+L05,การตรวจอุจจาระ,Stool examination,laboratory
+L06,การตรวจทางพยาธิวิทยา,Pathology,laboratory
+L07,การตรวจทางเซลล์วิทยา,Cytology,laboratory
+L08,การตรวจเชื่อ และเพาะเชื่อ,Microbiology,laboratory
+L99,การตรวจอื่นๆ,Other laboratory testing,laboratory
+R01,การตรวจเอกซเรย์,Radiograph,radiology
+R02,การตรวจเอกซเรย์คอมพิวเตอร์,CT Scan,radiology
+R03,การตรวจอัลตราซาวน์,Ultrasound,radiology
+R04,การตรวจเอกซเรย์คอมพิวเตอร์จำลองการรักษา,CT Simulation,radiology
+R99,การตรวจทางรังสีอื่นๆ,Other radiology studies,radiology
