@@ -36,7 +36,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['daily','graylog2'],
+            'channels' => ['daily','stderr'],
         ],
 
         'single' => [
@@ -72,6 +72,7 @@ return [
 
         'stderr' => [
             'driver' => 'monolog',
+            'tap' => [App\Logging\TapRequestInfo::class],
             'handler' => StreamHandler::class,
             'with' => [
                 'stream' => 'php://stderr',
