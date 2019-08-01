@@ -1,4 +1,7 @@
 tests
 vendor
-storage/app/!default*
+storage/app/assets
+storage/app/document
+storage/app/template
+storage/app/templates
 storage/logs/*.*
