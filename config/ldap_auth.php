@@ -133,7 +133,7 @@ return [
 
         'ldap' => [
 
-            'locate_users_by' => 'sAMAccountName',
+            'locate_users_by' => 'userprincipalname',
 
             'bind_users_by' => 'distinguishedname',
 
