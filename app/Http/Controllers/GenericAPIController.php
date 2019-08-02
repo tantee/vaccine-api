@@ -50,7 +50,7 @@ class GenericAPIController extends Controller
           if ($result['returnModels'] instanceof Illuminate\Database\Eloquent\Collection) {
             return new \App\Http\Resources\ExtendedResourceCollection($result['returnModels'],$result['success'],$result['errorTexts']);
           } else {
-            return new \App\Http\Resources\ExtendedResource($result['returnModels'],$result['success'],$result['errorTexts']);
+            return new \App\Http\Resources\ExtendedResourceCollection($result['returnModels'],$result['success'],$result['errorTexts']);
           }
         } else {
           return new \App\Http\Resources\ExtendedResource($result);
