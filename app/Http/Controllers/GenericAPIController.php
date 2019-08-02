@@ -56,7 +56,7 @@ class GenericAPIController extends Controller
           return new \App\Http\Resources\ExtendedResource($result);
         }
       } else {
-        if ($result instanceof Illuminate\Database\Eloquent\Collection) {
+        if ($result instanceof Illuminate\Database\Eloquent\Collection || $result instanceof Illuminate\Contracts\Pagination\Paginator) {
           return new \App\Http\Resources\ExtendedResourceCollection($result);
         } else {
           return new \App\Http\Resources\ExtendedResource($result);
