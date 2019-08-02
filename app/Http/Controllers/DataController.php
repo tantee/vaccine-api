@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Log;
 use Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -202,6 +203,7 @@ class DataController extends Controller
               $returnModels = $returnModels->paginate($request->perPage)->appends(['perPage'=>$request->perPage]);
               if (isset($request->orderBy)) $returnModels->appends(['orderBy'=>$request->orderBy]);
               if (isset($request->with)) $returnModels->appends(['with'=>$request->with]);
+              log::info($result instanceof Illuminate\Database\Eloquent\Collection || $result instanceof Illuminate\Contracts\Pagination\Paginator);
             }
             else $returnModels = $returnModels->get();
           }
