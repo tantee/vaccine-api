@@ -18,6 +18,7 @@ class CreateInsurances extends Migration
             $table->string('insuranceName');
             $table->enum('priceLevel',['1','2','3','4','5'])->default('1');
             $table->decimal('discount',5,2)->nullable();
+            $table->string('payerARCode');
             $table->boolean('isCoverageAll')->default(true);
             $table->boolean('isChargeToPatient')->default(true);
             $table->boolean('isApplyToOpd')->default(true);
