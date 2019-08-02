@@ -48,8 +48,7 @@ class GenericAPIController extends Controller
     public static function resultToResource($result) {
       if (is_array($result)) {
         if (isset($result['returnModels']) && isset($result['success'])) {
-          log::info(get_class($result['returnModels']));
-          if ($result['returnModels'] instanceof Illuminate\Database\Eloquent\Collection || $result['returnModels'] instanceof Illuminate\Contracts\Pagination\Paginator) {
+          if ($result['returnModels'] instanceof Illuminate\Database\Eloquent\Collection || $result['returnModels'] instanceof Illuminate\Pagination\LengthAwarePaginator) {
             return new \App\Http\Resources\ExtendedResourceCollection($result['returnModels'],$result['success'],$result['errorTexts']);
           } else {
             return new \App\Http\Resources\ExtendedResource($result['returnModels'],$result['success'],$result['errorTexts']);
