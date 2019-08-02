@@ -11,14 +11,14 @@ class PassportPersonalClientCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'passport:personalifnotexist';
+    protected $signature = 'passport:clientifnotexist';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create Personal Access Client if not already exist';
+    protected $description = 'Create Client if not already exist';
 
     /**
      * Create a new command instance.
@@ -40,6 +40,7 @@ class PassportPersonalClientCommand extends Command
       $client = \Laravel\Passport\Passport::personalAccessClient();
       if (! $client->exists()) {
         $this->call('passport:client', ['--personal' => true, '--name' => config('app.name').' Personal Access Client']);
+        $this->call('passport:client', ['--password' => true, '--name' => config('app.name').' Password Grant Client']);
       }
     }
 }
