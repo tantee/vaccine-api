@@ -21,3 +21,5 @@ docker_deploy:
   stage: deploy
   script:
     - docker stack deploy -c /var/local/cah/docker-compose.yml cah-his
+    - docker container prune
+    - docker image prune
