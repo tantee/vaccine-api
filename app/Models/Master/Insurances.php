@@ -14,7 +14,6 @@ class Insurances extends Model
     protected $guarded = [];
 
     protected $casts = [
-      'coverageInclusion' => 'array',
-      'coverageExclusion' => 'array',
+      'conditions' => 'array',
     ];
 }
