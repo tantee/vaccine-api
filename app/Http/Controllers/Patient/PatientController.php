@@ -158,7 +158,6 @@ class PatientController extends Controller
 
       $patient = \App\Models\Patient\Patients::find($hn);
       if ($patient != null) {
-        $patient = $patient->with(['Name_th','Name_en']);
         $patient = $patient->first()->makeHidden(['personIdDetail']);
         $returnModels = $patient;
       } else {

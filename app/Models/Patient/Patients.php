@@ -38,20 +38,20 @@ class Patients extends Model
       return $this->hasMany('App\Models\Asset\Assets','hn','hn');
     }
 
-    public function Name_th() {
-      return $this->Names()->where('nameType','TH')->orWhere('nameType','ALIAS_TH')->orderBy('nameType')->orderBy('id','desc')->limit(1);
+    public function getNameThAttribute() {
+      return \App\Models\Patient\PatientsNames::where('hn',$this->hn)->where('nameType','TH')->orWhere('nameType','ALIAS_TH')->orderBy('nameType')->orderBy('id','desc')->first();
     }
 
-    public function Name_en() {
-      return $this->Names()->where('nameType','EN')->orWhere('nameType','ALIAS_EN')->orderBy('nameType')->orderBy('id','desc')->limit(1);
+    public function getNameEnAttribute() {
+      return \App\Models\Patient\PatientsNames::where('hn',$this->hn)->where('nameType','EN')->orWhere('nameType','ALIAS_EN')->orderBy('nameType')->orderBy('id','desc')->first();
     }
 
-    public function Name_real_th() {
-      return $this->Names()->where('nameType','TH')->orderBy('id','desc')->limit(1);
+    public function getNameRealThAttribute() {
+      return \App\Models\Patient\PatientsNames::where('hn',$this->hn)->where('nameType','TH')->orderBy('id','desc')->first();
     }
 
-    public function Name_real_en() {
-      return $this->Names()->where('nameType','EN')->orderBy('id','desc')->limit(1);
+    public function getNameRealEnAttribute() {
+      return \App\Models\Patient\PatientsNames::where('hn',$this->hn)->where('nameType','EN')->orderBy('id','desc')->first();
     }
 
     public function Photos() {
@@ -62,5 +62,5 @@ class Patients extends Model
       'personIdDetail' => 'array',
     ];
 
-    protected $with = ['name_th','name_en','name_real_th','name_real_en'];
+    protected $appends = ['name_th','name_en','name_real_th','name_real_en'];
 }
