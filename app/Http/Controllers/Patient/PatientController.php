@@ -156,9 +156,8 @@ class PatientController extends Controller
       $errorTexts = [];
       $returnModels = [];
 
-      $patient = \App\Models\Patient\Patients::find($hn);
+      $patient = \App\Models\Patient\Patients::find($hn)->makeHidden(['personIdDetail']);
       if ($patient != null) {
-        $patient = $patient->first()->makeHidden(['personIdDetail']);
         $returnModels = $patient;
       } else {
         $success = false;

@@ -68,10 +68,10 @@ class PrintController extends Controller
 
         $patient = $document->patient;
         $patientData['hn'] = $patient->hn;
-        $patientData['name_th'] = $patient->Name_th[0];
-        $patientData['name_en'] = $patient->Name_en[0];
-        $patientData['name_real_th'] = $patient->Name_real_th[0];
-        $patientData['name_real_en'] = $patient->Name_real_en[0];
+        $patientData['name_th'] = $patient->Name_th;
+        $patientData['name_en'] = $patient->Name_en;
+        $patientData['name_real_th'] = $patient->Name_real_th;
+        $patientData['name_real_en'] = $patient->Name_real_en;
         $patientData['personId'] = $patient->personId;
         $patientData['sex'] = $patient->sex;
         $patientData['maritalStatus'] = $patient->maritalStatus;
