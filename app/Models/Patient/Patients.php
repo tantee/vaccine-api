@@ -55,7 +55,9 @@ class Patients extends Model
     }
 
     public function Photos() {
-      return $this->Assets()->where('assetType','id_photo')->orWhere('assetType','patient_photo')->orderBy('id','desc');
+      return $this->Assets()->where(function ($query) {
+        $query->where('assetType','id_photo')->orWhere('assetType','patient_photo');
+      })->orderBy('id','desc');
     }
 
     protected $casts = [
