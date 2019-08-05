@@ -49,7 +49,7 @@ class PatientPhotoController extends Controller
 
       if (PatientController::isExistPatient($hn)) {
         $patient = \App\Models\Patient\Patients::find($hn);
-        $returnModels = $patient->Photos();
+        $returnModels = $patient->Assets()->where('assetType','id_photo')->orWhere('assetType','patient_photo')->orderBy('id','desc');
         if (isset($request->perPage) && is_numeric($request->perPage)) {
           $returnModels = $returnModels->paginate($request->perPage)->appends(['perPage'=>$request->perPage]);
           $temp = $returnModels->makeHidden(['storage','storagePath']);
@@ -73,7 +73,7 @@ class PatientPhotoController extends Controller
 
       if (PatientController::isExistPatient($hn)) {
         $patient = \App\Models\Patient\Patients::find($hn);
-        $photoAsset = $patient->Photos()->first();
+        $photoAsset = $patient->Assets()->where('assetType','id_photo')->orWhere('assetType','patient_photo')->orderBy('id','desc')->first();
         if ($photoAsset != null) {
           $photoAsset->with(['base64data']);
           $returnModels = $photoAsset->only(['id','md5hash','base64data']);
