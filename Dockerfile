@@ -14,7 +14,8 @@ VOLUME [ "/var/www/html/storage" ]
 
 RUN echo "Asia/Bangkok" > /etc/TZ && \
     apk add --no-cache openldap-dev && \
-    docker-php-ext-install iconv ldap sockets && \
+    docker-php-ext-configure iconv ldap sockets mbstring exif gd && \
+    docker-php-ext-install iconv ldap sockets mbstring exif gd && \
     sed -i "s/;decorate_workers_output = no/decorate_workers_output = no/g" ${fpm_conf} && \
     composer global require hirak/prestissimo
 

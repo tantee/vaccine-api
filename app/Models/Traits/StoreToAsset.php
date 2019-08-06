@@ -27,7 +27,7 @@ trait StoreToAsset {
   }
 
   protected static function storeToAsset(&$modelValue,$modelKey,$hn) {
-    if (\is_array($modelValue) && isset($modelValue['base64string'])) {
+    if (\is_array($modelValue) && isset($modelValue['base64string']) && !isset($modelValue['id'])) {
       if (isset($modelValue['assetType'])) $assetType = $modelValue['assetType'];
       else $assetType = null;
 

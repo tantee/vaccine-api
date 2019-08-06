@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\File\MimeType\ExtensionGuesser;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\DataController;
+use \Gumlet\ImageResize;
 
 class AssetController extends Controller
 {
@@ -118,7 +119,17 @@ class AssetController extends Controller
       $returnData = null;
 
       if (Storage::disk($asset->storage)->exists($asset->storagePath)) {
-        $returnData = Storage::disk($asset->storage)->get($asset->storagePath);
+        if (startsWith($asset->mimeType,'image/')) {
+          try {
+            $image = ImageResize::createFromString(Storage::disk($asset->storage)->get($asset->storagePath));
+            $image->resizeToWidth(1024);
+            $returnData = $image->getImageAsString();
+          } catch (ImageResizeException $e) {
+            $returnData = Storage::disk($asset->storage)->get($asset->storagePath);
+          }
+        } else {
+          $returnData = Storage::disk($asset->storage)->get($asset->storagePath);
+        }
         $returnData = base64_encode($returnData);
         $returnData = 'data:'.$asset->mimeType.';base64,'.$returnData;
       }
