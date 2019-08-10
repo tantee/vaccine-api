@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\Master\IdController;
+use App\Http\Controllers\Patient\PatientController;
 use Carbon\Carbon;
 
 class DocumentController extends Controller
