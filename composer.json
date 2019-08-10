@@ -9,6 +9,7 @@
         "adldap2/adldap2-laravel": "^6.0",
         "aranyasen/hl7": "^1.7",
         "barryvdh/laravel-cors": "^0.11.2",
+        "doctrine/dbal": "^2.9",
         "fideloper/proxy": "^4.0",
         "gumlet/php-image-resize": "^1.9",
         "guzzlehttp/guzzle": "^6.3",
@@ -23,7 +24,9 @@
         "simplesoftwareio/simple-qrcode": "^2.0",
         "tinybutstrong/opentbs": "^1.9",
         "tom-lingham/searchy": "^2.0",
-        "venturecraft/revisionable": "1.*"
+        "venturecraft/revisionable": "1.*",
+        "nesbot/carbon": "2.22.0 as 1.34.0",
+        "kylekatarnls/laravel-carbon-2": "^1.0.0"
     },
     "require-dev": {
         "ajthinking/tinx": "^2.2",

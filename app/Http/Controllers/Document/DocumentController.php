@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\Master\IdController;
+use Carbon\Carbon;
 
 class DocumentController extends Controller
 {
@@ -30,59 +31,88 @@ class DocumentController extends Controller
       return $document;
     }
 
-    public static function addScannedDocument($documentData,$hn=null,$category=null,$encounterId=null,$referenceId=null) {
+    public static function addScannedDocuments($documentData,$hn=null,$category=null,$encounterId=null,$referenceId=null,$isAppend=false) {
       $success = true;
       $errorTexts = [];
       $returnModels = [];
 
-      $tmpData = explode(',',$documentData);
-      $tmpData = (count($tmpData)==1) ? tmpData[0] : tmpData[1];
+      if (array_keys($documentData) !== range(0, count($documentData) - 1)) $documentData = array(documentData);
 
-      $tmpData = base64_decode($tmpData);
+      foreach($documentData as $data) {
+        if (\is_array($data) && isset($data['base64string'])) {
+          $tmpData = explode(',',$data['base64string']);
+          $tmpData = (count($tmpData)==1) ? tmpData[0] : tmpData[1];
 
-      try {
-        $QRCodeReader = new \Zxing\QrReader($tmpData,\Zxing\QrReader::SOURCE_TYPE_BLOB);
-        $QRCodeData = $QRCodeReader->text();
-        $QRCodeData = \json_decode($qrCodeData,true);
-      } catch(\Exception $e) {
-        $QRCodeData = [];
+          $tmpData = base64_decode($tmpData);
+
+          try {
+            $QRCodeReader = new \Zxing\QrReader($tmpData,\Zxing\QrReader::SOURCE_TYPE_BLOB);
+            $QRCodeData = $QRCodeReader->text();
+            $QRCodeData = \json_decode($qrCodeData,true);
+          } catch(\Exception $e) {
+            $QRCodeData = [];
+          }
+
+          if (isset($QRCodeData['DocId'])) {
+            $document = \App\Models\Document\Documents::find($QRCodeData['DocId']);
+          } else if ($hn!=null) {
+            $document = self::addDocument($hn,'default_scan',null,$category,$encounterId,$referenceId);
+            if ($document["success"]) {
+              $document = $document["returnModels"][0];
+            } else {
+              $success = false;
+              array_push($errorTexts,["errorText" => 'Error creating new document']);
+            }
+          } else {
+            $success = false;
+            array_push($errorTexts,["errorText" => 'No identification provided']);
+          }
+
+          if ($success) {
+            if ($isAppend || Carbon::now()->diffInMinute($document->updated_at)<=5) array_push($document->data,$data);
+            else {
+              if (!empty($document->data)) {
+                array_push($document->revision,[
+                  "data" => $document->data,
+                  "updated_by" => $document->updated_by,
+                  "updated_at" => $document->updated_at,
+                ]);
+              }
+              $document->data = [$data];
+            }
+
+            $document->save();
+            array_push($returnModels,$document);
+          }
+        } else {
+          $success = false;
+          array_push($errorTexts,["errorText" => 'Invalid document data']);
+        }
       }
 
-      if (isset($QRCodeData['tmpl'])) {
-        $documentTemplate = \App\Models\Document\DocumentsTemplates::find($QRCodeData['tmpl']);
-      }
+      return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
+    }
 
-      if ($hn==null && isset($QRCodeData['hn'])) $hn = $QRCodeData['hn'];
-      if ($category==null) {
-        if (isset($QRCodeData['cat'])) $category = $QRCodeData['cat'];
-        else if ($documentTemplate != null && $documentTemplate->defaultCategory != null) $category = $documentTemplate->defaultCategory;
-      }
-      if ($referenceId==null && isset($QRCodeData['ref'])) $referenceId = $QRCodeData['ref'];
-      if ($encounterId==null && isset($QRCodeData['enc'])) $encounterId = $QRCodeData['enc'];
-      if (isset($QRCodeData['pId'])) {
-        $parentDocument = \App\Models\Document\Documents::find($QRCodeData['pId']);
-      }
-      if (isset($QRCodeData['cId'])) $copyId = $QRCodeData['cId'];
-      else $copyId = uniqid();
+    public static function getDocuments(Request $request,$hn,$category=null,$encounterId=null,$referenceId=null) {
+      $success = true;
+      $errorTexts = [];
+      $returnModels = [];
 
-      if ($hn!=null || $parentDocument!=null) {
-        $documentAsset = \App\Http\Controllers\Asset\AssetController::addAssetBase64((($parentDocument) ? $parentDocument->hn : $hn),$documentData);
 
-        $newDocument = \App\Models\Document\Documents::firstOrNew(['copyId'=>$copyId]);
-        $newDocument->hn = ($parentDocument) ? $parentDocument->hn : $hn;
-        $newDocument->referenceId = ($parentDocument) ? $parentDocument->referenceId : $referenceId;
-        $newDocument->encounterId = ($parentDocument) ? $parentDocument->encounterId : $encounterId;;
-        $newDocument->category = ($parentDocument) ? $parentDocument->category : $category;;
-        $newDocument->templateCode = 'document_scanned';
-        $newDocument->data[] = $documentAsset;
-        $newDocument->isScanned = true;
-        $newDocument->parentId = ($parentDocument) ? $parentDocument->id : null;
-        $newDocument->save();
-
-        $returnModels = $newDocument;
+      if (PatientController::isExistPatient($hn)) {
+        $patient = \App\Models\Patient\Patients::find($hn);
+        $returnModels = $patient->Documents();
+        if ($category!=null) $returnModels = $returnModels->where('category',$category);
+        if ($encounterId!=null) $returnModels = $returnModels->where('encounterId',$encounterId);
+        if ($referenceId!=null) $returnModels = $returnModels->where('referenceId',$referenceId);
+        if (isset($request->perPage) && is_numeric($request->perPage)) {
+          $returnModels = $returnModels->paginate($request->perPage)->appends(['perPage'=>$request->perPage]);
+        } else {
+          $returnModels = $returnModels->get();
+        }
       } else {
         $success = false;
-        array_push($errorTexts,["errorText" => 'Missing patient\'s HN']);
+        array_push($errorTexts,["errorText" => 'No patient for HN '.$hn]);
       }
 
       return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];

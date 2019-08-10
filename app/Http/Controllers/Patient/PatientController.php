@@ -126,14 +126,24 @@ class PatientController extends Controller
     }
 
     public static function verifyPatient($hn,$personIdDetail,$personIdDocument=null) {
-      if (isset($personIdDocument)) {
+      $success = true;
+      $errorTexts = [];
+      $returnModels = [];
 
-      } else if (\App\Utilities\JSON::isJson($personIdDetail)) {
-
+      $patient = \App\Models\Patient\Patients::find($hn);
+      if ($patient != null) {
+        $patient->personIdVerified = true;
+        $patient->save();
+      } else {
+        $success = false;
+        array_push($errorTexts,["errorText" => 'No patient for HN '.$hn]);
       }
+
+      return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }
 
     public static function verifyPatientId($data) {
+
 
     }
 

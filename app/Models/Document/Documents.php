@@ -21,7 +21,12 @@ class Documents extends Model
       return $this->belongsTo('App\Models\Patient\Patients','hn','hn');
     }
 
+    public function Encounter() {
+      return $this->belongsTo('App\Models\Opd\Encounters','encounterId','encounterId');
+    }
+
     protected $casts = [
       'data' => 'array',
+      'revision' => 'array',
     ];
 }

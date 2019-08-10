@@ -38,6 +38,10 @@ class Patients extends Model
       return $this->hasMany('App\Models\Asset\Assets','hn','hn');
     }
 
+    public function Documents() {
+      return $this->hasMany('App\Models\Document\Documents','hn','hn');
+    }
+
     public function getNameThAttribute() {
       return \App\Models\Patient\PatientsNames::where('hn',$this->hn)->where('nameType','TH')->orWhere('nameType','ALIAS_TH')->orderBy('nameType')->orderBy('id','desc')->first();
     }

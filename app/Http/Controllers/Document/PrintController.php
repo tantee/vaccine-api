@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Document\clsMasterItem;
+use App\Http\Controllers\Patient\PatientController;
 
 class PrintController extends Controller
 {
@@ -17,8 +18,7 @@ class PrintController extends Controller
       $documentTemplate = "receipt";
 
       $document_qrcode_data = [
-        'hn' => '',
-        'documentId' => $documentId,
+        'DocId' => $documentId,
       ];
 
       $document_qrcode_content = \json_encode($document_qrcode_data);
@@ -61,7 +61,30 @@ class PrintController extends Controller
       return $printedDocument;
     }
 
-    public static function printDocumentByTemplate($hn="19000026",$documentTemplate="application_form") {
+    public static function printDocumentByTemplate($templateCode,$hn=null,$encounterId=null) {
+      $success = true;
+      $errorTexts = [];
+      $returnModels = [];
+
+      $template = \App\Models\Document\DocumentsTemplates::find($templateCode);
+
+      if ($template!=null) {
+        if ($template->isRequiredPatientInfo && !PatientController::isExistPatient($hn)) {
+          $success = false;
+          array_push($errorTexts,["errorText" => 'Require patient HN']);
+        }
+
+        if ($template->isRequiredEncounter && $encounterId == null) {
+          $success = false;
+          array_push($errorTexts,["errorText" => 'Require encounter ID']);
+        }
+
+        DocumentController::addDocument($hn,$templateCode,null,$template->defaultCategory);
+      } else {
+        $success = false;
+        array_push($errorTexts,["errorText" => 'Document template not found']);
+      }
+
       $document = \App\Models\Document\Documents::where('hn',$hn)->where('templateCode',$documentTemplate)->orderBy('id','desc')->first();
       if ($document != null) {
         $data = $document->data;

@@ -17,10 +17,10 @@ class CreateDocuments extends Migration
             $table->increments('id');
             $table->string('hn');
             $table->string('encounterId')->nullable();
-            $table->string('referenceId')->nullable();
+            $table->string('referenceId')->nullable(); //such as receipt id
             $table->string('templateCode');
-            $table->integer('parentId')->nullable();
-            $table->string('copyId')->nullable();
+            $table->integer('parentId')->nullable(); //wil remove in future release
+            $table->string('copyId')->nullable(); //wil remove in future release
             $table->string('category')->default('999');
             $table->boolean('isScanned')->default(false);
             $table->json('data');
