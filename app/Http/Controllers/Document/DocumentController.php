@@ -42,7 +42,7 @@ class DocumentController extends Controller
       foreach($documentData as $data) {
         if (\is_array($data) && isset($data['base64string'])) {
           $tmpData = explode(',',$data['base64string']);
-          $tmpData = (count($tmpData)==1) ? tmpData[0] : tmpData[1];
+          $tmpData = (count($tmpData)==1) ? $tmpData[0] : $tmpData[1];
 
           $tmpData = base64_decode($tmpData);
 
