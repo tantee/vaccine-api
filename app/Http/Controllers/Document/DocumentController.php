@@ -88,7 +88,7 @@ class DocumentController extends Controller
           }
         } else {
           $success = false;
-          array_push($errorTexts,["errorText" => $data]);
+          array_push($errorTexts,["errorText" => 'Invalid document data']);
         }
       }
 
