@@ -70,7 +70,7 @@ class DocumentController extends Controller
           }
 
           if ($success) {
-            if ($isAppend || Carbon::now()->diffInMinute($document->updated_at)<=5) array_push($document->data,$data);
+            if ($document->isScanned && ($isAppend || Carbon::now()->diffInMinute($document->updated_at)<=5)) array_push($document->data,$data);
             else {
               if (!empty($document->data)) {
                 array_push($document->revision,[
@@ -81,13 +81,14 @@ class DocumentController extends Controller
               }
               $document->data = [$data];
             }
+            $document->isScanned = true;
 
             $document->save();
             array_push($returnModels,$document);
           }
         } else {
           $success = false;
-          array_push($errorTexts,["errorText" => 'Invalid document data']);
+          array_push($errorTexts,["errorText" => $data]);
         }
       }
 
