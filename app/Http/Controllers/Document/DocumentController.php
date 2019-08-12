@@ -13,7 +13,7 @@ class DocumentController extends Controller
 {
     //
     public static function addDocument($hn,$templateCode,$data,$category=null,$encounterId=null,$referenceId=null) {
-      return addDocuments([
+      return self::addDocuments([
         'referenceId' => $referenceId,
         'hn' => $hn,
         'templateCode' => $templateCode,
