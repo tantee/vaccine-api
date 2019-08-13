@@ -5,6 +5,7 @@ namespace App\Models\Document;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UserStamps;
+use App\Models\Traits\StoreToAsset;
 
 class Documents extends Model
 {
