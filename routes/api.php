@@ -46,3 +46,7 @@ Route::get('{methodNamespace}/{methodClass}/{methodName}','GenericAPIController@
 Route::post('{methodNamespace}/{methodClass}/{methodName}','GenericAPIController@route');
 Route::get('direct/{methodNamespace}/{methodClass}/{methodName}','GenericAPIController@routeDirect');
 Route::post('direct/{methodNamespace}/{methodClass}/{methodName}','GenericAPIController@routeDirect');
+
+Route::get('/phpinfo',function () {
+  phpinfo();
+});
