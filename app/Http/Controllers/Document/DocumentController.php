@@ -63,6 +63,7 @@ class DocumentController extends Controller
             } else {
               $success = false;
               array_push($errorTexts,["errorText" => 'Error creating new document']);
+              array_push($errorTexts,$document["errorTexts"]);
             }
           } else {
             $success = false;
