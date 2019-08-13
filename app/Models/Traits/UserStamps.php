@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 trait UserStamps {
   public static function bootUserStamps() {
     static::creating(function($model) {
-      if (Auth::check()) $model->created_by = Auth::user()->id;
+      if (Auth::guard('api')->check()) $model->created_by = Auth::guard('api')->user()->id;
       else $model->created_by = 'creator';
     });
     static::updating(function($model) {
