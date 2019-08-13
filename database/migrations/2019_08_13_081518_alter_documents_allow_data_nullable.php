@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AlterDocumentsAddDataDefault extends Migration
+class AlterDocumentsAllowDataNullable extends Migration
 {
     /**
      * Run the migrations.
@@ -15,7 +15,7 @@ class AlterDocumentsAddDataDefault extends Migration
     {
         Schema::table('documents', function (Blueprint $table) {
             //
-            $table->json('data')->default('{}')->change();
+            $table->json('data')->nullable()->change();
         });
     }
 
