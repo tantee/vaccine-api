@@ -39,6 +39,8 @@ class DocumentController extends Controller
 
       if (array_keys($documentData) !== range(0, count($documentData) - 1)) $documentData = array(documentData);
 
+      DB::beginTransaction();
+
       foreach($documentData as $data) {
         if (\is_array($data) && isset($data['base64string'])) {
           $tmpData = explode(',',$data['base64string']);
@@ -63,7 +65,7 @@ class DocumentController extends Controller
             } else {
               $success = false;
               array_push($errorTexts,["errorText" => 'Error creating new document']);
-              array_push($errorTexts,$document["errorTexts"]);
+              $errorTexts = array_merge($errorTexts,$document["errorTexts"]);
             }
           } else {
             $success = false;
@@ -83,15 +85,24 @@ class DocumentController extends Controller
               $document->data = [$data];
             }
             $document->isScanned = true;
-
-            $document->save();
-            array_push($returnModels,$document);
+            $document->status = 'approved';
+            try {
+              $document->save();
+              array_push($returnModels,$document);
+            } catch (\Exception $e) {
+              $returnModels = [];
+              $success = false;
+              array_push($errorTexts,["errorText" => $e->getMessage()]);
+            }
           }
         } else {
           $success = false;
           array_push($errorTexts,["errorText" => 'Invalid document data']);
         }
       }
+
+      if ($success) DB::commit();
+      else DB::rollBack();
 
       return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }
