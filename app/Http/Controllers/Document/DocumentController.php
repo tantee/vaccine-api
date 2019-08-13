@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Document;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\Master\IdController;
