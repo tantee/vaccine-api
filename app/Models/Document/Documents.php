@@ -9,7 +9,7 @@ use App\Models\Traits\UserStamps;
 class Documents extends Model
 {
     //
-    use SoftDeletes,UserStamps;
+    use SoftDeletes,UserStamps,StoreToAsset;
 
     protected $guarded = [];
 
@@ -29,4 +29,6 @@ class Documents extends Model
       'data' => 'array',
       'revision' => 'array',
     ];
+
+    protected $toStores = ['data'];
 }
