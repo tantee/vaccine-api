@@ -19,7 +19,7 @@ class TapRequestInfo
             $record['extra']['ip'] = \Request::getClientIp();
             $record['extra']['path'] = \Request::path();
             $record['extra']['referer'] = \Request::server('HTTP_REFERER');
-            $record['extra']['user'] = (Auth::check()) ? Auth::user()->username : "";
+            $record['extra']['user'] = (Auth::guard('api')->check()) ? Auth::guard('api')->user()->username : "";
 
             return $record;
           });
