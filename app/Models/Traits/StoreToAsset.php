@@ -8,22 +8,22 @@ use App\Http\Controllers\Asset\AssetController;
 trait StoreToAsset {
   public static function bootStoreToAsset() {
     static::creating(function($model) {
-      $model->storeWhenSave($model);
+      $model->storeWhenSave();
     });
     static::updating(function($model) {
-      $model->storeWhenSave($model);
+      $model->storeWhenSave();
     });
   }
 
-  public function storeWhenSave(&$model) {
+  public function storeWhenSave() {
     log::debug($this->toStores);
     $toStores = (isset($this->toStores)) ? $this->toStores : [];
     foreach($toStores as $toStore) {
       log::debug('running '.$toStore);
-      log::debug($model->$toStore);
-      if (isset($model->$toStore) && \is_array($model->$toStore)) {
+      log::debug($this->$toStore);
+      if (isset($this->$toStore) && \is_array($this->$toStore)) {
         log::debug('array_walk fired');
-        if (isset($model->hn)) \array_walk($model->$toStore,['self','storeToAsset'],$model->hn);
+        if (isset($this->hn)) \array_walk($this->$toStore,['self','storeToAsset'],$this->hn);
       }
     }
   }
