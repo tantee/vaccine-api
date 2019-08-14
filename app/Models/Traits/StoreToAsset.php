@@ -2,31 +2,31 @@
 
 namespace App\Models\Traits;
 
+use Log;
 use App\Http\Controllers\Asset\AssetController;
 
 trait StoreToAsset {
-  public static function boot() {
+  protected $toStores = array();
+  
+  public static function bootStoreToAsset() {
     static::creating(function($model) {
-      $toStores = ($toStores) ? $toStores : [];
-      foreach($toStores as $toStore) {
-        if (isset($model->$toStore) && \is_array($model->$toStore)) {
-          if (isset($model->hn)) \array_walk($model->$toStore,['self','storeToAsset'],$model->hn);
-        }
-      }
+      $model->storeWhenSave();
     });
     static::updating(function($model) {
-      $toStores = ($toStores) ? $toStores : [];
-      foreach($toStores as $toStore) {
-        if (isset($model->$toStore) && \is_array($model->$toStore)) {
-          if (isset($model->hn)) \array_walk($model->$toStore,['self','storeToAsset'],$model->hn);
-        }
-      }
+      $model->storeWhenSave();
     });
-
-    parent::boot();
   }
 
-  protected static function storeToAsset(&$modelValue,$modelKey,$hn) {
+  public function storeWhenSave() {
+    $toStores = $this->$toStores;
+    foreach($toStores as $toStore) {
+      if (isset($model->$toStore) && \is_array($model->$toStore)) {
+        if (isset($model->hn)) \array_walk($model->$toStore,[$this,'storeToAsset'],$model->hn);
+      }
+    }
+  }
+  
+  protected function storeToAsset(&$modelValue,$modelKey,$hn) {
     if (\is_array($modelValue) && isset($modelValue['base64string']) && !isset($modelValue['id'])) {
       if (isset($modelValue['assetType'])) $assetType = $modelValue['assetType'];
       else $assetType = null;
