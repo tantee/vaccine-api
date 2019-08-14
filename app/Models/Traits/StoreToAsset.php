@@ -15,7 +15,7 @@ trait StoreToAsset {
     });
   }
 
-  public function storeWhenSave($model) {
+  public function storeWhenSave(&$model) {
     log::debug($this->toStores);
     $toStores = (isset($this->toStores)) ? $this->toStores : [];
     foreach($toStores as $toStore) {
@@ -23,12 +23,12 @@ trait StoreToAsset {
       log::debug($model->$toStore);
       if (isset($model->$toStore) && \is_array($model->$toStore)) {
         log::debug('array_walk fired');
-        if (isset($model->hn)) \array_walk($model->$toStore,[$this,'storeToAsset'],$model->hn);
+        if (isset($model->hn)) \array_walk($model->$toStore,['self','storeToAsset'],$model->hn);
       }
     }
   }
 
-  protected function storeToAsset(&$modelValue,$modelKey,$hn) {
+  protected static function storeToAsset(&$modelValue,$modelKey,$hn) {
     log::debug('storetoasset fired');
     if (\is_array($modelValue) && isset($modelValue['base64string']) && !isset($modelValue['id'])) {
       if (isset($modelValue['assetType'])) $assetType = $modelValue['assetType'];
