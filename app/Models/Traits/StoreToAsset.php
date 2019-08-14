@@ -8,14 +8,14 @@ use App\Http\Controllers\Asset\AssetController;
 trait StoreToAsset {
   public static function bootStoreToAsset() {
     static::creating(function($model) {
-      $model->storeWhenSave();
+      $model->storeWhenSave($model);
     });
     static::updating(function($model) {
-      $model->storeWhenSave();
+      $model->storeWhenSave($model);
     });
   }
 
-  public function storeWhenSave() {
+  public function storeWhenSave($model) {
     log::debug($this->toStores);
     $toStores = (isset($this->toStores)) ? $this->toStores : [];
     foreach($toStores as $toStore) {
