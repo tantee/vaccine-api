@@ -19,7 +19,7 @@ trait StoreToAsset {
     log::debug($this->toStores);
     $toStores = (isset($this->toStores)) ? $this->toStores : [];
     foreach($toStores as $toStore) {
-      log::debug('running '+$toStore);
+      log::debug('running '.$toStore);
       log::debug($model->$toStore);
       if (isset($model->$toStore) && \is_array($model->$toStore)) {
         log::debug('array_walk fired');
