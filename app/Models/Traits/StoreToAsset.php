@@ -2,11 +2,10 @@
 
 namespace App\Models\Traits;
 
-use Log;
 use App\Http\Controllers\Asset\AssetController;
 
 trait StoreToAsset {
-  public static function bootStoreToAsset() {
+  public static function boot() {
     static::creating(function($model) {
       $toStores = ($toStores) ? $toStores : [];
       foreach($toStores as $toStore) {
@@ -23,6 +22,8 @@ trait StoreToAsset {
         }
       }
     });
+
+    parent::boot();
   }
 
   protected static function storeToAsset(&$modelValue,$modelKey,$hn) {
