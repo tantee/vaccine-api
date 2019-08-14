@@ -16,14 +16,13 @@ trait StoreToAsset {
   }
 
   public function storeWhenSave() {
-    log::debug($this->toStores);
     $toStores = (isset($this->toStores)) ? $this->toStores : [];
     foreach($toStores as $toStore) {
-      log::debug('running '.$toStore);
-      log::debug($this->$toStore);
       if (isset($this->$toStore) && \is_array($this->$toStore)) {
         log::debug('array_walk fired');
-        if (isset($this->hn)) \array_walk($this->$toStore,['self','storeToAsset'],$this->hn);
+        $tmpFieldToStore = $this->$toStore;
+        if (isset($this->hn)) \array_walk($tmpFieldToStore,['self','storeToAsset'],$this->hn);
+        $this->$toStore = $tmpFieldToStore;
       }
     }
   }
