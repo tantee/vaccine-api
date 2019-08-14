@@ -16,6 +16,7 @@ trait StoreToAsset {
   }
 
   public function storeWhenSave() {
+    log::debug($this->toStores);
     $toStores = (isset($this->toStores)) ? $this->toStores : [];
     foreach($toStores as $toStore) {
       if (isset($model->$toStore) && \is_array($model->$toStore)) {
@@ -25,10 +26,11 @@ trait StoreToAsset {
   }
 
   protected function storeToAsset(&$modelValue,$modelKey,$hn) {
+    log::debug('storetoasset fired');
     if (\is_array($modelValue) && isset($modelValue['base64string']) && !isset($modelValue['id'])) {
       if (isset($modelValue['assetType'])) $assetType = $modelValue['assetType'];
       else $assetType = null;
-
+      log::debug('base64string fired');
       $result = AssetController::addAssetBase64($hn,$modelValue['base64string'],$assetType);
       if ($result['success']) {
         $modelValue = $result['returnModels'];
