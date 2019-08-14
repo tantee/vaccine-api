@@ -16,7 +16,7 @@ trait StoreToAsset {
   }
 
   public function storeWhenSave() {
-    $toStores = (isset($this->$toStores)) ? $this->$toStores : [];
+    $toStores = (isset($this->toStores)) ? $this->toStores : [];
     foreach($toStores as $toStore) {
       if (isset($model->$toStore) && \is_array($model->$toStore)) {
         if (isset($model->hn)) \array_walk($model->$toStore,[$this,'storeToAsset'],$model->hn);
