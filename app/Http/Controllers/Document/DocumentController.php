@@ -74,6 +74,11 @@ class DocumentController extends Controller
           }
 
           if ($success) {
+            if (isset($data['category']) && $data['category']!=null && $data['category']!='') $document->category = $data['category'];
+            if (isset($data['referenceId']) && $data['referenceId']!=null && $data['referenceId']!='') $document->referenceId = $data['referenceId'];
+
+            $data = array_only($data,['base64string']);
+            
             if ($document->isScanned && ($isAppend || Carbon::now()->diffInMinute($document->updated_at)<=5)) array_push($document->data,$data);
             else {
               if (!empty($document->data)) {
@@ -128,6 +133,23 @@ class DocumentController extends Controller
       } else {
         $success = false;
         array_push($errorTexts,["errorText" => 'No patient for HN '.$hn]);
+      }
+
+      return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
+    }
+
+    public static function deleteDocument($id) {
+      $success = true;
+      $errorTexts = [];
+      $returnModels = [];
+
+      $document = \App\Models\Document\Documents::find($id);
+
+      if ($document !== null) {
+        $document->delete();
+      } else {
+        $success = false;
+        array_push($errorTexts,["errorText" => 'No document matached']);
       }
 
       return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
