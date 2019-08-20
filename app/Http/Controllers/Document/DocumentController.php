@@ -117,19 +117,20 @@ class DocumentController extends Controller
       $success = true;
       $errorTexts = [];
       $returnModels = [];
-
+      
 
       if (PatientController::isExistPatient($hn)) {
-        $patient = \App\Models\Patient\Patients::find($hn);
-        $returnModels = $patient->Documents();
-        if ($category!=null) $returnModels = $returnModels->where('category',$category);
-        if ($encounterId!=null) $returnModels = $returnModels->where('encounterId',$encounterId);
-        if ($referenceId!=null) $returnModels = $returnModels->where('referenceId',$referenceId);
-        if (isset($request->perPage) && is_numeric($request->perPage)) {
-          $returnModels = $returnModels->paginate($request->perPage)->appends(['perPage'=>$request->perPage]);
-        } else {
-          $returnModels = $returnModels->get();
-        }
+        // $patient = \App\Models\Patient\Patients::find($hn);
+        // $returnModels = $patient->Documents();
+        // if ($category!=null) $returnModels = $returnModels->where('category',$category);
+        // if ($encounterId!=null) $returnModels = $returnModels->where('encounterId',$encounterId);
+        // if ($referenceId!=null) $returnModels = $returnModels->where('referenceId',$referenceId);
+        // if (isset($request->perPage) && is_numeric($request->perPage)) {
+        //   $returnModels = $returnModels->paginate($request->perPage)->appends(['perPage'=>$request->perPage]);
+        // } else {
+        //   $returnModels = $returnModels->get();
+        // }
+        return DataController::searchModelByRequest($request,\App\Models\Document\Documents::class);
       } else {
         $success = false;
         array_push($errorTexts,["errorText" => 'No patient for HN '.$hn]);
