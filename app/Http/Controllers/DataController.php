@@ -342,7 +342,8 @@ class DataController extends Controller
           foreach($data as $row) {
             $column = explode('$',$row['searchWhere'][0][0]);
             if (count($column)==1) {
-              $returnModels = $returnModels->Where($row['searchWhere']);
+              if (is_array($row['searchWhere'][0][2])) $returnModels = $returnModels->whereIn($row['searchWhere'][0][0],$row['searchWhere'][0][2]);
+              else $returnModels = $returnModels->Where($row['searchWhere']);
             } else {
               $row['searchWhere'][0][0] = $column[count($column)-1];
               $returnModels = $returnModels->whereHas($column[0],function($query) use ($row) {
