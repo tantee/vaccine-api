@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AlterDocumentsTemplates extends Migration
+class AlterDocumentsTemplatesRevision extends Migration
 {
     /**
      * Run the migrations.
@@ -14,9 +14,9 @@ class AlterDocumentsTemplates extends Migration
     public function up()
     {
         Schema::table('documents_templates', function (Blueprint $table) {
-            $table->boolean('isRequiredPatientInfo')->default(true)->change();
-            $table->boolean('isNoDefaultHeader')->default(false)->after('isPrintable');
-            $table->boolean('isNoDefaultFooter')->default(false)->after('isNoDefaultHeader');
+            //
+            $table->string('revisionId')->after('templateCompatibility');
+            $table->string('revisionDate')->after('revisionId');
         });
     }
 
@@ -28,8 +28,8 @@ class AlterDocumentsTemplates extends Migration
     public function down()
     {
         Schema::table('documents_templates', function (Blueprint $table) {
-            $table->boolean('isRequiredPatientInfo')->default(false)->change();
-            $table->dropColumn(['isNoDefaultHeader','isNoDefaultFooter']);
+            //
+            $table->dropColumn(['revisionId','revisionDate']);
         });
     }
 }

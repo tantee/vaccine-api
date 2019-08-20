@@ -26,7 +26,7 @@ class DocumentsTemplates extends Model
         if (isset($model->printTemplate) && is_array($model->printTemplate) && isset($model->printTemplate['base64string'])) {
           $content = File::base64ToFileContent($model->printTemplate['base64string']);
           $fileExt = File::base64ToFileExtension($model->printTemplate['base64string']);
-          $filePath = '/templates/'.$model->templateCode.'.'.$fileExt;
+          $filePath = '/templates/'.$model->templateCode.'.'.$model->revisionId.'.'.$fileExt;
 
           if (File::overwritePut($filePath,$content)) {
             $model->printTemplate = $filePath;
@@ -39,7 +39,7 @@ class DocumentsTemplates extends Model
         if (isset($model->printTemplate) && is_array($model->printTemplate) && isset($model->printTemplate['base64string'])) {
           $content = File::base64ToFileContent($model->printTemplate['base64string']);
           $fileExt = File::base64ToFileExtension($model->printTemplate['base64string']);
-          $filePath = '/templates/'.$model->templateCode.'.'.$fileExt;
+          $filePath = '/templates/'.$model->templateCode.'.'.$model->revisionId.'.'.$fileExt;
 
           if (File::overwritePut($filePath,$content)) {
             $model->printTemplate = $filePath;
