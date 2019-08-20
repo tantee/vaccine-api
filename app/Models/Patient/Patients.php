@@ -5,6 +5,7 @@ namespace App\Models\Patient;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UserStamps;
+use Carbon\Carbon;
 
 class Patients extends Model
 {
@@ -58,15 +59,29 @@ class Patients extends Model
       return \App\Models\Patient\PatientsNames::where('hn',$this->hn)->where('nameType','EN')->orderBy('id','desc')->first();
     }
 
+    public function getAgeAttribute() {
+      if ($this->dateOfDeath!==null) $interval = $this->dateOfDeath->diffAsCarbonInterval($this->dateOfBirth);
+      else $interval = Carbon::now()->diffAsCarbonInterval($this->dateOfBirth);
+
+      $interval->setLocale('th_TH');
+
+      return $interval->forHumans();
+    }
+
     public function Photos() {
       return $this->Assets()->where(function ($query) {
         $query->where('assetType','id_photo')->orWhere('assetType','patient_photo');
       })->orderBy('id','desc');
     }
 
+    protected $dates = [
+        'dateOfBirth',
+        'dateOfDeath'
+    ];
+
     protected $casts = [
       'personIdDetail' => 'array',
     ];
 
-    protected $appends = ['name_th','name_en','name_real_th','name_real_en'];
+    protected $appends = ['name_th','name_en','name_real_th','name_real_en','age'];
 }
