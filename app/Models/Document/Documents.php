@@ -26,10 +26,21 @@ class Documents extends Model
       return $this->belongsTo('App\Models\Opd\Encounters','encounterId','encounterId');
     }
 
+    public function getPatientAgeAttribute() {
+      if ($this->patient->dateOfDeath!==null && $this->created_at->greaterThan($this->patient->dateOfDeath)) $interval = $this->patient->dateOfDeath->diffAsCarbonInterval($this->patient->dateOfBirth);
+      else $this->created_at->diffAsCarbonInterval($this->patient->dateOfBirth);
+      
+      $interval->setLocale('th_TH');
+
+      return $interval->forHumans(['parts'=>2]);
+    }
+
     protected $casts = [
       'data' => 'array',
       'revision' => 'array',
     ];
 
     protected $toStores = ['data'];
+
+    protected $appends = ['patient_age'];
 }

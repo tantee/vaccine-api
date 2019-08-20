@@ -65,7 +65,7 @@ class Patients extends Model
 
       $interval->setLocale('th_TH');
 
-      return $interval->forHumans();
+      return $interval->forHumans(['parts'=>2]);
     }
 
     public function Photos() {
