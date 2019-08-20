@@ -359,7 +359,9 @@ class DataController extends Controller
             if (count($orderBy)==1) array_push($orderBy,"ASC");
             $returnModels = $returnModels->orderBy($orderBy[0],$orderBy[1]);
           }
-
+          
+          log::info($returnModels->toSql());
+          
           if (isset($request->perPage) && is_numeric($request->perPage)) {
             $returnModels = $returnModels->paginate($request->perPage)->appends(['perPage'=>$request->perPage]);
             if (isset($request->orderBy)) $returnModels->appends(['orderBy'=>$request->orderBy]);
