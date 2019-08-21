@@ -24,9 +24,5 @@ class PatientsInsurances extends Model
         'endDate'
     ];
 
-    protected $casts = [
-      'documents' => 'array',
-    ];
-
     protected $with = ['Insurance'];
 }
