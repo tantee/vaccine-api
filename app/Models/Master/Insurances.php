@@ -10,7 +10,9 @@ class Insurances extends Model
 {
     //
     use SoftDeletes,UserStamps;
-
+    protected $primaryKey = 'insuranceCode';
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $guarded = [];
 
     protected $casts = [

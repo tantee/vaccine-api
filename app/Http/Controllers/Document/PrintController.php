@@ -178,17 +178,27 @@ class PrintController extends Controller
       }
     }
 
-    public static function genericPrintDocument($documentTemplate,$documentData,$documentId=null) {
+    public static function genericPrintDocument($documentId) {
       $tmpUniqId = uniqid();
       $tmpDirectory = 'tmp/'.$tmpUniqId;
       $tmpFilename = $tmpDirectory.'/output.docx';
+      $tmpFilenameTmpl = $tmpDirectory.'/template.docx';
       $tmpFilenamePDF = $tmpDirectory.'/output.pdf';
 
-      if ($documentId==null) $documentId = $documentTemplate;
+      $document = \App\Models\Document\Documents::find($documentId);
+      if ($document == null) return null;
 
-      $data = (is_array($documentData)) ? $documentData : \json_decode($documentData,true);
+      $data = $document->data;
+      $document->Patient;
+      $document->Encounter;
 
-      Storage::makeDirectory($tmpDirectory);
+      if ($document->Patient != null) {
+
+      }
+
+      if ($document->Patient != null) {
+
+      }
 
       setlocale(LC_TIME, 'th_TH.utf8');
       $data['print_date'] = Carbon::now()->formatLocalized('%A %d %B %Y');
@@ -200,6 +210,25 @@ class PrintController extends Controller
         if (is_array($value) && \array_key_exists('assetId',$value)) {}
       }
 
+      // Wait for good merge library
+
+      // $tmpDefaultTemplate = null;
+      // if ($document->Template->isNoDefaultHeader || $document->Template->isNoDefaultFooter) {
+      //   if (!$document->Template->isNoDefaultHeader && !$document->Template->isNoDefaultFooter) {
+      //     if ($document->Template->isRequiredEncounter) $tmpDefaultTemplate = 'tmpl_header_footer_all';
+      //     else $tmpDefaultTemplate = 'tmpl_header_footer';
+      //   }
+      //   if (!$document->Template->isNoDefaultHeader && $document->Template->isNoDefaultFooter) {
+      //     if ($document->Template->isRequiredEncounter) $tmpDefaultTemplate = 'tmpl_header_all';
+      //     else $tmpDefaultTemplate = 'tmpl_header';
+      //   }
+      //   if ($document->Template->isNoDefaultHeader && !$document->Template->isNoDefaultFooter) $tmpDefaultTemplate = 'tmpl_footer';
+      // }
+
+      // if ($tmpDefaultTemplate!=null) $tmpDefaultTemplate = $tmpDefaultTemplate.'.docx';
+
+      Storage::makeDirectory($tmpDirectory);
+      
       $currPrm = [
         'tmpDirectory' => $tmpDirectory,
       ];
@@ -209,7 +238,7 @@ class PrintController extends Controller
       $TBS->Plugin(clsMasterItem::class);
       //$TBS->NoErr = true;
 
-      $TBS->LoadTemplate(storage_path('app/template/'.$documentTemplate.'.docx'),\OPENTBS_ALREADY_UTF8);
+      $TBS->LoadTemplate(storage_path('app/'.$document->Template->printTemplate),\OPENTBS_ALREADY_UTF8);
       self::merge($TBS,$data,$currPrm);
 
       $TBS->PlugIn(\OPENTBS_SELECT_HEADER, \OPENTBS_DEFAULT);
@@ -220,7 +249,7 @@ class PrintController extends Controller
 
       $TBS->Show(\OPENTBS_FILE,storage_path('app/'.$tmpFilename));
 
-      Storage::copy($tmpFilename,'/document/'.$documentTemplate.'/docx/'.$documentId.'_'.$tmpUniqId.'.docx');
+      Storage::copy($tmpFilename,'/documents/'.$document->hn.'/'.$document->Template->templateCode.'/docx/'.$documentId.'_'.$tmpUniqId.'.docx');
 
       if (self::convertToPDF($tmpFilename,$tmpFilenamePDF)) {
         $returnData = Storage::get($tmpFilenamePDF);
@@ -232,6 +261,7 @@ class PrintController extends Controller
 
       return $returnData;
     }
+
 
     public static function genericPrintDocumentBase64($documentTemplate,$documentData,$documentId=null) {
       return base64_encode(self::genericPrintDocument($documentTemplate,$documentData,$documentId));

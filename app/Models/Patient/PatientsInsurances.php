@@ -14,4 +14,19 @@ class PatientsInsurances extends Model
 
     protected $guarded = [];
     protected $toStores = ['documents'];
+
+    public function Insurance() {
+        return $this->hasOne('App\Model\Master\Insurances','insuranceCode','insuranceCode');
+    }
+
+    protected $dates = [
+        'beginDate',
+        'endDate'
+    ];
+
+    protected $casts = [
+      'documents' => 'array',
+    ];
+
+    protected $with = ['Insurance'];
 }
