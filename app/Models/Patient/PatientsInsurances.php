@@ -16,7 +16,7 @@ class PatientsInsurances extends Model
     protected $toStores = ['documents'];
 
     public function Insurance() {
-        return $this->hasOne('App\Model\Master\Insurances','insuranceCode','insuranceCode');
+        return $this->hasOne('App\Models\Master\Insurances','insuranceCode','insuranceCode');
     }
 
     protected $dates = [
