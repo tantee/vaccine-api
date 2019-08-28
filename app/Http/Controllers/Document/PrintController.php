@@ -185,24 +185,44 @@ class PrintController extends Controller
       $tmpFilenameTmpl = $tmpDirectory.'/template.docx';
       $tmpFilenamePDF = $tmpDirectory.'/output.pdf';
 
+      $returnData = null;
+
       $document = \App\Models\Document\Documents::find($documentId);
       if ($document == null) return null;
 
       $data = $document->data;
-      $document->Patient;
-      $document->Encounter;
+
+      $data['qrCodeData'] = \json_encode(['DocId' => $document->id]);
 
       if ($document->Patient != null) {
+        $patientData['hn'] = $document->Patient->hn;
+        $patientData['name_th'] = $document->Patient->Name_th->toArray();
+        $patientData['name_en'] = $document->Patient->Name_en->toArray();
+        $patientData['name_real_th'] = $document->Patient->Name_real_th->toArray();
+        $patientData['name_real_en'] = $document->Patient->Name_real_en->toArray();
+        $patientData['personId'] = $document->Patient->personId;
+        $patientData['sex'] = $document->Patient->sex;
+        $patientData['maritalStatus'] = $document->Patient->maritalStatus;
+        $patientData['dateOfBirth'] = $document->Patient->dateOfBirth;
+        $patientData['nationality'] = $document->Patient->nationality;
+        $patientData['race'] = $document->Patient->race;
+        $patientData['religion'] = $document->Patient->religion;
+        $patientData['primaryMobileNo'] = $document->Patient->primaryMobileNo;
+        $patientData['primaryTelephoneNo'] = $document->Patient->primaryTelephoneNo;
+        $patientData['primaryEmail'] = $document->Patient->primaryEmail;
 
+        $data['patientData'] = $patientData;
       }
 
-      if ($document->Patient != null) {
-
+      if ($document->Encounter != null) {
+        $encounterData['encounterId'] = '';
+        
+        $data['encounterData'] = $encounterData;
       }
 
       setlocale(LC_TIME, 'th_TH.utf8');
       $data['print_date'] = Carbon::now()->formatLocalized('%A %d %B %Y');
-      $data['print_user'] = (Auth::user()) ? Auth::user()->name : '';
+      $data['print_user'] = (Auth::guard('api')->check()) ? Auth::guard('api')->user()->username : 'Unidentified';
 
       foreach($data as $key=>$value) {
         if (\strpos($key,'base64')) {}
@@ -210,51 +230,39 @@ class PrintController extends Controller
         if (is_array($value) && \array_key_exists('assetId',$value)) {}
       }
 
-      // Wait for good merge library
-
-      // $tmpDefaultTemplate = null;
-      // if ($document->Template->isNoDefaultHeader || $document->Template->isNoDefaultFooter) {
-      //   if (!$document->Template->isNoDefaultHeader && !$document->Template->isNoDefaultFooter) {
-      //     if ($document->Template->isRequiredEncounter) $tmpDefaultTemplate = 'tmpl_header_footer_all';
-      //     else $tmpDefaultTemplate = 'tmpl_header_footer';
-      //   }
-      //   if (!$document->Template->isNoDefaultHeader && $document->Template->isNoDefaultFooter) {
-      //     if ($document->Template->isRequiredEncounter) $tmpDefaultTemplate = 'tmpl_header_all';
-      //     else $tmpDefaultTemplate = 'tmpl_header';
-      //   }
-      //   if ($document->Template->isNoDefaultHeader && !$document->Template->isNoDefaultFooter) $tmpDefaultTemplate = 'tmpl_footer';
-      // }
-
-      // if ($tmpDefaultTemplate!=null) $tmpDefaultTemplate = $tmpDefaultTemplate.'.docx';
-
       Storage::makeDirectory($tmpDirectory);
       
       $currPrm = [
         'tmpDirectory' => $tmpDirectory,
       ];
 
-      $TBS = new \clsTinyButStrong();
-      $TBS->Plugin(\TBS_INSTALL, 'clsOpenTBS');
-      $TBS->Plugin(clsMasterItem::class);
-      //$TBS->NoErr = true;
+      $templatePath = null;
+      if ($document->Template->printTemplate!=null && Storage::exists($document->Template->printTemplate)) $templatePath = $document->Template->printTemplate;
+      else if (Storage::exists('/default/documents/'.$document->templateCode.'.docx')) $templatePath = '/default/documents/'.$document->templateCode.'.docx';
+      else if (Storage::exists('/default/documents/'.$document->templateCode.'.xlsx')) $templatePath = '/default/documents/'.$document->templateCode.'.xlsx';
 
-      $TBS->LoadTemplate(storage_path('app/'.$document->Template->printTemplate),\OPENTBS_ALREADY_UTF8);
-      self::merge($TBS,$data,$currPrm);
+      if ($templatePath!=null) {
+        $TBS = new \clsTinyButStrong();
+        $TBS->Plugin(\TBS_INSTALL, 'clsOpenTBS');
+        $TBS->Plugin(clsMasterItem::class);
+        //$TBS->NoErr = true;
 
-      $TBS->PlugIn(\OPENTBS_SELECT_HEADER, \OPENTBS_DEFAULT);
-      self::merge($TBS,$data,$currPrm);
+        $TBS->LoadTemplate(storage_path('app/'.$document->Template->printTemplate),\OPENTBS_ALREADY_UTF8);
+        self::merge($TBS,$data,$currPrm);
 
-      $TBS->PlugIn(\OPENTBS_SELECT_FOOTER, \OPENTBS_DEFAULT);
-      self::merge($TBS,$data,$currPrm);
+        $TBS->PlugIn(\OPENTBS_SELECT_HEADER, \OPENTBS_DEFAULT);
+        self::merge($TBS,$data,$currPrm);
 
-      $TBS->Show(\OPENTBS_FILE,storage_path('app/'.$tmpFilename));
+        $TBS->PlugIn(\OPENTBS_SELECT_FOOTER, \OPENTBS_DEFAULT);
+        self::merge($TBS,$data,$currPrm);
 
-      Storage::copy($tmpFilename,'/documents/'.$document->hn.'/'.$document->Template->templateCode.'/docx/'.$documentId.'_'.$tmpUniqId.'.docx');
+        $TBS->Show(\OPENTBS_FILE,storage_path('app/'.$tmpFilename));
 
-      if (self::convertToPDF($tmpFilename,$tmpFilenamePDF)) {
-        $returnData = Storage::get($tmpFilenamePDF);
-      } else {
-        $returnData = null;
+        Storage::copy($tmpFilename,'/documents/'.$document->hn.'/'.$document->Template->templateCode.'/raw/'.$documentId.'_'.$tmpUniqId.'.docx');
+
+        if (self::convertToPDF($tmpFilename,$tmpFilenamePDF)) {
+          $returnData = Storage::get($tmpFilenamePDF);
+        }
       }
 
       Storage::deleteDirectory($tmpDirectory);
@@ -263,8 +271,8 @@ class PrintController extends Controller
     }
 
 
-    public static function genericPrintDocumentBase64($documentTemplate,$documentData,$documentId=null) {
-      return base64_encode(self::genericPrintDocument($documentTemplate,$documentData,$documentId));
+    public static function genericPrintDocumentBase64($documentId) {
+      return base64_encode(self::genericPrintDocument($documentId));
     }
 
     private static function merge(&$TBS,$data,$currPrm) {

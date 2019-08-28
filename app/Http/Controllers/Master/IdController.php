@@ -44,7 +44,7 @@ class IdController extends Controller
 
     public static function issueId($idType,$prefix,$numberLength=6,$spacerChar='',$addCheckDigit=true) {
       $prefix = date($prefix);
-      $masterid = \App\Models\Master\MasterIds::where([['idType','=',$idType],['prefix','=',$prefix]])->first();
+      $masterid = \App\Models\Master\MasterIds::where([['idType','=',$idType],['prefix','=',$prefix]])->lockForUpdate()->first();
       if ($masterid == null) {
         $masterid = new \App\Models\Master\MasterIds;
         $masterid->idType = $idType;
