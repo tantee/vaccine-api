@@ -167,21 +167,15 @@ class MasterGroupsSeeder extends Seeder
     }
 
     public function CSVImport($groupKey, $filename) {
-      // try {
-      //   $Item = CSV::CSVtoArray(storage_path('app/default/'.$filename.'.csv'));
-      //   array_walk($Item, function(&$a) use ($groupKey) {
-      //     $a = array_merge(['groupKey'=>$groupKey], $a);
-      //   });
-      //   DataController::createModel($Item,\App\Models\Master\MasterItems::class);
-      //   print('Successful imported '.$groupKey."\n");
-      // } catch (\Exception $e) {
-      //   print('Failed imported '.$e->getMessage()."\n");
-      // }
-      $Item = CSV::CSVtoArray(storage_path('app/default/'.$filename.'.csv'));
-      array_walk($Item, function(&$a) use ($groupKey) {
-        $a = array_merge(['groupKey'=>$groupKey], $a);
-      });
-      DataController::createModel($Item,\App\Models\Master\MasterItems::class);
-      print('Successful imported '.$groupKey."\n");
+      try {
+        $Item = CSV::CSVtoArray(storage_path('app/default/'.$filename.'.csv'));
+        array_walk($Item, function(&$a) use ($groupKey) {
+          $a = array_merge(['groupKey'=>$groupKey], $a);
+        });
+        DataController::createModel($Item,\App\Models\Master\MasterItems::class);
+        print('Successful imported '.$groupKey."\n");
+      } catch (\Exception $e) {
+        print('Failed imported '.$e->getMessage()."\n");
+      }
     }
 }
