@@ -17,7 +17,8 @@ class CreateClinics extends Migration
             $table->string('clinicCode')->primary();
             $table->string('clinicName');
             $table->string('clinicNameEN');
-            $table->string('locationCode');
+             $table->string('encounterType')->nullable()->default('AMB');
+            $table->string('locationCode')->nullable();
             $table->integer('defaultTimeSlot')->nullable();
             $table->json('defaultDocument')->nullable();
             $table->json('autoCharge')->nullable();

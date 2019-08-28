@@ -26,7 +26,6 @@ class CreatePatientsInsurances extends Migration
             $table->string('contractNo')->nullable();
             $table->string('contractPayer1')->nullable();
             $table->string('contractPayer2')->nullable();
-            $table->json('documents')->nullable();
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->string('deleted_by')->nullable();

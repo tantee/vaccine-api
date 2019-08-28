@@ -19,12 +19,13 @@ class CreateDocuments extends Migration
             $table->string('encounterId')->nullable();
             $table->string('referenceId')->nullable(); //such as receipt id
             $table->string('templateCode');
-            $table->integer('parentId')->nullable(); //wil remove in future release
-            $table->string('copyId')->nullable(); //wil remove in future release
-            $table->string('category')->default('999');
+            $table->string('category')->default('999')->nullable();
+            $table->string('folder')->default('default');
             $table->boolean('isScanned')->default(false);
-            $table->json('data');
+            $table->json('data')->nullable();
             $table->text('note')->nullable();
+            $table->string('status')->default('draft');
+            $table->json('revision')->nullable();
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->string('deleted_by')->nullable();
