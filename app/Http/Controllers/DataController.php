@@ -239,7 +239,7 @@ class DataController extends Controller
           if (method_exists($searchModel,'scopeActive')) $searchModel = $searchModel->active();
 
           if (isset($request->data['keyword'])) {
-            $returnModels = \Searchy::search($searchModel->getTable())->fields($searchField)->query($request->data['keyword'])->getQuery();
+            if (!isset($request->data['eager']) || !$request->data['eager']) $returnModels = \Searchy::search($searchModel->getTable())->fields($searchField)->query($request->data['keyword'])->getQuery();
             if(isset($request->data['filter']) && is_array($request->data['filter'])) {
               $returnModels = $returnModels->where($request->data['filter']);
             }

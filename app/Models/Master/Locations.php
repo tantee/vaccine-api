@@ -16,4 +16,8 @@ class Locations extends Model
     protected $keyType = 'string';
 
     protected $guarded = [];
+
+    protected $casts = [
+      'subunits' => 'array',
+    ];
 }
