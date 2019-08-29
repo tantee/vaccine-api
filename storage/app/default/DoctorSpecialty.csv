@@ -1,0 +1,7 @@
+itemCode,itemValue,itemValueEN
+GEN,เวชปฏิบัติทั่วไป,"General practitioner"
+MD,อายุรกรรม,"Medicine"
+MDONC,อายุรกรรมโรคมะเร็ง,"Medicine, Oncology"
+MDNEPH,อายุรแพทย์โรคไต,"Medicine, Nephrology"
+RT,รังสีรักษาและมะเร็งวิทยา,"Radiation Oncology"
+RD,รังสีวิทยา,"Diagnostic Radiology"

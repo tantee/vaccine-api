@@ -153,6 +153,18 @@ class MasterGroupsSeeder extends Seeder
             'description' => 'หมวดหมู่เอกสาร',
             'propertiesTemplate' => null,
           ],
+          [
+            'groupKey' => '$DoctorType',
+            'groupName' => 'ชนิดแพทย์',
+            'description' => 'ชนิดแพทย์',
+            'propertiesTemplate' => null,
+          ],
+          [
+            'groupKey' => '$DoctorSpecialty',
+            'groupName' => 'สาขาความเชี่ยวชาญแพทย์',
+            'description' => 'สาขาความเชี่ยวชาญแพทย์',
+            'propertiesTemplate' => null,
+          ],
         ];
 
         

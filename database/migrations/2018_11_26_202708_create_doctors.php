@@ -25,8 +25,8 @@ class CreateDoctors extends Migration
             $table->string('defaultTaxId')->nullable();
             $table->string('telephone');
             $table->string('email')->nullable();
-            $table->json('photo');
-            $table->json('signature');
+            $table->json('photo')->nullable();
+            $table->json('signature')->nullable();
             $table->text('note')->nullable();
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
