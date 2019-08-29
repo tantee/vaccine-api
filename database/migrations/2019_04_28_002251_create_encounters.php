@@ -34,6 +34,9 @@ class CreateEncounters extends Migration
             $table->string('deleted_by')->nullable();
             $table->SoftDeletes();
             $table->timestamps();
+            $table->index(['hn','encounterType']);
+            $table->index(['encounterType','doctorCode']);
+            $table->index(['encounterType','locationCode','clinicCode']);
         });
     }
 

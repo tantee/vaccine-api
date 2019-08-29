@@ -15,14 +15,19 @@ class CreateDoctors extends Migration
     {
         Schema::create('doctors', function (Blueprint $table) {
             $table->string('doctorCode')->primary();
-            $table->string('licenseId');
-            $table->json('name_th');
-            $table->json('name_en');
-            $table->string('specialtyCode');
-            $table->boolean('isParttime');
-            $table->string('fulltimeHospital')->nullable();
+            $table->string('doctorType');
+            $table->string('name_th');
+            $table->string('name_en');
+            $table->string('specialty');
+            $table->string('mainHospital')->nullable();
+            $table->string('licenseNo');
+            $table->string('personId');
+            $table->string('defaultTaxId')->nullable();
+            $table->string('telephone');
+            $table->string('email')->nullable();
             $table->json('photo');
             $table->json('signature');
+            $table->text('note')->nullable();
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->string('deleted_by')->nullable();
