@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Document\clsMasterItem;
 use App\Http\Controllers\Patient\PatientController;
+use App\Http\Controllers\Document\DocumentController;
 
 class PrintController extends Controller
 {
@@ -130,52 +131,43 @@ class PrintController extends Controller
       }
     }
 
-    public static function printBlankDocumentByTemplate($hn,$documentTemplate,$encounterId=null,$referenceId=null) {
+    public static function printBlankDocumentByTemplate($documentTemplate,$hn=null,$encounterId=null,$referenceId=null) {
+      $success = true;
+      $errorTexts = [];
+      $returnModels = [];
+
       $documentTemplate = \App\Models\Document\DocumentsTemplates::find($documentTemplate);
-      $patient = \App\Models\Patient\Patients::find($hn);
-      if ($documentTemplate != null && $patient!=null) {
-        $data = [];
 
-        $patientData['hn'] = $patient->hn;
-        $patientData['name_th'] = $patient->Name_th[0]->toArray();
-        $patientData['name_en'] = $patient->Name_en[0]->toArray();
-        $patientData['name_real_th'] = $patient->Name_real_th[0]->toArray();
-        $patientData['name_real_en'] = $patient->Name_real_en[0]->toArray();
-        $patientData['personId'] = $patient->personId;
-        $patientData['sex'] = $patient->sex;
-        $patientData['maritalStatus'] = $patient->maritalStatus;
-        $patientData['dateOfBirth'] = $patient->dateOfBirth;
-        $patientData['nationality'] = $patient->nationality;
-        $patientData['race'] = $patient->race;
-        $patientData['religion'] = $patient->religion;
-        $patientData['primaryMobileNo'] = $patient->primaryMobileNo;
-        $patientData['primaryTelephoneNo'] = $patient->primaryTelephoneNo;
-        $patientData['primaryEmail'] = $patient->primaryEmail;
+      if ($documentTemplate != null) {
+        if ($documentTemplate->isRequiredPatientInfo && (empty($hn) || !PatientController::isExistPatient($hn))) {
+          $success = false;
+          array_push($errorTexts,["errorText" => "Require HN"]);
+        }
+        if ($documentTemplate->isRequiredEncounter && empty($encounterId)) {
+          $success = false;
+          array_push($errorTexts,["errorText" => "Require HN"]);
+        }
 
-        $data['patientData'] = $patientData;
+        if ($success) {
+          $document = DocumentController::addDocument($hn,$documentTemplate->templateCode,null,$documentTemplate->defaultCategory,$encounterId,$referenceId);
+          if ($document["success"]) {
+            $document = $document["returnModels"][0];
+          } else {
+            $success = false;
+            array_push($errorTexts,["errorText" => 'Error creating new document']);
+            $errorTexts = array_merge($errorTexts,$document["errorTexts"]);
+          }
+        }
 
-        $qrCodeData = [
-          'hn' => $hn,
-          'cId' => uniqid(),
-          'tmpl' => $documentTemplate->id,
-        ];
-
-        $data['qrCodeData'] = \json_encode($qrCodeData);
-
-        // $documentData = [
-        //   'document_createdate' => $document->created_at,
-        //   'document_creator' => $document->created_by,
-        //   'document_updatedate' => $document->updated_at,
-        //   'document_updater' => $document->updated_by,
-        // ];
-        //
-        // $data['documentData'] = $documentData;
-
-        return self::genericPrintDocumentBase64($documentTemplate->id,$data);
-        //return $data;
+        if ($success) {
+          return self::genericPrintDocumentBase64($document->id);
+        }
       } else {
-        return ['success'=>false];
+        $success = false;
+        array_push($errorTexts,["errorText" => "Invalid template code"]);
       }
+
+      return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }
 
     public static function genericPrintDocument($documentId) {

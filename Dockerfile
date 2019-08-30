@@ -23,6 +23,7 @@ ADD . /var/www/html/
 WORKDIR "/var/www/html"
 
 RUN mv .env.example .env || true && \
+    cp -rf storage storage.default || true && \
     composer install --no-dev --working-dir=/var/www/html
 
 EXPOSE 443 80
