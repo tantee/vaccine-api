@@ -16,8 +16,8 @@ class CreateDoctors extends Migration
         Schema::create('doctors', function (Blueprint $table) {
             $table->string('doctorCode')->primary();
             $table->string('doctorType');
-            $table->string('name_th');
-            $table->string('name_en');
+            $table->string('nameTH');
+            $table->string('nameEN');
             $table->string('specialty');
             $table->string('mainHospital')->nullable();
             $table->string('licenseNo');

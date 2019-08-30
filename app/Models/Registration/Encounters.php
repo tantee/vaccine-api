@@ -15,6 +15,18 @@ class Encounters extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     protected $guarded = [];
+    
+    public function Location() {
+        return $this->hasOne('App\Models\Master\Locations','locationCode','locationCode');
+    }
+
+    public function Clinic() {
+        return $this->hasOne('App\Models\Master\Clinics','clinicCode','clinicCode');
+    }
+
+    public function Doctor() {
+        return $this->hasOne('App\Models\Master\Doctors','doctorCode','doctorCode');
+    }
 
     public static function boot() {
         static::creating(function($model) {
@@ -55,4 +67,6 @@ class Encounters extends Model
         'summary' => 'array',
         'statusLog' => 'array',
     ];
+
+    protected $with = ['Location','Clinic','Doctor'];
 }
