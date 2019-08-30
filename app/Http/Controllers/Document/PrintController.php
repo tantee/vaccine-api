@@ -237,7 +237,7 @@ class PrintController extends Controller
         $TBS = new \clsTinyButStrong();
         $TBS->Plugin(\TBS_INSTALL, 'clsOpenTBS');
         $TBS->Plugin(clsMasterItem::class);
-        //$TBS->NoErr = true;
+        $TBS->NoErr = true;
 
         $TBS->LoadTemplate(storage_path('app/'.$document->Template->printTemplate),\OPENTBS_ALREADY_UTF8);
         self::merge($TBS,$data,$currPrm);
