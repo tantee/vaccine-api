@@ -3,8 +3,10 @@
 namespace App\Models\Registration;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Http\Controllers\Master\IdController;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Traits\UserStamps;
 use Carbon\Carbon;
+use App\Http\Controllers\Master\IdController;
 
 class Encounters extends Model
 {
