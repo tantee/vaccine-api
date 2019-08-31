@@ -19,8 +19,14 @@ class Clinics extends Model
       return $this->hasMany('App\Models\Appointment\DoctorsTimetables','clinicCode','clinicCode')->orderBy('dayOfWeek')->orderBy('beginTime');
     }
 
+    public function Location() {
+        return $this->hasOne('App\Models\Master\Locations','locationCode','locationCode');
+    }
+
     protected $casts = [
       'defaultDocument' => 'array',
       'autoCharge' => 'array',
     ];
+
+    protected $with = ['Location'];
 }
