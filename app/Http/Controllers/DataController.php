@@ -223,7 +223,6 @@ class DataController extends Controller
 
       $queryDataValidator = Validator::make($request->all(),[
         'data' => 'required|array',
-        'data.keyword' => 'required',
       ]);
 
       if ($queryDataValidator->fails()) {
