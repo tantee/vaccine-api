@@ -246,7 +246,7 @@ class DataController extends Controller
           } else {
             if (isset($request->data['all']) && $request->data['all']) {   
               if(isset($request->data['filter']) && is_array($request->data['filter'])) {
-                $returnModels = $returnModels->where($request->data['filter']);
+                $returnModels = $searchModel->where($request->data['filter']);
                 $returnModels = $returnModels->get();
               } else {
                 $returnModels = $searchModel::all();
