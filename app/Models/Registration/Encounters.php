@@ -33,7 +33,7 @@ class Encounters extends Model
     public static function boot() {
         static::creating(function($model) {
             if (!isset($model->encounterId) || empty($model->encounterId)) {
-                $prefix = implode('\\',str_split($model->encounterType));
+                $prefix = implode("\\",str_split($model->encounterType));
                 if ($model->encounterType == "IMP") {
                     $prefix .= "ym";
                     $model->encounterId = IdController::issueId("Encounter",$prefix,4,'',true);
