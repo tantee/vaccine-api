@@ -326,7 +326,7 @@ class DataController extends Controller
         }
 
         $searchDataValidator = Validator::make($data,[
-          '*' => 'array|count:3',
+          '*' => 'array|size:3',
         ]);
 
         if ($searchDataValidator->fails()) {
