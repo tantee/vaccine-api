@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use App\Http\Controllers\GenericAPIController;
+use App\Utilities\ArrayType;
 
 class DataController extends Controller
 {
@@ -304,7 +305,6 @@ class DataController extends Controller
 
       $searchDataValidator = Validator::make($request->all(),[
         'data' => 'required|array',
-        'data.searchWhere' => 'sometimes|required|array'
       ]);
 
       if ($searchDataValidator->fails()) {
@@ -312,29 +312,26 @@ class DataController extends Controller
         $success = false;
       }
 
-      if ($success) {
-        if (!array_key_exists('searchWhere',$request->data)) {
-          if (array_keys($request->data) !== range(0, count($request->data) - 1)) {
-            $data = $request->data;
-          } else {
-            $success = false;
-            array_push($errorTexts,["errorText"=>"Invalid search data"]);
-          }
 
-          if ($success) {
-            $tempData = [];
-            foreach($data as $key=>$value) {
-              array_push($tempData,['searchWhere' => [[$key,'=',$value]]]);
-            }
-            $data = $tempData;
+      if ($success) {
+        $data = [];
+
+        if (ArrayType::isAssociative($data)) {
+          foreach($request->data as $key=>$value) {
+            array_push($data,[$key,'=',$value]);
           }
         } else {
-          if (count($request->data['searchWhere'])!==count($request->data['searchWhere'],COUNT_RECURSIVE)) {
-            $data = [];
-            foreach($request->data['searchWhere'] as $value) array_push($data,['searchWhere' => [$value]]);
-          } else {
-            $data = [$request->data];
-          }
+          if (ArrayType::isMultiDimension($data)) $data = $request->data;
+          else $data = [$request->data];
+        }
+
+        $searchDataValidator = Validator::make($data,[
+          '*' => 'array|count:3',
+        ]);
+
+        if ($searchDataValidator->fails()) {
+          foreach($searchDataValidator->errors()->all() as $value) array_push($errorTexts,["errorText"=>$value]);
+          $success = false;
         }
       }
 
@@ -348,14 +345,13 @@ class DataController extends Controller
         try {
           $returnModels = new $model;
           foreach($data as $row) {
-            $column = explode('$',$row['searchWhere'][0][0]);
+            $column = explode('$',$row[0]);
             if (count($column)==1) {
-              if (is_array($row['searchWhere'][0][2])) $returnModels = $returnModels->whereIn($row['searchWhere'][0][0],$row['searchWhere'][0][2]);
-              else $returnModels = $returnModels->Where($row['searchWhere']);
+              $returnModels = self::searhQuery($returnModels,$row);
             } else {
-              $row['searchWhere'][0][0] = $column[count($column)-1];
+              $row[0] = $column[count($column)-1];
               $returnModels = $returnModels->whereHas($column[0],function($query) use ($row) {
-                $query->where($row['searchWhere']);
+                self::searchQuery($query,$row);
               });
             }
           }
@@ -454,5 +450,19 @@ class DataController extends Controller
       } catch (\Exception $e) {
         return false;
       }
+    }
+
+    private static function searchQuery(&$query, $searchData) {
+      $whereFunction = explode('#',$searchData[0]);
+      if (count($whereFunction)>1) {
+        $searchData[0] = $whereFunction[count($whereFunction)-1];
+        $whereFunction = $whereFunction[0];
+      } else {
+        if (is_array($searchData[2])) $whereFunction = 'whereIn';
+        else $whereFunction = 'Where';
+      }
+
+      if ($searchData[1]=="=") return $query->$whereFunction($searchData[0],$searchData[2]);
+      else return $query->$whereFunction($searchData[0],$searchData[1],$searchData[2]);
     }
 }
