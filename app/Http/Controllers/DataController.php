@@ -351,7 +351,7 @@ class DataController extends Controller
             } else {
               $row[0] = $column[count($column)-1];
               $returnModels = $returnModels->whereHas($column[0],function($query) use ($row) {
-                self::searchQuery($query,$row);
+                DataController::searchQuery($query,$row);
               });
             }
           }
@@ -452,7 +452,7 @@ class DataController extends Controller
       }
     }
 
-    private static function searchQuery(&$query, $searchData) {
+    public static function searchQuery(&$query, $searchData) {
       $whereFunction = explode('#',$searchData[0]);
       if (count($whereFunction)>1) {
         $searchData[0] = $whereFunction[count($whereFunction)-1];
