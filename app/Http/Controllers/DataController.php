@@ -243,7 +243,7 @@ class DataController extends Controller
             if(isset($request->data['filter']) && is_array($request->data['filter'])) {
               $returnModels = $returnModels->where($request->data['filter']);
             }
-            $returnModels = $returnModels->get();
+            $returnModels = $model::hydrate($returnModels->get());
           } else {
             if (isset($request->data['all']) && $request->data['all']) {   
               if(isset($request->data['filter']) && is_array($request->data['filter'])) {
