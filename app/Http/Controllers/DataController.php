@@ -321,10 +321,11 @@ class DataController extends Controller
             array_push($data,[$key,'=',$value]);
           }
         } else {
+          array_push($errorTexts,["errorText"=>"2 logic"]);
           if (ArrayType::isMultiDimension($data)) $data = $request->data;
           else $data = [$request->data];
         }
-
+        array_push($errorTexts,["errorText"=>$data]);
         $searchDataValidator = Validator::make($data,[
           '*' => 'array|size:3',
         ]);
