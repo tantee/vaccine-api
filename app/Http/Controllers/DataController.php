@@ -316,16 +316,15 @@ class DataController extends Controller
       if ($success) {
         $data = [];
 
-        if (ArrayType::isAssociative($data)) {
+        if (ArrayType::isAssociative($request->data)) {
           foreach($request->data as $key=>$value) {
             array_push($data,[$key,'=',$value]);
           }
         } else {
-          array_push($errorTexts,["errorText"=>"2 logic"]);
-          if (ArrayType::isMultiDimension($data)) $data = $request->data;
+          if (ArrayType::isMultiDimension($request->data)) $data = $request->data;
           else $data = [$request->data];
         }
-        array_push($errorTexts,["errorText"=>$data]);
+
         $searchDataValidator = Validator::make($data,[
           '*' => 'array|size:3',
         ]);
