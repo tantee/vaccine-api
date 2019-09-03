@@ -453,6 +453,8 @@ class DataController extends Controller
     }
 
     public static function searchQuery(&$query, $searchData) {
+      $singleParameter = ["whereNull","whereNotNull","orWhereNull","orWhereNotNull"];
+
       $whereFunction = explode('#',$searchData[0]);
       if (count($whereFunction)>1) {
         $searchData[0] = $whereFunction[count($whereFunction)-1];
@@ -461,8 +463,9 @@ class DataController extends Controller
         if (is_array($searchData[2])) $whereFunction = 'whereIn';
         else $whereFunction = 'Where';
       }
-
-      if ($searchData[1]=="=") return $query->$whereFunction($searchData[0],$searchData[2]);
+      
+      if (in_array($whereFunction,$singleParameter)) return $query->$whereFunction($searchData[0]);
+      else if ($searchData[1]=="=") return $query->$whereFunction($searchData[0],$searchData[2]);
       else return $query->$whereFunction($searchData[0],$searchData[1],$searchData[2]);
     }
 }
