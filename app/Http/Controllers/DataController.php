@@ -347,7 +347,7 @@ class DataController extends Controller
           foreach($data as $row) {
             $column = explode('$',$row[0]);
             if (count($column)==1) {
-              $returnModels = self::searhQuery($returnModels,$row);
+              $returnModels = self::searchQuery($returnModels,$row);
             } else {
               $row[0] = $column[count($column)-1];
               $returnModels = $returnModels->whereHas($column[0],function($query) use ($row) {
