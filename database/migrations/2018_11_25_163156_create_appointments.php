@@ -31,9 +31,9 @@ class CreateAppointments extends Migration
             $table->string('deleted_by')->nullable();
             $table->SoftDeletes();
             $table->timestamps();
-            $table->index(['hn','appointDateTime','clinicCode','doctorCode']);
-            $table->index(['appointDateTime','clinicCode']);
-            $table->index(['appointDateTime','doctorCode']);
+            $table->index(['hn','appointmentDateTime','clinicCode','doctorCode']);
+            $table->index(['appointmentDateTime','clinicCode']);
+            $table->index(['appointmentDateTime','doctorCode']);
         });
     }
 
