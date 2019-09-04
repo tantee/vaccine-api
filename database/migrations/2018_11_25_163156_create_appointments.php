@@ -16,9 +16,10 @@ class CreateAppointments extends Migration
         Schema::create('appointments', function (Blueprint $table) {
             $table->increments('id');
             $table->string('hn');
-            $table->datetime('appointDateTime');
-            $table->string('appointType')->nullable();
-            $table->string('appointActivity')->nullable();
+            $table->datetime('appointmentDateTime');
+            $table->integer('appointmentDuration')->nullable()->default(15);
+            $table->string('appointmentType')->nullable();
+            $table->string('appointmentActivity')->nullable();
             $table->string('clinicCode');
             $table->string('doctorCode')->nullable();
             $table->text('suggestion')->nullable();
