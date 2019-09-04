@@ -46,8 +46,12 @@ class Encounters extends Model
 
         static::updating(function($model) {
             $original = $model->getOriginal();
-            if ($model->status != $original['status']) {
-                array_push($model->statusLog,["status"=>$model->status,"statusDateTime"=>Carbon::now()->toIso8601String()]);
+            if ($model->status != $original['status'] || $model->currectLocation != $original['currentLocation']) {
+                array_push($model->statusLog,[
+                    "status"=>$model->status,
+                    "location"=>$model->currectLocation,
+                    "statusDateTime"=>Carbon::now()->toIso8601String()
+                ]);
             }
 
             if ($model->clinicCode != $original['clinicCode'] || $model->doctorCode != $original['doctorCode'] || $model->locationCode != $original['locationCode'] || $model->locationSubunitCode != $original['locationSubunitCode']) {

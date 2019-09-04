@@ -165,6 +165,18 @@ class MasterGroupsSeeder extends Seeder
             'description' => 'สาขาความเชี่ยวชาญแพทย์',
             'propertiesTemplate' => null,
           ],
+          [
+            'groupKey' => '$AppointmentActivity',
+            'groupName' => 'กิจกรรมการนัดหมาย',
+            'description' => 'กิจกรรมการนัดหมาย',
+            'propertiesTemplate' => null,
+          ],
+          [
+            'groupKey' => '$AppointmentType',
+            'groupName' => 'ชนิดของการนัด',
+            'description' => 'ชนิดของการนัด',
+            'propertiesTemplate' => null,
+          ],
         ];
 
         

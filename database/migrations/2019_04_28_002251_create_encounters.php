@@ -22,13 +22,17 @@ class CreateEncounters extends Migration
             $table->string('locationCode');
             $table->string('locationSubunitCode')->nullable();
             $table->json('locationLog')->nullable();
+            $table->string('currentLocation')->nullable();
+            $table->string('nextLocation')->nullable();
             $table->datetime('admitDateTime');
             $table->datetime('dischargeDateTime')->nullable();
             $table->json('screening')->nullable();
             $table->json('diagnosis')->nullable();
             $table->json('summary')->nullable();
+            $table->boolean('isTransactionLock')->nullable()->default(false);
             $table->string('status')->nullable()->default('checkedIn');
             $table->json('statusLog')->nullable();
+            $table->integer('fromAppointmentId')->nullable();
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->string('deleted_by')->nullable();
