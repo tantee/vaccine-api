@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cp -rfu storage.default storage
+cp -Rfu storage.default/* storage
 
 php artisan migrate
 php artisan migrate
