@@ -318,7 +318,15 @@ class DataController extends Controller
 
         if (ArrayType::isAssociative($request->data)) {
           foreach($request->data as $key=>$value) {
-            array_push($data,[$key,'=',$value]);
+            $explodedKey = explode('#',$key);
+            if (count($explodedKey)==3) {
+              $key = $explodedKey[0]."#".$explodedKey[1];
+              array_push($data,[$key,$explodedKey[2],$value]);
+              array_push($errorTexts,["errorText" => "split"]);
+              array_push($errorTexts,["errorText" => $key]);
+            } else {
+              array_push($data,[$key,'=',$value]);
+            }
           }
         } else {
           if (ArrayType::isMultiDimension($request->data)) $data = $request->data;
@@ -342,6 +350,7 @@ class DataController extends Controller
       }
 
       if ($success) {
+        array_push($errorTexts,["errorText" => $data]);
         try {
           $returnModels = new $model;
           foreach($data as $row) {
@@ -373,6 +382,7 @@ class DataController extends Controller
 
         } catch (\Exception $e) {
           $success = false;
+          $returnModels = [];
           array_push($errorTexts,["errorText" => $e->getMessage()]);
         }
       }
