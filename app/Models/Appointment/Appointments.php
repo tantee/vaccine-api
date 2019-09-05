@@ -23,9 +23,13 @@ class Appointments extends Model
         return $this->hasOne('App\Models\Registration\Encounters','encounterId','fromEncounterId');
     }
 
+    public function toEncounter() {
+        return $this->hasMany('App\Models\Registration\Encounters','fromAppointmentId','id');
+    }
+
     protected $casts = [
       'additionalDetail' => 'array',
     ];
 
-    protected $with = ['Clinic','Doctor','fromEncounter'];
+    protected $with = ['Clinic','Doctor','fromEncounter','toEncounter'];
 }

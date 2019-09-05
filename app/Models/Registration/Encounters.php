@@ -30,6 +30,10 @@ class Encounters extends Model
         return $this->hasOne('App\Models\Master\Doctors','doctorCode','doctorCode');
     }
 
+    public function fromAppointment() {
+        return $this->hasOne('App\Models\Appointment\Appointments','id','fromAppointmentId');
+    }
+
     public static function boot() {
         static::creating(function($model) {
             if (!isset($model->encounterId) || empty($model->encounterId)) {
@@ -74,5 +78,5 @@ class Encounters extends Model
         'statusLog' => 'array',
     ];
 
-    protected $with = ['Location','Clinic','Doctor'];
+    protected $with = ['Location','Clinic','Doctor','fromAppointment'];
 }
