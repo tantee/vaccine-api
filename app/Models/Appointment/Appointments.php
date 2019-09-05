@@ -20,11 +20,11 @@ class Appointments extends Model
     }
 
     public function fromEncounter() {
-        return $this->hasOne('App\Models\Registration\Encounters','encounterId','fromEncounterId');
+        return $this->hasOne('App\Models\Registration\Encounters','encounterId','fromEncounterId')->without('fromAppointment');
     }
 
     public function toEncounter() {
-        return $this->hasMany('App\Models\Registration\Encounters','fromAppointmentId','id');
+        return $this->hasMany('App\Models\Registration\Encounters','fromAppointmentId','id')->without('fromAppointment');
     }
 
     protected $casts = [

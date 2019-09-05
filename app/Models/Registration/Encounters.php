@@ -31,7 +31,7 @@ class Encounters extends Model
     }
 
     public function fromAppointment() {
-        return $this->hasOne('App\Models\Appointment\Appointments','id','fromAppointmentId');
+        return $this->hasOne('App\Models\Appointment\Appointments','id','fromAppointmentId')->without(['fromEncounter','toEncounter']);
     }
 
     public static function boot() {
