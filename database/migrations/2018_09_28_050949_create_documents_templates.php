@@ -18,7 +18,7 @@ class CreateDocumentsTemplates extends Migration
             $table->string('templateName');
             $table->string('templateCompatibility')->nullable();
             $table->string('revisionId');
-            $table->string('revisionDate');
+            $table->date('revisionDate');
             $table->string('description')->nullable();
             $table->string('defaultCategory')->nullable();
             $table->boolean('isRequiredPatientInfo')->nullable()->default(true);

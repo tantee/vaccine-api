@@ -186,6 +186,16 @@ class PrintController extends Controller
 
       $data['qrCodeData'] = \json_encode(['DocId' => $document->id]);
 
+      if ($document->Template != null) {
+        $documentData['templateCode'] = $document->Template->templateCode;
+        $documentData['templateName'] = $document->Template->templateName;
+        $documentData['revisionId'] = $document->Template->revisionId;
+        $documentData['revisionDate'] = $document->Template->revisionDate->locale('th_TH')->isoFormat('DD/MM/YYYY');
+        $documentData['description'] = $document->Template->description;
+
+        $data['documentData'] = $documentData;
+      }
+
       if ($document->Patient != null) {
         $patientData['hn'] = $document->Patient->hn;
         $patientData['name_th'] = $document->Patient->Name_th->toArray();
@@ -203,24 +213,26 @@ class PrintController extends Controller
         $patientData['primaryTelephoneNo'] = $document->Patient->primaryTelephoneNo;
         $patientData['primaryEmail'] = $document->Patient->primaryEmail;
 
+        $patientData['photo'] = storage_path('app/'.$document->Patient->Photos->first()->storagePath);
+
         $data['patientData'] = $patientData;
       }
 
       if ($document->Encounter != null) {
-        $encounterData['encounterId'] = '';
+        $encounterData['encounterId'] = $document->Encounter->encounterId;
+        $encounterData['encounterType'] = $document->Encounter->encounterType;
+        $encounterData['clinicName'] = $document->Encounter->Clinic->clinicName;
+        $encounterData['clinicNameEN'] = $document->Encounter->Clinic->clinicNameEN;
+        $encounterData['locationName'] = $document->Encounter->Location->locationName;
+        $encounterData['doctorNameTH'] = $document->Encounter->Doctor->nameTH;
+        $encounterData['doctorNameEN'] = $document->Encounter->Doctor->nameEN;
         
         $data['encounterData'] = $encounterData;
       }
 
-      setlocale(LC_TIME, 'th_TH.utf8');
-      $data['print_date'] = Carbon::now()->formatLocalized('%A %d %B %Y');
+      
+      $data['print_date'] = Carbon::now()->locale('th_TH')->isoFormat('dddd DD MMMM YYYY');
       $data['print_user'] = (Auth::guard('api')->check()) ? Auth::guard('api')->user()->username : 'Unidentified';
-
-      foreach($data as $key=>$value) {
-        if (\strpos($key,'base64')) {}
-        if (\strpos($key,'file')) {}
-        if (is_array($value) && \array_key_exists('assetId',$value)) {}
-      }
 
       Storage::makeDirectory($tmpDirectory);
       

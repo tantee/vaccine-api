@@ -40,6 +40,10 @@ class Documents extends Model
       'revision' => 'array',
     ];
 
+    protected $dates = [
+        'revisionDate',
+    ];
+
     protected $toStores = ['data'];
 
     protected $appends = ['patient_age'];
