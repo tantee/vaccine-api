@@ -86,5 +86,5 @@ class Encounters extends Model
         'statusLog' => 'array',
     ];
 
-    protected $with = ['Location','Clinic','Doctor','fromAppointment'];
+    protected $with = ['Patient','Location','Clinic','Doctor','fromAppointment'];
 }
