@@ -51,4 +51,8 @@ class DocumentsTemplates extends Model
   
       parent::boot();
     }
+    
+    protected $dates = [
+        'revisionDate',
+    ];
 }
