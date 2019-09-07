@@ -17,7 +17,11 @@ class Encounters extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     protected $guarded = [];
-    
+
+    public function Patient() {
+        return $this->hasOne('App\Models\Patient\Patients','hn','hn');
+    }
+
     public function Location() {
         return $this->hasOne('App\Models\Master\Locations','locationCode','locationCode');
     }
@@ -28,6 +32,10 @@ class Encounters extends Model
 
     public function Doctor() {
         return $this->hasOne('App\Models\Master\Doctors','doctorCode','doctorCode');
+    }
+
+    public function Transactions() {
+      return $this->hasMany('App\Models\Patient\PatientsTransactions','hn','hn')->where('encounterId',$this->encounterId);
     }
 
     public function fromAppointment() {
