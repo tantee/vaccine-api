@@ -14,5 +14,5 @@ class PatientsTransactions extends Model
         return $this->hasOne('App\Models\Master\Products','productCode','productCode');
     }
 
-    
+    protected $with = ['Product'];
 }

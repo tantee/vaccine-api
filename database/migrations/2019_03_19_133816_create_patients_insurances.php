@@ -17,6 +17,7 @@ class CreatePatientsInsurances extends Migration
             $table->increments('id');
             $table->string('hn');
             $table->string('insuranceCode');
+            $table->integer('priority')->nullable()->default('10');
             $table->date('beginDate');
             $table->date('endDate')->nullable();
             $table->decimal('limit',10,2)->nullable();

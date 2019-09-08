@@ -19,20 +19,20 @@ class CreatePatientsTransactions extends Migration
             $table->string('encounterId');
             $table->string('referenceId'); //Invoice Id? Unique ID?
             $table->string('billingId')->nullable();
+            $table->timestamp('transactionDateTime')->useCurrent();
             $table->string('categoryInsurance');
             $table->string('categoryCgd');
             $table->string('productCode');
             $table->integer('quantity');
-            $table->decimal('unitPrice',10,2);
-            $table->decimal('totalPrice',10,2);
-            $table->decimal('totalCgdPrice',10,2);
             $table->string('orderPerson');
+            $table->string('orderClinic');
             $table->string('orderLocation');
             $table->string('performPerson')->nullable();
+            $table->string('performClinic')->nullable();
             $table->string('performLocation')->nullable();
             $table->boolean('isPerformed')->default(true);
             $table->boolean('isChargable')->default(true);
-            $table->enum('status',['confirmed','canceled','drafted'])->default('confirmed');
+            $table->string('status')->nullable()->default('confirmed');
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->string('deleted_by')->nullable();
