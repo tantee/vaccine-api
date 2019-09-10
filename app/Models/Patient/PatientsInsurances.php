@@ -26,6 +26,12 @@ class PatientsInsurances extends Model
       });
     }
 
+    public function scopeActiveAt($query,$date) {
+      return $query->whereDate('beginDate','<=',$date)->where(function ($query) {
+        $query->whereDate('endDate','>=',$date)->orWhereNull('endDate');
+      });
+    }
+
     protected $dates = [
         'beginDate',
         'endDate'
