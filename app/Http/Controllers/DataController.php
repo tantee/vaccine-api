@@ -236,15 +236,18 @@ class DataController extends Controller
           $searchModel = new $model;
           $searchField = (isset($request->data['field'])) ? $request->data['field'] : array_diff(Schema::getColumnListing($searchModel->getTable()),$excludedField);
 
-          if (method_exists($searchModel,'scopeActive')) $searchModel = $searchModel->active();
-
           if (isset($request->data['keyword'])) {
             $returnModels = \Searchy::search($searchModel->getTable())->fields($searchField)->query($request->data['keyword'])->getQuery();
             if(isset($request->data['filter']) && is_array($request->data['filter'])) {
               $returnModels = $returnModels->where($request->data['filter']);
             }
+            if (method_exists($searchModel,'scopeActive')) {
+              $searchModel = $searchModel->active();
+              $returnModels->mergeWheres($searchModel->getQuery()->wheres, $searchModel->getQuery()->bindings);
+            }
             $returnModels = $model::hydrate($returnModels->get()->toArray())->fresh();
           } else {
+            if (method_exists($searchModel,'scopeActive')) $searchModel = $searchModel->active();            
             if (isset($request->data['all']) && $request->data['all']) {   
               if(isset($request->data['filter']) && is_array($request->data['filter'])) {
                 $returnModels = $searchModel->where($request->data['filter']);
