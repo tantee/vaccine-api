@@ -20,20 +20,16 @@ class PatientsTransactions extends Model
         return $this->hasOne('App\Models\Registration\Encounters','encounterId','encounterId');
     }
 
-    public function Insurances() {
-        return $this->hasMany('App\Models\Patient\PatientsInsurances','hn','hn')->activeAt($this->transactionDateTime)->orderBy('priority','asc');
-    }
-
     public function getOrderLocationAttribute() {
-        return \App\Models\Master\Locations::find($this->orderLocationCode);
+        return \App\Models\Master\Locations::find($this->order_location_code);
     }
 
     public function getOrderClinicAttribute() {
-        return \App\Models\Master\Clinics::find($this->orderClinicCode);
+        return \App\Models\Master\Clinics::find($this->order_clinic_code);
     }
 
     public function getOrderDoctorAttribute() {
-        return \App\Models\Master\Doctors::find($this->orderDoctorCode);
+        return \App\Models\Master\Doctors::find($this->order_doctor_code);
     }
 
     public function performLocation() {
@@ -49,8 +45,10 @@ class PatientsTransactions extends Model
     }
 
     public function getInsuranceAttribute() {
+        $Insurances = \App\Models\Patient\PatientsInsurances::where('hn',$this->hn)->activeAt($this->transactionDateTime)->get();
+
         $returnInsurance = null;
-        foreach($this->Insurances as $PatientInsurance) {
+        foreach($Insurances as $PatientInsurance) {
             $Insurance = $PatientInsurance->Insurance;
             if ($this->Encounter->encounterType == "IMP" && !$Insurance->isApplyToIpd) break;
             if ($this->Encounter->encounterType != "IMP" && !$Insurance->isApplyToOpd) break;
@@ -96,7 +94,7 @@ class PatientsTransactions extends Model
         $insurance = $this->Insurance;
         if ($insurance == null) return $this->Product->price1;
         else {
-            $price = 'price'.$insurance->priceLevel;
+            $price = 'price'.$insurance->Insurance->priceLevel;
             return $this->Product->$price;
         }
     }
@@ -104,7 +102,19 @@ class PatientsTransactions extends Model
     public function getDiscountAttribute() {
         $insurance = $this->Insurance;
         if ($insurance == null) return 0;
-        else return $this->Product->$discount;
+        else return $insurance->Insurance->discount;
+    }
+
+    public function getDiscountPriceAttribute() {
+        return round(($this->price*$this->quantity*$this->discount/100),2);
+    }
+
+    public function getTotalPriceAttribute() {
+        return round($this->price*$this->quantity,2);
+    }
+
+    public function getFinalPriceAttribute() {
+        return round(($this->price*$this->quantity)-($this->price*$this->quantity*$this->discount/100),2);
     }
 
     public function getCategoryInsuranceAttribute($value) {
@@ -132,11 +142,30 @@ class PatientsTransactions extends Model
         else return $this->Encounter->locationCode;
     }
 
+    public function toArray()
+    {
+        $toArray = parent::toArray();
+        $toArray['categoryInsurance'] = $this->category_insurance;
+        $toArray['categoryCgd'] = $this->category_cgd;
+        $toArray['orderDoctor'] = $this->order_doctor;
+        $toArray['orderDoctorCode'] = $this->order_doctor_code;
+        $toArray['orderClinic'] = $this->order_clinic;
+        $toArray['orderClinicCode'] = $this->order_clinic_code;
+        $toArray['orderLocation'] = $this->order_location;
+        $toArray['orderLocationCode'] = $this->order_location_code;
+
+        $toArray['discountPrice'] = $this->discount_price;
+        $toArray['totalPrice'] = $this->total_price;
+        $toArray['finalPrice'] = $this->final_price;
+        
+        return $toArray;
+    }
+
     protected $dates = [
         'transactionDateTime',
     ];
 
-    protected $with = ['Product','Encounter','Insurances'];
+    protected $with = ['Product','Encounter'];
 
-    protected $appends = ['insurance','discount','price'];
+    protected $appends = ['insurance','discount','price','final_price'];
 }
