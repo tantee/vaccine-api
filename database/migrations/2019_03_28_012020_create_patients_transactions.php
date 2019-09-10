@@ -17,11 +17,11 @@ class CreatePatientsTransactions extends Migration
             $table->increments('id');
             $table->string('hn');
             $table->string('encounterId');
-            $table->string('referenceId'); //Invoice Id? Unique ID?
+            $table->string('referenceId')->nullable(); //Invoice Id? Unique ID?
             $table->string('billingId')->nullable();
             $table->timestamp('transactionDateTime')->useCurrent();
-            $table->string('categoryInsurance');
-            $table->string('categoryCgd');
+            $table->string('categoryInsurance')->nullable();
+            $table->string('categoryCgd')->nullable();
             $table->string('productCode');
             $table->integer('quantity')->nullable()->default(1);
             $table->string('orderDoctorCode')->nullable();

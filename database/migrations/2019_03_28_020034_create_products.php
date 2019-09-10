@@ -29,7 +29,7 @@ class CreateProducts extends Migration
             $table->decimal('price5',10,2)->nullable();
             $table->string('cgdCode')->nullable();
             $table->string('cgdAccount')->nullable(); //บัญชียา ED, NED
-            $table->decimal('cgdPrice',10,2);
+            $table->decimal('cgdPrice',10,2)->nullable();
             $table->string('accountCodeStock')->nullable();
             $table->string('accountCodeCost')->nullable();
             $table->string('accountCodeIncome');
