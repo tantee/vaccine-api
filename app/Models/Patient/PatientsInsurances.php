@@ -27,7 +27,7 @@ class PatientsInsurances extends Model
     }
 
     public function scopeActiveAt($query,$date) {
-      return $query->whereDate('beginDate','<=',$date)->where(function ($query) {
+      return $query->whereDate('beginDate','<=',$date)->where(function ($query) use ($date) {
         $query->whereDate('endDate','>=',$date)->orWhereNull('endDate');
       });
     }

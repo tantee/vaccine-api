@@ -21,7 +21,7 @@ class PatientsTransactions extends Model
     }
 
     public function Insurances() {
-        return $this->hasMany('App\Models\Patient\PatientsInsurances','hn','hn')->activeAt($this->transaction_date_time)->orderBy('priority','asc');
+        return $this->hasMany('App\Models\Patient\PatientsInsurances','hn','hn')->activeAt($this->transactionDateTime)->orderBy('priority','asc');
     }
 
     public function getOrderLocationAttribute() {
