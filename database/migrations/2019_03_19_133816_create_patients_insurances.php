@@ -15,8 +15,8 @@ class CreatePatientsInsurances extends Migration
     {
         Schema::create('patients_insurances', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('hn');
-            $table->string('insuranceCode');
+            $table->string('hn',20);
+            $table->string('insuranceCode',50);
             $table->integer('priority')->nullable()->default('10');
             $table->date('beginDate');
             $table->date('endDate')->nullable();

@@ -14,7 +14,7 @@ class CreateClinics extends Migration
     public function up()
     {
         Schema::create('clinics', function (Blueprint $table) {
-            $table->string('clinicCode')->primary();
+            $table->string('clinicCode',50)->primary();
             $table->string('clinicName');
             $table->string('clinicNameEN');
             $table->string('encounterType')->nullable()->default('AMB');

@@ -15,7 +15,7 @@ class CreatePatientsReferrers extends Migration
     {
       Schema::create('patients_referrers', function (Blueprint $table) {
           $table->increments('id');
-          $table->string('hn');
+          $table->string('hn',20);
           $table->string('hospital');
           $table->string('doctor')->nullable();
           $table->string('referenceId')->nullable();

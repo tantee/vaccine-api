@@ -14,7 +14,7 @@ class CreateMasterGroups extends Migration
     public function up()
     {
       Schema::create('master_groups', function (Blueprint $table) {
-          $table->string('groupKey')->primary();
+          $table->string('groupKey',50)->primary();
           $table->string('groupName');
           $table->string('description')->nullable();
           $table->text('propertiesTemplate')->nullable();

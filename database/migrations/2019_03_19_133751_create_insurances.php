@@ -14,7 +14,7 @@ class CreateInsurances extends Migration
     public function up()
     {
         Schema::create('insurances', function (Blueprint $table) {
-            $table->string('insuranceCode')->primary();
+            $table->string('insuranceCode',50)->primary();
             $table->string('insuranceName');
             $table->enum('priceLevel',['1','2','3','4','5'])->default('1');
             $table->decimal('discount',5,2)->nullable();

@@ -15,7 +15,7 @@ class CreatePatientsRelatives extends Migration
     {
       Schema::create('patients_relatives', function (Blueprint $table) {
           $table->increments('id');
-          $table->string('hn');
+          $table->string('hn',20);
           $table->string('name');
           $table->string('relation')->nullable();
           $table->string('mobileNo')->nullable();

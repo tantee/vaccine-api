@@ -15,14 +15,14 @@ class CreatePatientsTransactions extends Migration
     {
         Schema::create('patients_transactions', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('hn');
-            $table->string('encounterId');
-            $table->string('referenceId')->nullable(); //Invoice Id? Unique ID?
-            $table->string('billingId')->nullable();
+            $table->string('hn',20);
+            $table->string('encounterId',50);
+            $table->string('referenceId',50)->nullable(); //Invoice Id? Unique ID?
+            $table->string('billingId',50)->nullable();
             $table->timestamp('transactionDateTime')->useCurrent();
             $table->string('categoryInsurance')->nullable();
             $table->string('categoryCgd')->nullable();
-            $table->string('productCode');
+            $table->string('productCode',50);
             $table->integer('quantity')->nullable()->default(1);
             $table->string('soldPatientsInsurancesId')->nullable();
             $table->decimal('soldPrice',10,2)->nullable();

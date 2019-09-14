@@ -15,7 +15,7 @@ class CreatePatientsNames extends Migration
     {
       Schema::create('patients_names', function (Blueprint $table) {
           $table->increments('id');
-          $table->string('hn');
+          $table->string('hn',20);
           $table->string('nameType',10)->default('TH');
           $table->string('namePrefix')->nullable();
           $table->string('firstName')->nullable();

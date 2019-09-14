@@ -15,8 +15,8 @@ class CreatePatientsVitalsign extends Migration
     {
         Schema::create('patients_vitalsign', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('hn');
-            $table->string('encounterId')->nullable();
+            $table->string('hn',20);
+            $table->string('encounterId',50)->nullable();
             $table->datetime('vitalSignDateTime');
             $table->decimal('temperature',5,2)->nullable();
             $table->integer('heartRate')->nullable();

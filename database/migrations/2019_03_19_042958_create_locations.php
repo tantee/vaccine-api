@@ -14,7 +14,7 @@ class CreateLocations extends Migration
     public function up()
     {
         Schema::create('locations', function (Blueprint $table) {
-            $table->string('locationCode')->primary();
+            $table->string('locationCode',50)->primary();
             $table->enum('locationType',['opd','ward','facility']);
             $table->string('locationName');
             $table->string('locationTelephone');

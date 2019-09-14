@@ -14,7 +14,7 @@ class CreateDocumentsTemplates extends Migration
     public function up()
     {
         Schema::create('documents_templates', function (Blueprint $table) {
-            $table->string('templateCode')->unique();
+            $table->string('templateCode',50)->unique();
             $table->string('templateName');
             $table->string('templateCompatibility')->nullable();
             $table->string('revisionId');

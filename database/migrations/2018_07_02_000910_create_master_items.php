@@ -15,7 +15,7 @@ class CreateMasterItems extends Migration
     {
       Schema::create('master_items', function (Blueprint $table) {
           $table->increments('id');
-          $table->string('groupKey');
+          $table->string('groupKey',50);
           $table->string('itemCode');
           $table->string('itemValue');
           $table->string('itemValueEN')->nullable();

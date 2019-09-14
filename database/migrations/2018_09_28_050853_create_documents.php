@@ -15,12 +15,12 @@ class CreateDocuments extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('hn');
-            $table->string('encounterId')->nullable();
-            $table->string('referenceId')->nullable(); //such as receipt id
-            $table->string('templateCode');
-            $table->string('category')->default('999')->nullable();
-            $table->string('folder')->default('default');
+            $table->string('hn',20);
+            $table->string('encounterId',50)->nullable();
+            $table->string('referenceId',50)->nullable(); //such as receipt id
+            $table->string('templateCode',50);
+            $table->string('category',20)->default('999')->nullable();
+            $table->string('folder',20)->default('default');
             $table->boolean('isScanned')->default(false);
             $table->json('data')->nullable();
             $table->text('note')->nullable();

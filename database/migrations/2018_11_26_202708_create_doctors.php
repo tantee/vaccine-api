@@ -14,7 +14,7 @@ class CreateDoctors extends Migration
     public function up()
     {
         Schema::create('doctors', function (Blueprint $table) {
-            $table->string('doctorCode')->primary();
+            $table->string('doctorCode',20)->primary();
             $table->string('doctorType');
             $table->string('nameTH');
             $table->string('nameEN');

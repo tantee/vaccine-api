@@ -15,7 +15,7 @@ class CreateDoctorsTimetables extends Migration
     {
         Schema::create('doctors_timetables', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('doctorCode')->index();
+            $table->string('doctorCode',20)->index();
             $table->string('clinicCode')->index();
             $table->string('dayOfweek');
             $table->time('beginTime');
