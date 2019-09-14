@@ -31,6 +31,9 @@ class CreateDocuments extends Migration
             $table->string('deleted_by')->nullable();
             $table->SoftDeletes();
             $table->timestamps();
+            $table->index(['hn','encounterId','templateCode']);
+            $table->index(['hn','encounterId','category','folder']);
+            $table->index(['folder','referenceId']);
         });
     }
 

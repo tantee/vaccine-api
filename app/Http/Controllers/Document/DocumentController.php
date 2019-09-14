@@ -13,7 +13,7 @@ use Carbon\Carbon;
 class DocumentController extends Controller
 {
     //
-    public static function addDocument($hn,$templateCode,$data,$category=null,$encounterId=null,$referenceId=null) {
+    public static function addDocument($hn,$templateCode,$data,$category=null,$encounterId=null,$referenceId=null,$folder=null) {
       return self::addDocuments([
         'referenceId' => $referenceId,
         'hn' => $hn,
@@ -21,6 +21,7 @@ class DocumentController extends Controller
         'data' => $data,
         'category' => $category,
         'encounterId' => $encounterId,
+        'folder' => $folder,
       ]);
     }
 

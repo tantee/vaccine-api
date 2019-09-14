@@ -45,75 +45,86 @@ class PatientsTransactions extends Model
     }
 
     public function getInsuranceAttribute() {
-        $Insurances = \App\Models\Patient\PatientsInsurances::where('hn',$this->hn)->activeAt($this->transactionDateTime)->get();
-
         $returnInsurance = null;
-        foreach($Insurances as $PatientInsurance) {
-            $Insurance = $PatientInsurance->Insurance;
-            if ($this->Encounter->encounterType == "IMP" && !$Insurance->isApplyToIpd) break;
-            if ($this->Encounter->encounterType != "IMP" && !$Insurance->isApplyToOpd) break;
 
-            if ($Insurance->isCoverageAll) {
-                $returnInsurance = $PatientInsurance;
-                foreach(collect($Insurance->conditions)->sortBy('conditionPriority') as $condition) {
-                    if ($condition['coverage']=="allow") {
-                        if (($condition['conditionType']=="productCategoryInsurance" && $condition['conditionCode']==$this->categoryInsurance) ||
-                            ($condition['conditionType']=="productCategoryCgd" && $condition['conditionCode']==$this->categoryCgd) ||
-                            ($condition['conditionType']=="product" && $condition['conditionCode']==$this->productCode)) break;
-                    } else {
-                        if (($condition['conditionType']=="productCategoryInsurance" && $condition['conditionCode']==$this->categoryInsurance) ||
-                            ($condition['conditionType']=="productCategoryCgd" && $condition['conditionCode']==$this->categoryCgd) ||
-                            ($condition['conditionType']=="product" && $condition['conditionCode']==$this->productCode)) {
-                                $returnInsurance = null;
-                                break;
-                            }
+        if (!$this->isForceSelfPay) {
+            if ($this->soldPatientsInsurancesId != null) return \App\Models\Patient\PatientsInsurances::find($this->soldPatientsInsurancesId);
+
+            $Insurances = \App\Models\Patient\PatientsInsurances::where('hn',$this->hn)->activeAt($this->transactionDateTime)->get();
+
+            foreach($Insurances as $PatientInsurance) {
+                $Insurance = $PatientInsurance->Insurance;
+                if ($this->Encounter->encounterType == "IMP" && !$Insurance->isApplyToIpd) break;
+                if ($this->Encounter->encounterType != "IMP" && !$Insurance->isApplyToOpd) break;
+
+                if ($Insurance->isCoverageAll) {
+                    $returnInsurance = $PatientInsurance;
+                    foreach(collect($Insurance->conditions)->sortBy('conditionPriority') as $condition) {
+                        if ($condition['coverage']=="allow") {
+                            if (($condition['conditionType']=="productCategoryInsurance" && $condition['conditionCode']==$this->categoryInsurance) ||
+                                ($condition['conditionType']=="productCategoryCgd" && $condition['conditionCode']==$this->categoryCgd) ||
+                                ($condition['conditionType']=="product" && $condition['conditionCode']==$this->productCode)) break;
+                        } else {
+                            if (($condition['conditionType']=="productCategoryInsurance" && $condition['conditionCode']==$this->categoryInsurance) ||
+                                ($condition['conditionType']=="productCategoryCgd" && $condition['conditionCode']==$this->categoryCgd) ||
+                                ($condition['conditionType']=="product" && $condition['conditionCode']==$this->productCode)) {
+                                    $returnInsurance = null;
+                                    break;
+                                }
+                        }
+                    }
+                } else {
+                    foreach(collect($Insurance->conditions)->sortBy('conditionPriority') as $condition) {
+                        if ($condition['coverage']=="allow") {
+                            if (($condition['conditionType']=="productCategoryInsurance" && $condition['conditionCode']==$this->categoryInsurance) ||
+                                ($condition['conditionType']=="productCategoryCgd" && $condition['conditionCode']==$this->categoryCgd) ||
+                                ($condition['conditionType']=="product" && $condition['conditionCode']==$this->productCode)) {
+                                    $returnInsurance = $PatientInsurance;
+                                    break;
+                                }
+                        } else {
+                            if (($condition['conditionType']=="productCategoryInsurance" && $condition['conditionCode']==$this->categoryInsurance) ||
+                                ($condition['conditionType']=="productCategoryCgd" && $condition['conditionCode']==$this->categoryCgd) ||
+                                ($condition['conditionType']=="product" && $condition['conditionCode']==$this->productCode)) break;
+                        }
                     }
                 }
-            } else {
-                foreach(collect($Insurance->conditions)->sortBy('conditionPriority') as $condition) {
-                    if ($condition['coverage']=="allow") {
-                        if (($condition['conditionType']=="productCategoryInsurance" && $condition['conditionCode']==$this->categoryInsurance) ||
-                            ($condition['conditionType']=="productCategoryCgd" && $condition['conditionCode']==$this->categoryCgd) ||
-                            ($condition['conditionType']=="product" && $condition['conditionCode']==$this->productCode)) {
-                                $returnInsurance = $PatientInsurance;
-                                break;
-                            }
-                    } else {
-                        if (($condition['conditionType']=="productCategoryInsurance" && $condition['conditionCode']==$this->categoryInsurance) ||
-                            ($condition['conditionType']=="productCategoryCgd" && $condition['conditionCode']==$this->categoryCgd) ||
-                            ($condition['conditionType']=="product" && $condition['conditionCode']==$this->productCode)) break;
-                    }
-                }
+                if ($returnInsurance != null) break;
             }
-            if ($returnInsurance != null) break;
         }
+
         return $returnInsurance;
     }
 
     public function getPriceAttribute() {
+        if ($this->soldPrice != null) return $this->soldPrice;
         $insurance = $this->Insurance;
         if ($insurance == null) return $this->Product->price1;
         else {
             $price = 'price'.$insurance->Insurance->priceLevel;
-            return $this->Product->$price;
+            return ($this->Product->$price!=null) ? $this->Product->$price : $this->Product->price1;
         }
     }
 
     public function getDiscountAttribute() {
+        if ($this->soldDiscount != null) return $this->soldDiscount;
         $insurance = $this->Insurance;
         if ($insurance == null) return 0;
         else return $insurance->Insurance->discount;
     }
 
     public function getDiscountPriceAttribute() {
+        if ($this->soldDiscountPrice != null) return $this->soldDiscountPrice;
         return round(($this->price*$this->quantity*$this->discount/100),2);
     }
 
     public function getTotalPriceAttribute() {
+        if ($this->soldTotalPrice != null) return $this->soldTotalPrice;
         return round($this->price*$this->quantity,2);
     }
 
     public function getFinalPriceAttribute() {
+        if ($this->soldFinalPrice != null) return $this->soldFinalPrice;
         return round(($this->price*$this->quantity)-($this->price*$this->quantity*$this->discount/100),2);
     }
 
@@ -165,7 +176,7 @@ class PatientsTransactions extends Model
         'transactionDateTime',
     ];
 
-    protected $with = ['Product','Encounter'];
+    protected $with = ['Product'];
 
-    protected $appends = ['insurance','discount','price','final_price'];
+    protected $appends = ['insurance','discount','price'];
 }
