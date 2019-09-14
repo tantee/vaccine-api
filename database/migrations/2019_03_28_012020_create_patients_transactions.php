@@ -20,8 +20,8 @@ class CreatePatientsTransactions extends Migration
             $table->string('referenceId',50)->nullable(); //Invoice Id? Unique ID?
             $table->string('billingId',50)->nullable();
             $table->timestamp('transactionDateTime')->useCurrent();
-            $table->string('categoryInsurance')->nullable();
-            $table->string('categoryCgd')->nullable();
+            $table->string('categoryInsurance',50)->nullable();
+            $table->string('categoryCgd',50)->nullable();
             $table->string('productCode',50);
             $table->integer('quantity')->nullable()->default(1);
             $table->string('soldPatientsInsurancesId')->nullable();

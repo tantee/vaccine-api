@@ -17,11 +17,11 @@ class CreatePatientsNames extends Migration
           $table->increments('id');
           $table->string('hn',20);
           $table->string('nameType',10)->default('TH');
-          $table->string('namePrefix')->nullable();
+          $table->string('namePrefix',50)->nullable();
           $table->string('firstName')->nullable();
           $table->string('middleName')->nullable();
           $table->string('lastName')->nullable();
-          $table->string('nameSuffix')->nullable();
+          $table->string('nameSuffix',50)->nullable();
           $table->string('created_by')->nullable();
           $table->string('updated_by')->nullable();
           $table->string('deleted_by')->nullable();

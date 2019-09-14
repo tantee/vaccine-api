@@ -24,11 +24,11 @@ class TransactionController extends Controller
                 return ($item->insurance==null) ? null : $item->insurance->id;
             });
 
-            $transactions = collect($transactions->toArray())->map(function($row) {
-                return array_except($row,['insurance']);
-            });
-
             $transactions->each(function($item,$key) {
+                $item = collect($item->toArray())->map(function($row) {
+                    return array_except($row,['insurance','encounter']);
+                });
+
                 $insurance =  \App\Models\Patient\PatientsInsurances::find($key);
 
                 $detailInsurance = $item->groupBy('category_insurance');
@@ -93,7 +93,9 @@ class TransactionController extends Controller
         }
     }
 
-    public static function createReceipt($invoiceId) {
+    public static function createReceipt($invoiceIds,$paymentDetail) {
+        if (!is_array($invoiceIds)) $invoiceIds = [$invoiceIds];
+
         $invoice = \App\Models\Document\Documents::where('folder','accounting')
                     ->where('referenceId',$invoiceId)
                     ->where('templateCode',env('INVOICE_TEMPLATE', 'invoice'))

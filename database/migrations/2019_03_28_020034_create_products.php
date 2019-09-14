@@ -18,9 +18,9 @@ class CreateProducts extends Migration
             $table->string('productName');
             $table->string('productNameEN');
             $table->string('productKeyword')->nullable();
-            $table->string('category');
-            $table->string('categoryInsurance');
-            $table->string('categoryCgd');
+            $table->string('category',50);
+            $table->string('categoryInsurance',50);
+            $table->string('categoryCgd',50);
             $table->string('saleUnit')->nullable();
             $table->decimal('price1',10,2);
             $table->decimal('price2',10,2)->nullable();
@@ -41,6 +41,8 @@ class CreateProducts extends Migration
             $table->string('deleted_by')->nullable();
             $table->SoftDeletes();
             $table->timestamps();
+            $table->index(['productType','category']);
+            $table->index(['isActive']);
         });
     }
 

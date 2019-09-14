@@ -16,7 +16,7 @@ class CreatePatientsAddresses extends Migration
         Schema::create('patients_addresses', function (Blueprint $table) {
             $table->increments('id');
             $table->string('hn',20);
-            $table->string('addressType')->default('contact');
+            $table->string('addressType',20)->default('contact');
             $table->string('address');
             $table->string('village')->nullable();
             $table->string('moo')->nullable();

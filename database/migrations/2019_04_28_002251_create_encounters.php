@@ -15,7 +15,7 @@ class CreateEncounters extends Migration
     {
         Schema::create('encounters', function (Blueprint $table) {
             $table->string('encounterId',50)->primary();
-            $table->string('encounterType')->default('AMB');
+            $table->string('encounterType',10)->default('AMB');
             $table->string('hn');
             $table->string('clinicCode');
             $table->string('doctorCode');
