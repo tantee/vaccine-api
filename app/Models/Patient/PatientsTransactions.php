@@ -101,7 +101,7 @@ class PatientsTransactions extends Model
         $insurance = $this->Insurance;
         if ($insurance == null) return $this->Product->price1;
         else {
-            $price = 'price'.$insurance->Insurance->priceLevel;
+            $price = 'price'.$insurance->Condition->priceLevel;
             return ($this->Product->$price!=null) ? $this->Product->$price : $this->Product->price1;
         }
     }
