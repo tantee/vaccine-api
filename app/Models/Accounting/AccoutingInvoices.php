@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models\Accouting;
+namespace App\Models\Accounting;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UserStamps;
 
-class AccoutingInvoices extends Model
+class AccountingInvoices extends Model
 {
     use SoftDeletes,UserStamps;
 
