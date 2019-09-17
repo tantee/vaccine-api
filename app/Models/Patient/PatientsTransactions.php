@@ -110,7 +110,7 @@ class PatientsTransactions extends Model
         if ($this->soldDiscount != null) return $this->soldDiscount;
         $insurance = $this->Insurance;
         if ($insurance == null) return 0;
-        else return $insurance->Insurance->discount;
+        else return $insurance->Condition->discount;
     }
 
     public function getTotalDiscountAttribute() {
