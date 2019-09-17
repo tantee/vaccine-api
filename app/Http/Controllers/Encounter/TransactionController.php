@@ -37,14 +37,14 @@ class TransactionController extends Controller
                 $summaryInsurance = $detailInsurance->map(function ($row){
                     return [
                         "totalPrice" => $row->sum('total_price'),
-                        "discountPrice" => $row->sum('discount_price'),
+                        "totalDiscount" => $row->sum('total_discount'),
                         "finalPrice" => $row->sum('final_price'),
                     ];
                 });
                 $summaryCgd = $detailCgd->map(function ($row){
                     return [
                         "totalPrice" => $row->sum('total_price'),
-                        "discountPrice" => $row->sum('discount_price'),
+                        "totalDiscount" => $row->sum('total_discount'),
                         "finalPrice" => $row->sum('final_price'),
                     ];
                 });
@@ -57,10 +57,12 @@ class TransactionController extends Controller
                     "summaryCgd" => $summaryCgd->toArray(),
 
                     "grandTotalPrice" => $item->sum('total_price'),
-                    "grandDiscountPrice" => $item->sum('discount_price'),
+                    "grandTotalDiscount" => $item->sum('total_discount'),
                     "grandFinalPrice" => $item->sum('final_price'),
 
                     "insurance" => $insurance,
+
+                    "invoiceDateTime" => "",
                 ];
 
                 $invoiceId = IdController::issueId('invoice',env('INVOICE_ID_FORMAT', '\I\N\Vym'),env('INVOICE_ID_DIGIT', 6));
@@ -72,7 +74,7 @@ class TransactionController extends Controller
                         "soldPrice" => $itemTransaction->price,
                         "soldDiscount" => $itemTransaction->discount,
                         "soldTotalPrice" => $itemTransaction->total_price,
-                        "soldDiscountPrice" => $itemTransaction->discount_price,
+                        "soldTotalDiscount" => $itemTransaction->total_discount,
                         "soldFinalPrice" => $itemTransaction->final_price,
                     ]);
                 });

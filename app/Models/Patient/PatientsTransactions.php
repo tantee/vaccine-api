@@ -53,7 +53,7 @@ class PatientsTransactions extends Model
             $Insurances = \App\Models\Patient\PatientsInsurances::where('hn',$this->hn)->activeAt($this->transactionDateTime)->get();
 
             foreach($Insurances as $PatientInsurance) {
-                $Insurance = $PatientInsurance->Insurance;
+                $Insurance = $PatientInsurance->Condition;
                 if ($this->Encounter->encounterType == "IMP" && !$Insurance->isApplyToIpd) break;
                 if ($this->Encounter->encounterType != "IMP" && !$Insurance->isApplyToOpd) break;
 
@@ -61,13 +61,13 @@ class PatientsTransactions extends Model
                     $returnInsurance = $PatientInsurance;
                     foreach(collect($Insurance->conditions)->sortBy('conditionPriority') as $condition) {
                         if ($condition['coverage']=="allow") {
-                            if (($condition['conditionType']=="productCategoryInsurance" && $condition['conditionCode']==$this->categoryInsurance) ||
-                                ($condition['conditionType']=="productCategoryCgd" && $condition['conditionCode']==$this->categoryCgd) ||
-                                ($condition['conditionType']=="product" && $condition['conditionCode']==$this->productCode)) break;
+                            if (($condition['conditionType']=="categoryInsurance" && $condition['conditionCode']==$this->categoryInsurance) ||
+                                ($condition['conditionType']=="categoryCgd" && $condition['conditionCode']==$this->categoryCgd) ||
+                                ($condition['conditionType']=="productCode" && $condition['conditionCode']==$this->productCode)) break;
                         } else {
-                            if (($condition['conditionType']=="productCategoryInsurance" && $condition['conditionCode']==$this->categoryInsurance) ||
-                                ($condition['conditionType']=="productCategoryCgd" && $condition['conditionCode']==$this->categoryCgd) ||
-                                ($condition['conditionType']=="product" && $condition['conditionCode']==$this->productCode)) {
+                            if (($condition['conditionType']=="categoryInsurance" && $condition['conditionCode']==$this->categoryInsurance) ||
+                                ($condition['conditionType']=="categoryCgd" && $condition['conditionCode']==$this->categoryCgd) ||
+                                ($condition['conditionType']=="productCode" && $condition['conditionCode']==$this->productCode)) {
                                     $returnInsurance = null;
                                     break;
                                 }
@@ -76,16 +76,16 @@ class PatientsTransactions extends Model
                 } else {
                     foreach(collect($Insurance->conditions)->sortBy('conditionPriority') as $condition) {
                         if ($condition['coverage']=="allow") {
-                            if (($condition['conditionType']=="productCategoryInsurance" && $condition['conditionCode']==$this->categoryInsurance) ||
-                                ($condition['conditionType']=="productCategoryCgd" && $condition['conditionCode']==$this->categoryCgd) ||
-                                ($condition['conditionType']=="product" && $condition['conditionCode']==$this->productCode)) {
+                            if (($condition['conditionType']=="categoryInsurance" && $condition['conditionCode']==$this->categoryInsurance) ||
+                                ($condition['conditionType']=="categoryCgd" && $condition['conditionCode']==$this->categoryCgd) ||
+                                ($condition['conditionType']=="productCode" && $condition['conditionCode']==$this->productCode)) {
                                     $returnInsurance = $PatientInsurance;
                                     break;
                                 }
                         } else {
-                            if (($condition['conditionType']=="productCategoryInsurance" && $condition['conditionCode']==$this->categoryInsurance) ||
-                                ($condition['conditionType']=="productCategoryCgd" && $condition['conditionCode']==$this->categoryCgd) ||
-                                ($condition['conditionType']=="product" && $condition['conditionCode']==$this->productCode)) break;
+                            if (($condition['conditionType']=="categoryInsurance" && $condition['conditionCode']==$this->categoryInsurance) ||
+                                ($condition['conditionType']=="categoryCgd" && $condition['conditionCode']==$this->categoryCgd) ||
+                                ($condition['conditionType']=="productCode" && $condition['conditionCode']==$this->productCode)) break;
                         }
                     }
                 }
@@ -113,8 +113,8 @@ class PatientsTransactions extends Model
         else return $insurance->Insurance->discount;
     }
 
-    public function getDiscountPriceAttribute() {
-        if ($this->soldDiscountPrice != null) return $this->soldDiscountPrice;
+    public function getTotalDiscountAttribute() {
+        if ($this->soldTotalDiscount != null) return $this->soldTotalDiscount;
         return round(($this->price*$this->quantity*$this->discount/100),2);
     }
 
@@ -165,7 +165,7 @@ class PatientsTransactions extends Model
         $toArray['orderLocation'] = $this->order_location;
         $toArray['orderLocationCode'] = $this->order_location_code;
 
-        $toArray['discountPrice'] = $this->discount_price;
+        $toArray['totalDiscount'] = $this->total_discount;
         $toArray['totalPrice'] = $this->total_price;
         $toArray['finalPrice'] = $this->final_price;
         

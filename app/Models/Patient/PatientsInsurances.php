@@ -16,7 +16,7 @@ class PatientsInsurances extends Model
     protected $guarded = [];
     protected $toStores = ['documents'];
 
-    public function Insurance() {
+    public function Condition() {
         return $this->hasOne('App\Models\Master\Insurances','insuranceCode','insuranceCode');
     }
 
@@ -37,5 +37,5 @@ class PatientsInsurances extends Model
         'endDate'
     ];
 
-    protected $with = ['Insurance'];
+    protected $with = ['Condition'];
 }

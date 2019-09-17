@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePatientsVitalsign extends Migration
+class CreatePatientsVitalsigns extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreatePatientsVitalsign extends Migration
      */
     public function up()
     {
-        Schema::create('patients_vitalsign', function (Blueprint $table) {
+        Schema::create('patients_vitalsigns', function (Blueprint $table) {
             $table->increments('id');
             $table->string('hn',20);
             $table->string('encounterId',50)->nullable();
