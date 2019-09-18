@@ -5,6 +5,7 @@ namespace App\Models\Accounting;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UserStamps;
+use App\Http\Controllers\Master\IdController;
 
 class AccountingPayments extends Model
 {
