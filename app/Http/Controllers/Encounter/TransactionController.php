@@ -78,7 +78,7 @@ class TransactionController extends Controller
                 $invoice->documentId = $invoiceDocument["returnModels"][0]->id;
                 $invoice->save();
 
-                $item->each(function($itemTransaction,$key) use ($invoiceId) {
+                $item->each(function($itemTransaction,$key) use ($invoice) {
                     $itemTransaction->update([
                         "invoiceId" => $invoice->invoiceId,
                         "soldPatientsInsurancesId" => ($itemTransaction->insurance) ? $itemTransaction->insurance->id : null,
