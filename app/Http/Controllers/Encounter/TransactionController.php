@@ -19,7 +19,7 @@ class TransactionController extends Controller
         DB::beginTransaction();
 
         $transactionsIds = array_pluck($transactions,'id');
-        $transactions = \App\Models\Patient\PatientsTransactions::whereIn('id',$transactionsIds)->whereNull('referenceId')->where('isChargable',true)->sharedLock()->get();
+        $transactions = \App\Models\Patient\PatientsTransactions::whereIn('id',$transactionsIds)->whereNull('invoiceId')->where('isChargable',true)->sharedLock()->get();
 
         if ($transactions != null) {
             $transactions = $transactions->groupBy(function ($item, $key) {
