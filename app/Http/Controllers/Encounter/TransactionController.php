@@ -6,18 +6,19 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Master\IdController;
 use App\Http\Controllers\Document\DocumentController;
+use Carbon\Carbon;
 
 class TransactionController extends Controller
 {
-    public static function createInvoice($hn,$transactionIds) {
+    public static function createInvoice($hn,$transactions) {
         $success = true;
         $errorTexts = [];
         $returnModels = [];
         
         DB::beginTransaction();
 
-        $transactionsIds = array_pluck($transactionsIds,'id');
-        $transactions = \App\Models\Patient\PatientsTransactions::whereIn('id',$transactionsIds)->whereNull('referenceId')->sharedLock()->get();
+        $transactionsIds = array_pluck($transactions,'id');
+        $transactions = \App\Models\Patient\PatientsTransactions::whereIn('id',$transactionsIds)->whereNull('referenceId')->where('isChargable',true)->sharedLock()->get();
 
         if ($transactions != null) {
             $transactions = $transactions->groupBy(function ($item, $key) {
@@ -49,7 +50,7 @@ class TransactionController extends Controller
                     ];
                 });
 
-                $invoice = [
+                $invoiceData = [
                     "raw" => $item->toArray(),
                     "detailInsurance" => $detailInsurance->toArray(),
                     "detailCgd" => $detailCgd->toArray(),
@@ -60,17 +61,25 @@ class TransactionController extends Controller
                     "grandTotalDiscount" => $item->sum('total_discount'),
                     "grandFinalPrice" => $item->sum('final_price'),
 
-                    "insurance" => $insurance,
+                    "insurance" => $insurance->toArray(),
 
-                    "invoiceDateTime" => "",
+                    "invoiceDateTime" => Carbon::now(),
                 ];
 
-                $invoiceId = IdController::issueId('invoice',env('INVOICE_ID_FORMAT', '\I\N\Vym'),env('INVOICE_ID_DIGIT', 6));
+                $invoice = new \App\Models\Accounting\AccountingInvoices();
+                $invoice->patientsInsurancesId = $key;
+                $invoice->amountDue = $invoiceData["grandFinalPrice"];
+                $invoice->save();
+
+                $invoiceDocument = DocumentController::addDocument($hn,env('INVOICE_TEMPLATE', 'invoice'),$invoiceData,env('INVOICE_CATEGORY', '999'),null,$invoice->invoiceId,'accounting');
+
+                $invoice->documentId = $invoiceDocument["returnModels"][0]->id;
+                $invoice->save();
 
                 $item->each(function($itemTransaction,$key) use ($invoiceId) {
                     $itemTransaction->update([
-                        "referenceId" => $invoiceId,
-                        "soldPatientsInsurancesId" => $itemTransaction->insurance->id,
+                        "invoiceId" => $invoice->invoiceId,
+                        "soldPatientsInsurancesId" => ($itemTransaction->insurance) ? $itemTransaction->insurance->id : null,
                         "soldPrice" => $itemTransaction->price,
                         "soldDiscount" => $itemTransaction->discount,
                         "soldTotalPrice" => $itemTransaction->total_price,
@@ -79,9 +88,7 @@ class TransactionController extends Controller
                     ]);
                 });
 
-                $invoiceDocument = DocumentController::addDocument($hn,env('INVOICE_TEMPLATE', 'invoice'),$invoice,env('INVOICE_CATEGORY', '999'),null,$invoiceId,'accounting');
-
-                $returnModels = array_merge($returnModels,$invoiceDocument["returnModels"]);
+                array_push($returnModels,$invoice);
             });
 
             DB::commit();
@@ -90,30 +97,73 @@ class TransactionController extends Controller
 
             $success = false;
             array_push($errorTexts,["errorText" => 'Transactions not found']);
-
-            return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
         }
+        
+        return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }
 
-    public static function createReceipt($invoiceIds,$paymentDetail) {
-        if (!is_array($invoiceIds)) $invoiceIds = [$invoiceIds];
+    public static function createPayment($cashiersPeriodsId,$invoiceId,$paymentMethod,$paymentDetail=null,$paymentAccount=null,$amountPaid) {
+        $success = true;
+        $errorTexts = [];
+        $returnModels = [];
 
-        $invoice = \App\Models\Document\Documents::where('folder','accounting')
-                    ->where('referenceId',$invoiceId)
-                    ->where('templateCode',env('INVOICE_TEMPLATE', 'invoice'))
-                    ->where('isScanned',false)
-                    ->orderBy('updated_at','desc')->first();
+        $invoice = \App\Models\Accounting\AccountingInvoices::find($invoiceId);
         if ($invoice!=null) {
+            if ($amountPaid>$invoice->amount_outstanding) {
+                $success = false;
+                array_push($errorTexts,["errorText" => 'Payment amount is over outstanding balance']);
+            }
+            if ($success) {
+                $paymentData = [
+                    "cashiersPeriodsId" => $cashiersPeriodsId,
+                    "paymentMethod" => $paymentMethod,
+                    "paymentDetail" => $paymentDetail,
+                    "paymentAccount" => $paymentAccount,
+                    "amountDue" => $invoice->amount_outstanding,
+                    "amountPaid" => $amountPaid,
+                ];
+                $payment = $invoice->payments()->create($paymentData);
 
+                $paymentData["amountOutstanding"] = $payment->amountDue - $payment->amountPaid;
+                $paymentData["receiptDate"] = Carbon::now();
+                $paymentData["cashiersPeriods"] = \App\Models\Accounting\CashiersPeriods::find(cashiersPeriodsId);
+
+                $paymentData = array_merge($invoice->document->data,$paymentData);
+
+                $receiptDocument = DocumentController::addDocument($hn,env('RECEIPT_TEMPLATE', 'receipt'),$paymentData,env('RECEIPT_CATEGORY', '999'),null,$payment->receiptId,'accounting');
+
+                $payment->documentId = $receiptDocument["returnModels"][0]->id;
+                $payment->save();
+
+                array_push($returnModels,$payment);
+            }
+
+        } else {
+            $success = false;
+            array_push($errorTexts,["errorText" => 'Invoice not found']);
         }
-
+        return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }
 
-    public static function createPayment($hn,$encounterId,$transactionIds) {
+    public static function createTransactionPayment($hn,$transactionIds,$cashiersPeriodsId,$paymentMethod,$paymentDetail=null,$paymentAccount=null,$amountPaid) {
+        $success = true;
+        $errorTexts = [];
+        $returnModels = [];
 
-    }
-
-    public static function cancelInvoice($invoiceId) {
-
+        $invoice = self::createInvoice($hn,$transactionIds);
+        if ($invoice["success"]) {
+            if (count($invoice["returnModels"])==1) {
+                return self::createPayment($cashiersPeriodsId,$invoice["returnModels"][0]->invoiceId,$paymentMethod,$paymentDetail,$paymentAccount,$amountPaid);
+            } else if (count($invoice["returnModels"])>1) {
+                $success = false;
+                array_push($errorTexts,["errorText" => 'Transcations are split to multiple invoices']);
+            } else {
+                $success = false;
+                array_push($errorTexts,["errorText" => 'No chargable transcations']);
+            }
+            return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
+        } else {
+            return $invoice;
+        }
     }
 }

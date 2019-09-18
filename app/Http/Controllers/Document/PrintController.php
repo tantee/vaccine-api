@@ -15,123 +15,7 @@ use App\Http\Controllers\Document\DocumentController;
 
 class PrintController extends Controller
 {
-    public static function printDocument($documentId="abc",$data=[]) {
-      $documentTemplate = "receipt";
-
-      $document_qrcode_data = [
-        'DocId' => $documentId,
-      ];
-
-      $document_qrcode_content = \json_encode($document_qrcode_data);
-
-      setlocale(LC_TIME, 'th_TH.utf8');
-      $data['document_header'] = '001';
-      $data['document_qrcode'] = $document_qrcode_content;
-      $data['document_barcode'] = '19000012';
-      $data['print_date'] = Carbon::now()->formatLocalized('%A %d %B %Y');
-      $data['print_user'] = (Auth::user()) ? Auth::user()->name : '';
-      $data['document_date'] = '';
-      $data['document_owner'] = '';
-
-      $printedDocument = self::genericPrintDocument($documentTemplate,$data);
-
-      return response($printedDocument)->header('Content-Type','application/pdf');
-    }
-
-    public static function printDocumentBase64($documentId="abc",$data=[]) {
-      $documentTemplate = "receipt";
-
-      $document_qrcode_data = [
-        'hn' => '',
-        'documentId' => $documentId,
-      ];
-
-      $document_qrcode_content = \json_encode($document_qrcode_data);
-
-      setlocale(LC_TIME, 'th_TH.utf8');
-      $data['document_header'] = '001';
-      $data['document_qrcode'] = $document_qrcode_content;
-      $data['document_barcode'] = '19000012';
-      $data['print_date'] = Carbon::now()->formatLocalized('%A %d %B %Y');
-      $data['print_user'] = (Auth::user()) ? Auth::user()->name : '';
-      $data['document_date'] = '';
-      $data['document_owner'] = '';
-
-      $printedDocument = self::genericPrintDocumentBase64($documentTemplate,$data);
-
-      return $printedDocument;
-    }
-
-    public static function printDocumentByTemplate($templateCode,$hn=null,$encounterId=null) {
-      $success = true;
-      $errorTexts = [];
-      $returnModels = [];
-
-      $template = \App\Models\Document\DocumentsTemplates::find($templateCode);
-
-      if ($template!=null) {
-        if ($template->isRequiredPatientInfo && !PatientController::isExistPatient($hn)) {
-          $success = false;
-          array_push($errorTexts,["errorText" => 'Require patient HN']);
-        }
-
-        if ($template->isRequiredEncounter && $encounterId == null) {
-          $success = false;
-          array_push($errorTexts,["errorText" => 'Require encounter ID']);
-        }
-
-        DocumentController::addDocument($hn,$templateCode,null,$template->defaultCategory);
-      } else {
-        $success = false;
-        array_push($errorTexts,["errorText" => 'Document template not found']);
-      }
-
-      $document = \App\Models\Document\Documents::where('hn',$hn)->where('templateCode',$documentTemplate)->orderBy('id','desc')->first();
-      if ($document != null) {
-        $data = $document->data;
-
-        $patient = $document->patient;
-        $patientData['hn'] = $patient->hn;
-        $patientData['name_th'] = $patient->Name_th;
-        $patientData['name_en'] = $patient->Name_en;
-        $patientData['name_real_th'] = $patient->Name_real_th;
-        $patientData['name_real_en'] = $patient->Name_real_en;
-        $patientData['personId'] = $patient->personId;
-        $patientData['sex'] = $patient->sex;
-        $patientData['maritalStatus'] = $patient->maritalStatus;
-        $patientData['dateOfBirth'] = $patient->dateOfBirth;
-        $patientData['nationality'] = $patient->nationality;
-        $patientData['race'] = $patient->race;
-        $patientData['religion'] = $patient->religion;
-        $patientData['primaryMobileNo'] = $patient->primaryMobileNo;
-        $patientData['primaryTelephoneNo'] = $patient->primaryTelephoneNo;
-        $patientData['primaryEmail'] = $patient->primaryEmail;
-
-        $data['patientData'] = $patientData;
-
-        $qrCodeData = [
-          'hn' => $hn,
-          'pId' => $document->id,
-          'cId' => uniqid(),
-          'tmpl' => $documentTemplate,
-        ];
-
-        $data['qrCodeData'] = \json_encode($qrCodeData);
-
-        $documentData = [
-          'document_createdate' => $document->created_at,
-          'document_creator' => $document->created_by,
-          'document_updatedate' => $document->updated_at,
-          'document_updater' => $document->updated_by,
-        ];
-
-        $data['documentData'] = $documentData;
-
-        return self::genericPrintDocumentBase64($documentTemplate,$data);
-      }
-    }
-
-    public static function printBlankDocumentByTemplate($documentTemplate,$hn=null,$encounterId=null,$referenceId=null) {
+    public static function printBlankDocumentByTemplate($documentTemplate,$hn=null,$encounterId=null,$referenceId=null,$data=null,$folder=null) {
       $success = true;
       $errorTexts = [];
       $returnModels = [];
@@ -149,7 +33,7 @@ class PrintController extends Controller
         }
 
         if ($success) {
-          $document = DocumentController::addDocument($hn,$documentTemplate->templateCode,null,$documentTemplate->defaultCategory,$encounterId,$referenceId);
+          $document = DocumentController::addDocument($hn,$documentTemplate->templateCode,$data,$documentTemplate->defaultCategory,$encounterId,$referenceId,$folder);
           if ($document["success"]) {
             $document = $document["returnModels"][0];
           } else {
@@ -170,7 +54,7 @@ class PrintController extends Controller
       return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }
 
-    public static function genericPrintDocument($documentId) {
+    public static function genericPrintDocument($documentId,$templateCode=null) {
       $tmpUniqId = uniqid();
       $tmpDirectory = 'tmp/'.$tmpUniqId;
       $tmpFilename = $tmpDirectory.'/output.docx';
@@ -181,6 +65,8 @@ class PrintController extends Controller
 
       $document = \App\Models\Document\Documents::find($documentId);
       if ($document == null) return null;
+
+      if ($templateCode != null) $document->templateCode = $templateCode;
 
       $data = $document->data;
 
@@ -234,6 +120,12 @@ class PrintController extends Controller
       $data['print_date'] = Carbon::now()->locale('th_TH')->isoFormat('dddd DD MMMM YYYY');
       $data['print_user'] = (Auth::guard('api')->check()) ? Auth::guard('api')->user()->username : 'Unidentified';
 
+      $data['created_at'] = $document->created_at->locale('th_TH')->isoFormat('dddd DD MMMM YYYY');
+      $data['created_by'] = $document->created_by;
+      $data['updated_at'] = $document->updated_at->locale('th_TH')->isoFormat('dddd DD MMMM YYYY');
+      $data['updated_by'] = $document->updated_by;
+           
+
       Storage::makeDirectory($tmpDirectory);
       
       $currPrm = [
@@ -275,8 +167,8 @@ class PrintController extends Controller
     }
 
 
-    public static function genericPrintDocumentBase64($documentId) {
-      return base64_encode(self::genericPrintDocument($documentId));
+    public static function genericPrintDocumentBase64($documentId,$templateCode=null) {
+      return base64_encode(self::genericPrintDocument($documentId,$templateCode=null));
     }
 
     private static function merge(&$TBS,$data,$currPrm) {

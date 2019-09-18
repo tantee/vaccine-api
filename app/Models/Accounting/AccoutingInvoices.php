@@ -27,13 +27,32 @@ class AccountingInvoices extends Model
         return $this->hasOne('App\Models\Document\Documents','id','documentId');
     }
 
+    public function getAmountPaidAttribute() {
+        return $this->payments->sum('amountPaid');
+    }
+
+    public function getAmountOutstandingAttribute() {
+        return ($this->amount_due - $this->amount_paid >= 0) ? $this->amount_due - $this->amount_paid : 0;
+    }
+
+    public function toArray()
+    {
+        $toArray = parent::toArray();
+        $toArray['amountPaid'] = $this->amount_paid;
+        $toArray['amountOutstanding'] = $this->amount_standing;
+
+        return $toArray;
+    }
+
     public static function boot() {
         static::creating(function($model) {
             if (!isset($model->invoiceId) || empty($model->invoiceId)) {
-                $model->invoiceId = IdController::issueId('invoice',env('INVOICE_ID_FORMAT', '\I\N\Vym'),env('INVOICE_ID_DIGIT', 6));
+                $model->invoiceId = IdController::issueId('invoice',env('INVOICE_ID_FORMAT', 'ym'),env('INVOICE_ID_DIGIT', 6));
             }
         });
 
         parent::boot();
     }
+
+    protected $with = ['Payments'];
 }
