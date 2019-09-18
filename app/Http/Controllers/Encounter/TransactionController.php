@@ -62,7 +62,7 @@ class TransactionController extends Controller
                     "grandTotalDiscount" => $item->sum('total_discount'),
                     "grandFinalPrice" => $item->sum('final_price'),
 
-                    "insurance" => $insurance->toArray(),
+                    "insurance" => ($insurance) ? $insurance->toArray() : null,
 
                     "invoiceDateTime" => Carbon::now(),
                 ];
