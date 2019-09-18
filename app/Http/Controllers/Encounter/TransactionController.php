@@ -26,7 +26,7 @@ class TransactionController extends Controller
                 return ($item->insurance==null) ? null : $item->insurance->id;
             });
 
-            $transactions->each(function($item,$key) {
+            $transactions->each(function($item,$key) use (&$hn,&$success,&$errorTexts,&$returnModels) {
                 $item = collect($item->toArray())->map(function($row) {
                     return array_except($row,['insurance','encounter']);
                 });
