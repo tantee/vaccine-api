@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Encounter;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Master\IdController;
 use App\Http\Controllers\Document\DocumentController;
@@ -145,12 +146,12 @@ class TransactionController extends Controller
         return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }
 
-    public static function createTransactionPayment($hn,$transactionIds,$cashiersPeriodsId,$paymentMethod,$paymentDetail=null,$paymentAccount=null,$amountPaid) {
+    public static function createTransactionPayment($hn,$transactions,$cashiersPeriodsId,$paymentMethod,$paymentDetail=null,$paymentAccount=null,$amountPaid) {
         $success = true;
         $errorTexts = [];
         $returnModels = [];
 
-        $invoice = self::createInvoice($hn,$transactionIds);
+        $invoice = self::createInvoice($hn,$transactions);
         if ($invoice["success"]) {
             if (count($invoice["returnModels"])==1) {
                 return self::createPayment($cashiersPeriodsId,$invoice["returnModels"][0]->invoiceId,$paymentMethod,$paymentDetail,$paymentAccount,$amountPaid);
