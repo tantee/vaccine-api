@@ -33,21 +33,21 @@ class TransactionController extends Controller
 
                 $insurance =  \App\Models\Patient\PatientsInsurances::find($key);
 
-                $detailInsurance = $item->groupBy('category_insurance');
-                $detailCgd = $item->groupBy('category_cgd');
+                $detailInsurance = $item->groupBy('categoryInsurance');
+                $detailCgd = $item->groupBy('categoryCgd');
 
                 $summaryInsurance = $detailInsurance->map(function ($row){
                     return [
-                        "totalPrice" => $row->sum('total_price'),
-                        "totalDiscount" => $row->sum('total_discount'),
-                        "finalPrice" => $row->sum('final_price'),
+                        "totalPrice" => $row->sum('totalPrice'),
+                        "totalDiscount" => $row->sum('totalDiscount'),
+                        "finalPrice" => $row->sum('finalPrice'),
                     ];
                 });
                 $summaryCgd = $detailCgd->map(function ($row){
                     return [
-                        "totalPrice" => $row->sum('total_price'),
-                        "totalDiscount" => $row->sum('total_discount'),
-                        "finalPrice" => $row->sum('final_price'),
+                        "totalPrice" => $row->sum('totalPrice'),
+                        "totalDiscount" => $row->sum('totalDiscount'),
+                        "finalPrice" => $row->sum('finalPrice'),
                     ];
                 });
 
@@ -58,9 +58,9 @@ class TransactionController extends Controller
                     "summaryInsurance" => $summaryInsurance->toArray(),
                     "summaryCgd" => $summaryCgd->toArray(),
 
-                    "grandTotalPrice" => $item->sum('total_price'),
-                    "grandTotalDiscount" => $item->sum('total_discount'),
-                    "grandFinalPrice" => $item->sum('final_price'),
+                    "grandTotalPrice" => $item->sum('totalPrice'),
+                    "grandTotalDiscount" => $item->sum('totalDiscount'),
+                    "grandFinalPrice" => $item->sum('finalPrice'),
 
                     "insurance" => ($insurance) ? $insurance->toArray() : null,
 
