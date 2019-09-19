@@ -26,8 +26,8 @@ class TransactionController extends Controller
                 return ($item->insurance==null) ? null : $item->insurance->id;
             });
 
-            $transactions->each(function($item,$key) use (&$hn,&$success,&$errorTexts,&$returnModels) {
-                $item = collect($item->toArray())->map(function($row) {
+            $transactions->each(function($itemCollection,$key) use (&$hn,&$success,&$errorTexts,&$returnModels) {
+                $item = collect($itemCollection->toArray())->map(function($row) {
                     return array_except($row,['insurance','encounter']);
                 });
 
@@ -78,7 +78,7 @@ class TransactionController extends Controller
                 $invoice->documentId = $invoiceDocument["returnModels"][0]->id;
                 $invoice->save();
 
-                $item->each(function($itemTransaction,$key) use ($invoice) {
+                $itemCollection->each(function($itemTransaction,$key) use ($invoice) {
                     $itemTransaction->update([
                         "invoiceId" => $invoice->invoiceId,
                         "soldPatientsInsurancesId" => ($itemTransaction->insurance) ? $itemTransaction->insurance->id : null,
