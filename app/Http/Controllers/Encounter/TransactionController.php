@@ -132,7 +132,7 @@ class TransactionController extends Controller
 
                 $paymentData = array_merge($invoice->document->data,$paymentData);
 
-                $receiptDocument = DocumentController::addDocument($hn,env('RECEIPT_TEMPLATE', 'receipt'),$paymentData,env('RECEIPT_CATEGORY', '999'),null,$payment->receiptId,'accounting');
+                $receiptDocument = DocumentController::addDocument($invoice->hn,env('RECEIPT_TEMPLATE', 'receipt'),$paymentData,env('RECEIPT_CATEGORY', '999'),null,$payment->receiptId,'accounting');
 
                 $payment->documentId = $receiptDocument["returnModels"][0]->id;
                 $payment->save();
