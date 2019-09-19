@@ -20,7 +20,7 @@ class AccountingPayments extends Model
     public function toArray()
     {
         $toArray = parent::toArray();
-        $toArray['amountOutstanding'] = $this->amount_standing;
+        $toArray['amountOutstanding'] = $this->amount_outstanding;
 
         return $toArray;
     }
