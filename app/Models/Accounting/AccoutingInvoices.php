@@ -40,7 +40,7 @@ class AccountingInvoices extends Model
     {
         $toArray = parent::toArray();
         $toArray['amountPaid'] = $this->amount_paid;
-        $toArray['amountOutstanding'] = $this->amount_standing;
+        $toArray['amountOutstanding'] = $this->amount_outstanding;
 
         return $toArray;
     }

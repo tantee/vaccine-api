@@ -128,7 +128,7 @@ class TransactionController extends Controller
 
                 $paymentData["amountOutstanding"] = $payment->amountDue - $payment->amountPaid;
                 $paymentData["receiptDate"] = Carbon::now();
-                $paymentData["cashiersPeriods"] = \App\Models\Accounting\CashiersPeriods::find(cashiersPeriodsId);
+                $paymentData["cashiersPeriods"] = \App\Models\Accounting\CashiersPeriods::find($cashiersPeriodsId);
 
                 $paymentData = array_merge($invoice->document->data,$paymentData);
 
