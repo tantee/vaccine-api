@@ -33,10 +33,7 @@ class DocumentController extends Controller
       if (is_array($documents)) $documents = array_pluck($documents,'id');
       else $documents = [$documents];
 
-      $documents = \App\Models\Document\Documents::whereIn('id',$documents)->get();
-      $documents->update([
-        "status" => "approved"
-      ]);
+      $documents = \App\Models\Document\Documents::whereIn('id',$documents)->update(["status" => "approved"]);
 
       return $documents;
     }
