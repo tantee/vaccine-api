@@ -33,7 +33,7 @@ class AccountingInvoices extends Model
     }
 
     public function getAmountOutstandingAttribute() {
-        return ($this->amount_due - $this->amount_paid >= 0) ? $this->amount_due - $this->amount_paid : 0;
+        return ($this->amountDue - $this->amount_paid >= 0) ? $this->amountDue - $this->amount_paid : 0;
     }
 
     public function toArray()
