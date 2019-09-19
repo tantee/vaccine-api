@@ -13,6 +13,10 @@ class AccountingPayments extends Model
 
     protected $guarded = [];
 
+    public function Document() {
+        return $this->hasOne('App\Models\Document\Documents','id','documentId');
+    }
+
     public function getAmountOutstandingAttribute() {
         return ($this->amount_due - $this->amount_paid >= 0) ? $this->amount_due - $this->amount_paid : 0;
     }

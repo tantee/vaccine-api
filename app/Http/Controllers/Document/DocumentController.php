@@ -29,6 +29,18 @@ class DocumentController extends Controller
       return DataController::createModel($documents,\App\Models\Document\Documents::class);
     }
 
+    public static function approveDocuments($documents) {
+      if (is_array($documents)) $documents = array_pluck($documents,'id');
+      else $documents = [$documents];
+
+      $documents = \App\Models\Document\Documents::whereIn('id',$documents)->get();
+      $documents->update([
+        "status" => "approved"
+      ]);
+
+      return $documents;
+    }
+
     public static function getDocumentByTemplate($hn,$templateCode) {
       $document = \App\Models\Document\Documents::where('templateCode',$templateCode)->orderBy('id','desc')->first();
       return $document;
