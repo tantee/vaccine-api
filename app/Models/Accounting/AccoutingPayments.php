@@ -28,7 +28,7 @@ class AccountingPayments extends Model
     public static function boot() {
         static::creating(function($model) {
             if (!isset($model->receiptId) || empty($model->receiptId)) {
-                $model->invoiceId = IdController::issueId('receipt',env('RECEIPT_ID_FORMAT', 'ym'),env('RECEIPT_ID_DIGIT', 6));
+                $model->receiptId = IdController::issueId('receipt',env('RECEIPT_ID_FORMAT', 'ym'),env('RECEIPT_ID_DIGIT', 6));
             }
         });
 
