@@ -22,7 +22,7 @@ class AccountingPayments extends Model
     }
 
     public function getAmountOutstandingAttribute() {
-        return ($this->amount_due - $this->amount_paid >= 0) ? $this->amount_due - $this->amount_paid : 0;
+        return ($this->amountDue - $this->amountPaid >= 0) ? $this->amountDue - $this->amountPaid : 0;
     }
 
     public function toArray()
