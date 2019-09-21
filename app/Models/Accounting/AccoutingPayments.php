@@ -17,6 +17,10 @@ class AccountingPayments extends Model
         return $this->hasOne('App\Models\Document\Documents','id','documentId');
     }
 
+    public function Invoice() {
+        return $this->belongsTo('App\Models\Accounting\AccountingInvoices','invoiceId','invoiceId');
+    }
+
     public function getAmountOutstandingAttribute() {
         return ($this->amount_due - $this->amount_paid >= 0) ? $this->amount_due - $this->amount_paid : 0;
     }
@@ -34,6 +38,11 @@ class AccountingPayments extends Model
             if (!isset($model->receiptId) || empty($model->receiptId)) {
                 $model->receiptId = IdController::issueId('receipt',env('RECEIPT_ID_FORMAT', 'ym'),env('RECEIPT_ID_DIGIT', 6));
             }
+        });
+
+        static::saved(function($model) {
+            $model->invoice->amountPaid = $model->invoice->payments->sum('amountPaid');
+            $model->invoice->save();
         });
 
         parent::boot();

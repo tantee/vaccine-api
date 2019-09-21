@@ -19,7 +19,7 @@ class Encounters extends Model
     protected $guarded = [];
 
     public function Patient() {
-        return $this->hasOne('App\Models\Patient\Patients','hn','hn');
+        return $this->belongsTo('App\Models\Patient\Patients','hn','hn');
     }
 
     public function Location() {

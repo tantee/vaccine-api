@@ -16,6 +16,10 @@ class AccountingInvoices extends Model
     protected $keyType = 'string';
     protected $guarded = [];
 
+    public function scopeUnpaid($query) {
+        return $query->whereColumn('amountDue','>','amountPaid');
+    }
+
     public function Transactions() {
         return $this->hasMany('App\Models\Patient\PatientsTransactions','invoiceId','invoiceId');
     }
@@ -28,18 +32,13 @@ class AccountingInvoices extends Model
         return $this->hasOne('App\Models\Document\Documents','id','documentId');
     }
 
-    public function getAmountPaidAttribute() {
-        return $this->payments->sum('amountPaid');
-    }
-
     public function getAmountOutstandingAttribute() {
-        return ($this->amountDue - $this->amount_paid >= 0) ? $this->amountDue - $this->amount_paid : 0;
+        return ($this->amountDue - $this->amountPaid >= 0) ? $this->amountDue - $this->amountPaid : 0;
     }
 
     public function toArray()
     {
         $toArray = parent::toArray();
-        $toArray['amountPaid'] = $this->amount_paid;
         $toArray['amountOutstanding'] = $this->amount_outstanding;
 
         return $toArray;

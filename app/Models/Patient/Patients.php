@@ -35,6 +35,18 @@ class Patients extends Model
       return $this->hasMany('App\Models\Patient\PatientsTransactions','hn','hn');
     }
 
+    public function UninvoicedTransactions() {
+      return $this->hasMany('App\Models\Patient\PatientsTransactions','hn','hn')->uninvoiced();
+    }
+
+    public function Invoices() {
+      return $this->hasMany('App\Models\Accounting\AccountingInvoices','hn','hn');
+    }
+
+    public function UnpaidInvoices() {
+      return $this->hasMany('App\Models\Accounting\AccountingInvoices','hn','hn')->unpaid();
+    }
+
     public function Assets() {
       return $this->hasMany('App\Models\Asset\Assets','hn','hn');
     }

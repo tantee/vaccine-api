@@ -12,6 +12,10 @@ class PatientsTransactions extends Model
 
     protected $guarded = [];
 
+    public function scopeUninvoiced($query) {
+      return $query->whereNull('invoiceId');
+    }
+
     public function Product() {
         return $this->hasOne('App\Models\Master\Products','productCode','productCode');
     }

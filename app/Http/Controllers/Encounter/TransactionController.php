@@ -171,14 +171,28 @@ class TransactionController extends Controller
         }
     }
 
-    public static function getUnpaidPatients(Request $request) {
+    public static function getUninvoicedPatients(Request $request) {
         $success = true;
         $errorTexts = [];
         $returnModels = [];
 
-        $returnModels = \App\Models\Patient\Patients::whereHas('transactions',function($query) {
-            $query->whereNull('invoiceId');
-        })->with('transactions');
+        $returnModels = \App\Models\Patient\Patients::whereHas('UninvoicedTransactions')->with('UninvoicedTransactions');
+
+        if (isset($request->perPage) && is_numeric($request->perPage)) {
+          $returnModels = $returnModels->paginate($request->perPage)->appends(['perPage'=>$request->perPage]);
+        } else {
+          $returnModels = $returnModels->get();
+        }
+
+        return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
+    }
+
+    public static function getUnpaidInvoices(Request $request) {
+        $success = true;
+        $errorTexts = [];
+        $returnModels = [];
+
+        $returnModels = \App\Models\Patient\Patients::whereHas('UnpaidInvoices')->with('UnpaidInvoices');
 
         if (isset($request->perPage) && is_numeric($request->perPage)) {
           $returnModels = $returnModels->paginate($request->perPage)->appends(['perPage'=>$request->perPage]);
