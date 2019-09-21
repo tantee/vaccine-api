@@ -187,7 +187,7 @@ class TransactionController extends Controller
         return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }
 
-    public static function getUnpaidInvoices(Request $request) {
+    public static function getUnpaidPatients(Request $request) {
         $success = true;
         $errorTexts = [];
         $returnModels = [];
