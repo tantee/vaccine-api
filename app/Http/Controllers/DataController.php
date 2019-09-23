@@ -325,8 +325,6 @@ class DataController extends Controller
             if (count($explodedKey)==3) {
               $key = $explodedKey[0]."#".$explodedKey[1];
               array_push($data,[$key,$explodedKey[2],$value]);
-              array_push($errorTexts,["errorText" => "split"]);
-              array_push($errorTexts,["errorText" => $key]);
             } else {
               array_push($data,[$key,'=',$value]);
             }
@@ -466,7 +464,7 @@ class DataController extends Controller
     }
 
     public static function searchQuery(&$query, $searchData) {
-      $singleParameter = ["whereNull","whereNotNull","orWhereNull","orWhereNotNull"];
+      $singleParameter = ["whereNull","whereNotNull","orWhereNull","orWhereNotNull","whereHas"];
 
       $whereFunction = explode('#',$searchData[0]);
       if (count($whereFunction)>1) {
