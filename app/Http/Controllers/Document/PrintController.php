@@ -133,7 +133,7 @@ class PrintController extends Controller
       ];
 
       $templatePath = null;
-      if ($document->Template->printTemplate!=null && Storage::exists($document->Template->printTemplate)) $templatePath = $document->Template->printTemplate;
+      if ($document->Template != null && $document->Template->printTemplate!=null && Storage::exists($document->Template->printTemplate)) $templatePath = $document->Template->printTemplate;
       else if (Storage::exists('/default/documents/'.$document->templateCode.'.docx')) $templatePath = '/default/documents/'.$document->templateCode.'.docx';
       else if (Storage::exists('/default/documents/'.$document->templateCode.'.xlsx')) $templatePath = '/default/documents/'.$document->templateCode.'.xlsx';
 
@@ -143,7 +143,7 @@ class PrintController extends Controller
         $TBS->Plugin(clsMasterItem::class);
         $TBS->NoErr = true;
 
-        $TBS->LoadTemplate(storage_path('app/'.$document->Template->printTemplate),\OPENTBS_ALREADY_UTF8);
+        $TBS->LoadTemplate(storage_path('app/'.$templatePath),\OPENTBS_ALREADY_UTF8);
         self::merge($TBS,$data,$currPrm);
 
         $TBS->PlugIn(\OPENTBS_SELECT_HEADER, \OPENTBS_DEFAULT);
@@ -154,7 +154,7 @@ class PrintController extends Controller
 
         $TBS->Show(\OPENTBS_FILE,storage_path('app/'.$tmpFilename));
 
-        Storage::copy($tmpFilename,'/documents/'.$document->hn.'/'.$document->Template->templateCode.'/raw/'.$documentId.'_'.$tmpUniqId.'.docx');
+        Storage::copy($tmpFilename,'/documents/'.$document->hn.'/'.$document->templateCode.'/raw/'.$documentId.'_'.$tmpUniqId.'.docx');
 
         if (self::convertToPDF($tmpFilename,$tmpFilenamePDF)) {
           $returnData = Storage::get($tmpFilenamePDF);
