@@ -3,6 +3,7 @@
 namespace App\Document;
 
 use Carbon\Carbon;
+use App\Http\Controllers\Master\MasterController;
 
 define('TBS_CAHPLUGIN','\App\Document\clsPlugin');
 
