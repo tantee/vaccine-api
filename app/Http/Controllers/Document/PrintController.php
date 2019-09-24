@@ -16,7 +16,7 @@ use App\Http\Controllers\Document\DocumentController;
 
 class PrintController extends Controller
 {
-    public static function printBlankDocumentByTemplate($documentTemplate,$hn=null,$encounterId=null,$referenceId=null,$data=null,$folder=null) {
+    public static function printBlankDocument($documentTemplate,$hn=null,$encounterId=null,$referenceId=null,$data=null,$folder=null) {
       $success = true;
       $errorTexts = [];
       $returnModels = [];
@@ -30,7 +30,7 @@ class PrintController extends Controller
         }
         if ($documentTemplate->isRequiredEncounter && empty($encounterId)) {
           $success = false;
-          array_push($errorTexts,["errorText" => "Require HN"]);
+          array_push($errorTexts,["errorText" => "Require encounter ID"]);
         }
 
         if ($success) {
@@ -55,67 +55,15 @@ class PrintController extends Controller
       return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }
 
-    public static function genericPrintDocument($documentId,$templateCode=null) {
-      $tmpUniqId = uniqid();
-      $tmpDirectory = 'tmp/'.$tmpUniqId;
-      $tmpFilename = $tmpDirectory.'/output.docx';
-      $tmpFilenameTmpl = $tmpDirectory.'/template.docx';
-      $tmpFilenamePDF = $tmpDirectory.'/output.pdf';
-
-      $returnData = null;
-
+    public static function printDocument($documentId,$templateCode=null) {
       $document = \App\Models\Document\Documents::find($documentId);
       if ($document == null) return null;
 
-      if ($templateCode != null) $document->templateCode = $templateCode;
+      if ($templateCode == null)  $templateCode = $document->templateCode;
 
       $data = $document->data;
 
       $data['qrCodeData'] = \json_encode(['DocId' => $document->id]);
-
-      if ($document->Template != null) {
-        $documentData['templateCode'] = $document->Template->templateCode;
-        $documentData['templateName'] = $document->Template->templateName;
-        $documentData['revisionId'] = $document->Template->revisionId;
-        $documentData['revisionDate'] = $document->Template->revisionDate->locale('th_TH')->isoFormat('DD/MM/YYYY');
-        $documentData['description'] = $document->Template->description;
-
-        $data['documentData'] = $documentData;
-      }
-
-      if ($document->Patient != null) {
-        $patientData['hn'] = $document->Patient->hn;
-        $patientData['name_th'] = $document->Patient->Name_th->toArray();
-        $patientData['name_en'] = $document->Patient->Name_en->toArray();
-        $patientData['name_real_th'] = $document->Patient->Name_real_th->toArray();
-        $patientData['name_real_en'] = $document->Patient->Name_real_en->toArray();
-        $patientData['personId'] = $document->Patient->personId;
-        $patientData['sex'] = $document->Patient->sex;
-        $patientData['maritalStatus'] = $document->Patient->maritalStatus;
-        $patientData['dateOfBirth'] = $document->Patient->dateOfBirth;
-        $patientData['nationality'] = $document->Patient->nationality;
-        $patientData['race'] = $document->Patient->race;
-        $patientData['religion'] = $document->Patient->religion;
-        $patientData['primaryMobileNo'] = $document->Patient->primaryMobileNo;
-        $patientData['primaryTelephoneNo'] = $document->Patient->primaryTelephoneNo;
-        $patientData['primaryEmail'] = $document->Patient->primaryEmail;
-
-        $patientData['photo'] = storage_path('app/'.$document->Patient->Photos->first()->storagePath);
-
-        $data['patientData'] = $patientData;
-      }
-
-      if ($document->Encounter != null) {
-        $encounterData['encounterId'] = $document->Encounter->encounterId;
-        $encounterData['encounterType'] = $document->Encounter->encounterType;
-        $encounterData['clinicName'] = $document->Encounter->Clinic->clinicName;
-        $encounterData['clinicNameEN'] = $document->Encounter->Clinic->clinicNameEN;
-        $encounterData['locationName'] = $document->Encounter->Location->locationName;
-        $encounterData['doctorNameTH'] = $document->Encounter->Doctor->nameTH;
-        $encounterData['doctorNameEN'] = $document->Encounter->Doctor->nameEN;
-        
-        $data['encounterData'] = $encounterData;
-      }
 
       $data['documentId'] = $document->id;
       $data['referenceId'] = $document->referenceId;
@@ -125,26 +73,95 @@ class PrintController extends Controller
       $data['documentNote'] = $document->note;
       $data['documentStatus'] = $document->status;
 
+      $data['created_at'] = $document->created_at;
+      $data['created_by'] = $document->created_by;
+      $data['updated_at'] = $document->updated_at;
+      $data['updated_by'] = $document->updated_by;
+      
+      return self::genericPrintDocument($document->hn,$document->encounterId,$templateCode,$data,$document->id);
+    }
 
-      $data['print_date'] = Carbon::now()->locale('th_TH')->isoFormat('dddd DD MMMM YYYY');
+
+    public static function printDocumentBase64($documentId,$templateCode=null) {
+      return base64_encode(self::printDocument($documentId,$templateCode=null));
+    }
+
+    public static function genericPrintDocument($hn,$encounterId,$templateCode,$data,$documentId=null) {
+      $tmpUniqId = uniqid();
+      $tmpDirectory = 'tmp/'.$tmpUniqId;
+      $tmpFilename = $tmpDirectory.'/output.docx';
+      $tmpFilenameTmpl = $tmpDirectory.'/template.docx';
+      $tmpFilenamePDF = $tmpDirectory.'/output.pdf';
+
+      $returnData = null;
+
+      if (!isset($data['qrCodeData'])) $data['qrCodeData'] = \json_encode([]);
+
+      $template = \App\Models\Document\DocumentsTemplates::find($templateCode);
+
+      if ($template != null) {
+        $documentData['templateCode'] = $template->templateCode;
+        $documentData['templateName'] = $template->templateName;
+        $documentData['revisionId'] = $template->revisionId;
+        $documentData['revisionDate'] = $template->revisionDate;
+        $documentData['description'] = $template->description;
+
+        $data['documentData'] = $documentData;
+      }
+
+      $patient = \App\Models\Patient\Patients::find($hn);
+
+      if ($patient != null) {
+        $patientData['hn'] = $patient->hn;
+        $patientData['name_th'] = $patient->Name_th->toArray();
+        $patientData['name_en'] = $patient->Name_en->toArray();
+        $patientData['name_real_th'] = $patient->Name_real_th->toArray();
+        $patientData['name_real_en'] = $patient->Name_real_en->toArray();
+        $patientData['personId'] = $patient->personId;
+        $patientData['sex'] = $patient->sex;
+        $patientData['maritalStatus'] = $patient->maritalStatus;
+        $patientData['dateOfBirth'] = $patient->dateOfBirth;
+        $patientData['nationality'] = $patient->nationality;
+        $patientData['race'] = $patient->race;
+        $patientData['religion'] = $patient->religion;
+        $patientData['primaryMobileNo'] = $patient->primaryMobileNo;
+        $patientData['primaryTelephoneNo'] = $patient->primaryTelephoneNo;
+        $patientData['primaryEmail'] = $patient->primaryEmail;
+
+        $patientData['photo'] = storage_path('app/'.$patient->Photos->first()->storagePath);
+
+        $data['patientData'] = $patientData;
+      }
+
+      $encounter = \App\Models\Registration\Encounters::find($encounterId);
+
+      if ($encounter != null) {
+        $encounterData['encounterId'] = $encounter->encounterId;
+        $encounterData['encounterType'] = $encounter->encounterType;
+        $encounterData['clinicName'] = $encounter->Clinic->clinicName;
+        $encounterData['clinicNameEN'] = $encounter->Clinic->clinicNameEN;
+        $encounterData['locationName'] = $encounter->Location->locationName;
+        $encounterData['doctorNameTH'] = $encounter->Doctor->nameTH;
+        $encounterData['doctorNameEN'] = $encounter->Doctor->nameEN;
+
+        $data['encounterData'] = $encounterData;
+      }
+
+
+      $data['print_date'] = Carbon::now();
       $data['print_user'] = (Auth::guard('api')->check()) ? Auth::guard('api')->user()->username : 'Unidentified';
 
-      $data['created_at'] = $document->created_at->locale('th_TH')->isoFormat('dddd DD MMMM YYYY');
-      $data['created_by'] = $document->created_by;
-      $data['updated_at'] = $document->updated_at->locale('th_TH')->isoFormat('dddd DD MMMM YYYY');
-      $data['updated_by'] = $document->updated_by;
-           
 
       Storage::makeDirectory($tmpDirectory);
-      
+
       $currPrm = [
         'tmpDirectory' => $tmpDirectory,
       ];
 
       $templatePath = null;
-      if ($document->Template != null && $document->Template->printTemplate!=null && Storage::exists($document->Template->printTemplate)) $templatePath = $document->Template->printTemplate;
-      else if (Storage::exists('/default/documents/'.$document->templateCode.'.docx')) $templatePath = '/default/documents/'.$document->templateCode.'.docx';
-      else if (Storage::exists('/default/documents/'.$document->templateCode.'.xlsx')) $templatePath = '/default/documents/'.$document->templateCode.'.xlsx';
+      if ($template != null && $template->printTemplate!=null && Storage::exists($template->printTemplate)) $templatePath = $template->printTemplate;
+      else if (Storage::exists('/default/documents/'.$templateCode.'.docx')) $templatePath = '/default/documents/'.$templateCode.'.docx';
+      else if (Storage::exists('/default/documents/'.$templateCode.'.xlsx')) $templatePath = '/default/documents/'.$templateCode.'.xlsx';
 
       if ($templatePath!=null) {
         $TBS = new \clsTinyButStrong();
@@ -164,7 +181,7 @@ class PrintController extends Controller
 
         $TBS->Show(\OPENTBS_FILE,storage_path('app/'.$tmpFilename));
 
-        Storage::copy($tmpFilename,'/documents/'.$document->hn.'/'.$document->templateCode.'/raw/'.$documentId.'_'.$tmpUniqId.'.docx');
+        if (isset($hn) && isset($templateCode) && isset($documentId)) Storage::copy($tmpFilename,'/documents/'.$hn.'/'.$templateCode.'/raw/'.$documentId.'_'.$tmpUniqId.'.docx');
 
         if (self::convertToPDF($tmpFilename,$tmpFilenamePDF)) {
           $returnData = Storage::get($tmpFilenamePDF);
@@ -174,11 +191,6 @@ class PrintController extends Controller
       Storage::deleteDirectory($tmpDirectory);
 
       return $returnData;
-    }
-
-
-    public static function genericPrintDocumentBase64($documentId,$templateCode=null) {
-      return base64_encode(self::genericPrintDocument($documentId,$templateCode=null));
     }
 
     private static function merge(&$TBS,$data,$currPrm) {
