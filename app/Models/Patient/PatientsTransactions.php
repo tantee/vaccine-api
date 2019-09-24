@@ -181,11 +181,11 @@ class PatientsTransactions extends Model
     ];
 
     protected $casts = [
-        "soldPrice" => "decimal:2",
-        "soldDiscount" => "decimal:2",
-        "soldTotalPrice" => "decimal:2",
-        "soldTotalDiscount" => "decimal:2",
-        "soldFinalPrice" => "decimal:2",
+        "soldPrice" => "float",
+        "soldDiscount" => "float",
+        "soldTotalPrice" => "float",
+        "soldTotalDiscount" => "float",
+        "soldFinalPrice" => "float",
     ];
 
     protected $with = ['Product'];
