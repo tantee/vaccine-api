@@ -56,7 +56,7 @@ class PrintController extends Controller
     }
 
     public static function printDocument($documentId,$templateCode=null) {
-      return base64_encode(self::printDocument($documentId,$templateCode=null));
+      return base64_encode(self::printDocumentRaw($documentId,$templateCode=null));
     }
 
     public static function genericPrintDocument($hn,$encounterId,$templateCode,$data,$documentId=null) {
