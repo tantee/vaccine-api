@@ -180,6 +180,14 @@ class PatientsTransactions extends Model
         'transactionDateTime',
     ];
 
+    protected $casts = [
+        "soldPrice" => "decimal:2",
+        "soldDiscount" => "decimal:2",
+        "soldTotalPrice" => "decimal:2",
+        "soldTotalDiscount" => "decimal:2",
+        "soldFinalPrice" => "decimal:2",
+    ];
+
     protected $with = ['Product'];
 
     protected $appends = ['insurance','discount','price'];
