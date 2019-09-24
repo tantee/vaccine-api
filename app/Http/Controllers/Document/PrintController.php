@@ -45,7 +45,7 @@ class PrintController extends Controller
         }
 
         if ($success) {
-          return self::genericPrintDocumentBase64($document->id);
+          return self::printDocument($document->id);
         }
       } else {
         $success = false;
@@ -56,6 +56,14 @@ class PrintController extends Controller
     }
 
     public static function printDocument($documentId,$templateCode=null) {
+      return base64_encode(self::printDocument($documentId,$templateCode=null));
+    }
+
+    public static function genericPrintDocument($hn,$encounterId,$templateCode,$data,$documentId=null) {
+      return base64_encode(self::genericPrintDocumentRaw($hn,$encounterId,$templateCode,$data,$documentId=null));
+    }
+
+    public static function printDocumentRaw($documentId,$templateCode=null) {
       $document = \App\Models\Document\Documents::find($documentId);
       if ($document == null) return null;
 
@@ -78,15 +86,10 @@ class PrintController extends Controller
       $data['updated_at'] = $document->updated_at;
       $data['updated_by'] = $document->updated_by;
       
-      return self::genericPrintDocument($document->hn,$document->encounterId,$templateCode,$data,$document->id);
+      return self::genericPrintDocumentRaw($document->hn,$document->encounterId,$templateCode,$data,$document->id);
     }
 
-
-    public static function printDocumentBase64($documentId,$templateCode=null) {
-      return base64_encode(self::printDocument($documentId,$templateCode=null));
-    }
-
-    public static function genericPrintDocument($hn,$encounterId,$templateCode,$data,$documentId=null) {
+    public static function genericPrintDocumentRaw($hn,$encounterId,$templateCode,$data,$documentId=null) {
       $tmpUniqId = uniqid();
       $tmpDirectory = 'tmp/'.$tmpUniqId;
       $tmpFilename = $tmpDirectory.'/output.docx';
