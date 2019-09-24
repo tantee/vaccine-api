@@ -116,7 +116,15 @@ class PrintController extends Controller
         $data['encounterData'] = $encounterData;
       }
 
-      
+      $data['documentId'] = $document->id;
+      $data['referenceId'] = $document->referenceId;
+      $data['templateCode'] = $document->templateCode;
+      $data['documentCategory'] = $document->category;
+      $data['documentFolder'] = $document->folder;
+      $data['documentNote'] = $document->note;
+      $data['documentStatus'] = $document->status;
+
+
       $data['print_date'] = Carbon::now()->locale('th_TH')->isoFormat('dddd DD MMMM YYYY');
       $data['print_user'] = (Auth::guard('api')->check()) ? Auth::guard('api')->user()->username : 'Unidentified';
 

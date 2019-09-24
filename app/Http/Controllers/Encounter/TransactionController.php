@@ -29,7 +29,7 @@ class TransactionController extends Controller
             $transactions->each(function($itemCollection,$key) use (&$hn,&$success,&$errorTexts,&$returnModels) {
                 $item = collect($itemCollection->toArray())->map(function($row) {
                     return array_except($row,['insurance','encounter']);
-                });
+                })->sortBy("transactionDateTime");
 
                 $insurance =  \App\Models\Patient\PatientsInsurances::find($key);
 
@@ -43,7 +43,7 @@ class TransactionController extends Controller
                         "totalDiscount" => $row->sum('totalDiscount'),
                         "finalPrice" => $row->sum('finalPrice'),
                     ]];
-                })->flatten(1);
+                })->flatten(1)->sortBy("categoryInsurance");
                 $summaryCgd = $detailCgd->map(function ($row,$key){
                     return [[
                         "categoryCgd" => $key,
@@ -51,21 +51,21 @@ class TransactionController extends Controller
                         "totalDiscount" => $row->sum('totalDiscount'),
                         "finalPrice" => $row->sum('finalPrice'),
                     ]];
-                })->flatten(1);
+                })->flatten(1)->sortBy("categoryCgd");
 
                 $detailInsurance = $detailInsurance->map(function ($row,$key){
                     return [[
                         "categoryInsurance" => $key,
                         "transactions" => $row
                     ]];
-                })->flatten(1);
+                })->flatten(1)->sortBy("categoryInsurance");
 
                 $detailCgd = $detailCgd->map(function ($row,$key){
                     return [[
                         "categoryCgd" => $key,
                         "transactions" => $row
                     ]];
-                })->flatten(1);
+                })->flatten(1)->sortBy("categoryCgd");
                 
 
                 $invoiceData = [
@@ -145,6 +145,7 @@ class TransactionController extends Controller
                 $payment = $invoice->payments()->create($paymentData);
 
                 $paymentData["amountOutstanding"] = $payment->amountDue - $payment->amountPaid;
+                $paymentData["invoiceId"] = $invoice->invoiceId;
                 $paymentData["receiptDate"] = Carbon::now();
                 $paymentData["cashiersPeriods"] = \App\Models\Accounting\CashiersPeriods::find($cashiersPeriodsId);
 
