@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Document\clsMasterItem;
+use App\Document\clsPlugin;
 use App\Http\Controllers\Patient\PatientController;
 use App\Http\Controllers\Document\DocumentController;
 
@@ -149,6 +150,7 @@ class PrintController extends Controller
         $TBS = new \clsTinyButStrong();
         $TBS->Plugin(\TBS_INSTALL, 'clsOpenTBS');
         $TBS->Plugin(clsMasterItem::class);
+        $TBS->Plugin(clsPlugin::class);
         $TBS->NoErr = true;
 
         $TBS->LoadTemplate(storage_path('app/'.$templatePath),\OPENTBS_ALREADY_UTF8);
