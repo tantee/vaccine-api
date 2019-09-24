@@ -45,5 +45,8 @@ class clsPlugin
         $Value = implode(" ",$tmpName);
       }
     }
+    if ($ope == 'formatcurr') {
+      $Value = number_format($Value,2);
+    }
   }
 }
