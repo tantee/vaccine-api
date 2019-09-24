@@ -27,7 +27,7 @@ class clsPlugin
       if (isset($PrmLst['locale'])) $locale = $PrmLst['locale'];
       else $locale = 'th_TH';
 
-      $value = Carbon::parse($Value)->locale($locale)->isoFormat($format);
+      $Value = Carbon::parse($Value)->locale($locale)->isoFormat($format);
     }
     if ($ope == 'formatname') {
       if (\is_array($Value)) {
