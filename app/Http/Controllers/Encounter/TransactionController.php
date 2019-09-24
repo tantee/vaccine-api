@@ -36,20 +36,22 @@ class TransactionController extends Controller
                 $detailInsurance = $item->groupBy('categoryInsurance');
                 $detailCgd = $item->groupBy('categoryCgd');
 
-                $summaryInsurance = $detailInsurance->map(function ($row){
+                $summaryInsurance = $detailInsurance->map(function ($row,$key){
                     return [
+                        "categoryInsurance" => $key,
                         "totalPrice" => $row->sum('totalPrice'),
                         "totalDiscount" => $row->sum('totalDiscount'),
                         "finalPrice" => $row->sum('finalPrice'),
                     ];
-                });
-                $summaryCgd = $detailCgd->map(function ($row){
+                })->flatten(1);
+                $summaryCgd = $detailCgd->map(function ($row,$key){
                     return [
+                        "categoryCgd" => $key,
                         "totalPrice" => $row->sum('totalPrice'),
                         "totalDiscount" => $row->sum('totalDiscount'),
                         "finalPrice" => $row->sum('finalPrice'),
                     ];
-                });
+                })->flatten(1);
 
                 $invoiceData = [
                     "raw" => $item->toArray(),
