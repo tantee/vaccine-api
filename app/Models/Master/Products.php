@@ -16,6 +16,12 @@ class Products extends Model
 
     protected $casts = [
       'specification' => 'array',
+      'price1' => 'float',
+      'price2' => 'float',
+      'price3' => 'float',
+      'price4' => 'float',
+      'price5' => 'float',
+      'cgdPrice' => 'float',
     ];
 
     public function scopeActive($query) {

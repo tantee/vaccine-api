@@ -37,5 +37,12 @@ class PatientsInsurances extends Model
         'endDate'
     ];
 
+    protected $casts = [
+      'limit' => 'float',
+      'limitToConfirm' => 'float',
+      'limitPerOpd' => 'float',
+      'limitPerIpd' => 'float',
+    ];
+
     protected $with = ['Condition'];
 }

@@ -6,9 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UserStamps;
 
-class PatientVitalSigns extends Model
+class PatientsVitalSigns extends Model
 {
     use SoftDeletes,UserStamps;
 
     protected $guarded = [];
+
+    protected $casts = [
+        "temperature" => "float",
+    ];
 }

@@ -17,5 +17,6 @@ class Insurances extends Model
 
     protected $casts = [
       'conditions' => 'array',
+      'discount' => 'float'
     ];
 }
