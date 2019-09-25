@@ -12,7 +12,8 @@ class Barcode
 
         $tmpUniqId = uniqid();
         $tmpDirectory = $CurrPrm['tmpDirectory'];
-        $tmpBarcodeFile = storage_path('app/'.$tmpDirectory.'/'.$tmpUniqId.'.svg');
+        $tmpBarcodeFile = storage_path('app/'.$tmpDirectory.'/'.$tmpUniqId.'.png');
+        QrCode::format('png');
         QrCode::errorCorrection('H');
         QrCode::encoding('UTF-8')->size(300)->generate($CurrVal,$tmpBarcodeFile);
 
