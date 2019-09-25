@@ -87,7 +87,7 @@ class TransactionController extends Controller
                 $invoice = new \App\Models\Accounting\AccountingInvoices();
                 $invoice->hn = $hn;
                 $invoice->patientsInsurancesId = is_numeric($key) ? $key : null;
-                $invoice->amountDue = $invoiceData["grandFinalPrice"];
+                $invoice->amountDue = ($insurance && !$insurance->condition->isChargeToPatient) ? 0 : $invoiceData["grandFinalPrice"];
                 $invoice->save();
 
                 $invoiceDocument = DocumentController::addDocument($hn,env('INVOICE_TEMPLATE', 'invoice'),$invoiceData,env('INVOICE_CATEGORY', '999'),null,$invoice->invoiceId,'accounting');

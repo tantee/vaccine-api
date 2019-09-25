@@ -54,5 +54,10 @@ class AccountingInvoices extends Model
         parent::boot();
     }
 
+    protected $casts = [
+        "amountDue" => "float",
+        "amountPaid" => "float",
+    ];
+
     protected $with = ['Payments'];
 }
