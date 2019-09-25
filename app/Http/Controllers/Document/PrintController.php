@@ -176,11 +176,12 @@ class PrintController extends Controller
         $TBS->LoadTemplate(storage_path('app/'.$templatePath),\OPENTBS_ALREADY_UTF8);
         self::merge($TBS,$data,$currPrm);
 
-        $TBS->PlugIn(\OPENTBS_SELECT_HEADER, \OPENTBS_DEFAULT);
-        self::merge($TBS,$data,$currPrm);
+        $subfiles = $TBS->PlugIn(OPENTBS_GET_HEADERS_FOOTERS);
 
-        $TBS->PlugIn(\OPENTBS_SELECT_FOOTER, \OPENTBS_DEFAULT);
-        self::merge($TBS,$data,$currPrm);
+        foreach ($subfiles as $subfile) {
+          $TBS->PlugIn(OPENTBS_SELECT_FILE, $subfile);
+          self::merge($TBS,$data,$currPrm);
+        }
 
         $TBS->Show(\OPENTBS_FILE,storage_path('app/'.$tmpFilename));
 
