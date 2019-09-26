@@ -56,6 +56,14 @@ class Encounters extends Model
             }
         });
 
+        static::created(function($model) {
+            if ($model->clinic != null) {
+                if (count($model->clinic->autoCharge)>0) {
+                    \App\Http\Controllers\Encounter\TransactionController::addTransactions($model->hn,$model->encounterId,$model->clinic->autoCharge);
+                }
+            }
+        });
+
         static::updating(function($model) {
             $original = $model->getOriginal();
             if ($model->status != $original['status'] || $model->currectLocation != $original['currentLocation']) {
