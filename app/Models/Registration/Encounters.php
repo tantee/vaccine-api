@@ -5,8 +5,8 @@ namespace App\Models\Registration;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UserStamps;
-use Carbon\Carbon;
 use App\Http\Controllers\Master\IdController;
+use Carbon\Carbon;
 
 class Encounters extends Model
 {
@@ -57,9 +57,9 @@ class Encounters extends Model
         });
 
         static::created(function($model) {
-            if ($model->clinic != null) {
-                if (count($model->clinic->autoCharge)>0) {
-                    \App\Http\Controllers\Encounter\TransactionController::addTransactions($model->hn,$model->encounterId,$model->clinic->autoCharge);
+            if ($model->Clinic != null) {
+                if (count($model->Clinic->autoCharge)>0) {
+                    \App\Http\Controllers\Encounter\TransactionController::addTransactions($model->hn,$model->encounterId,$model->Clinic->autoCharge);
                 }
             }
         });

@@ -194,9 +194,9 @@ class TransactionController extends Controller
         data_fill($transactions,"*.hn",$hn);
         data_fill($transactions,"*.encounterId",$encounterId);
         $validationRule = [
-          '*.hn' => 'required',
-          '*.encounterId' => 'required',
-          '*.productCode' => 'required',
+          'hn' => 'required',
+          'encounterId' => 'required',
+          'productCode' => 'required',
         ];
         return DataController::createModel($transactions,\App\Models\Patients\PatientsTransactions::class,$validationRule);
     }
