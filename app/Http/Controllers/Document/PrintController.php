@@ -202,6 +202,8 @@ class PrintController extends Controller
         foreach($data as $key=>$value) {
           if (\is_array($value)) {
             if ($key=="patientData") $TBS->MergeField($key,$value,false,$currPrm);
+            else if ($key=="documentData") $TBS->MergeField($key,$value,false,$currPrm);
+            else if ($key=="encounterData") $TBS->MergeField($key,$value,false,$currPrm);
             else if (!$TBS->MergeBlock($key,$value)) $TBS->MergeField($key,$value,false,$currPrm);
           } else {
             $TBS->MergeField($key,$value,false,$currPrm);
