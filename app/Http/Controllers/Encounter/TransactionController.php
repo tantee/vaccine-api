@@ -198,6 +198,6 @@ class TransactionController extends Controller
           'encounterId' => 'required',
           'productCode' => 'required',
         ];
-        return DataController::createModel($transactions,\App\Models\Patients\PatientsTransactions::class,$validationRule);
+        return DataController::createModel($transactions,\App\Models\Patient\PatientsTransactions::class,$validationRule);
     }
 }
