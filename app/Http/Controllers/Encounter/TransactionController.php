@@ -193,6 +193,11 @@ class TransactionController extends Controller
     public static function addTransactions($hn,$encounterId,$transactions) {
         data_fill($transactions,"*.hn",$hn);
         data_fill($transactions,"*.encounterId",$encounterId);
+
+        $transactions = array_map(function ($value) {
+            return array_except($value,'id');
+        }, $transactions);
+        
         $validationRule = [
           'hn' => 'required',
           'encounterId' => 'required',
