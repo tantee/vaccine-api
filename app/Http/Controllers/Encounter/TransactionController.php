@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Encounter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\DataController;
 use App\Http\Controllers\Master\IdController;
 use App\Http\Controllers\Document\DocumentController;
 use Carbon\Carbon;
