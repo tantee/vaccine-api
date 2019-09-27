@@ -17,6 +17,7 @@ use App\Utilities\ArrayType;
 use TheCodingMachine\Gotenberg\Client;
 use TheCodingMachine\Gotenberg\DocumentFactory;
 use TheCodingMachine\Gotenberg\MergeRequest;
+use TheCodingMachine\Gotenberg\OfficeRequest;
 
 class PrintController extends Controller
 {
