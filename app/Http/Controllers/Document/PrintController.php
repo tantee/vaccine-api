@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Document;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
-use GuzzleHttp\Client;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -14,6 +13,10 @@ use App\Document\clsPlugin;
 use App\Http\Controllers\Patient\PatientController;
 use App\Http\Controllers\Document\DocumentController;
 use App\Utilities\ArrayType;
+
+use TheCodingMachine\Gotenberg\Client;
+use TheCodingMachine\Gotenberg\DocumentFactory;
+use TheCodingMachine\Gotenberg\MergeRequest;
 
 class PrintController extends Controller
 {
@@ -252,22 +255,13 @@ class PrintController extends Controller
       $UnoconvServ = env('UNOCONV_SERV',null);
 
       if (($UnoconvServ != null) && ($UnoconvServ != "")) {
-        $client = new Client(['base_uri' =>  $UnoconvServ]);
-
         try {
-          $response = $client->request('POST', 'convert/office', [
-            'multipart' => [
-                [
-                    'name'     => 'files',
-                    'contents' => Storage::get($filename),
-                    'filename' => basename($filename)
-                ],
-              ]
-          ]);
-          if ($response->getStatusCode() == 200) {
-            Storage::put($outputFilename,$response->getBody());
-            $success = true;
-          }
+          $client = new Client($UnoconvServ, new \Http\Adapter\Guzzle6\Client());
+          $files = [
+              DocumentFactory::makeFromPath(basename($filename), storage_path('app/'.$filename));
+          ];
+          $request = new OfficeRequest($files);
+          $client->store($request, $outputFilename);
         } catch (\Exception $e) {
 
         }
@@ -280,26 +274,14 @@ class PrintController extends Controller
       $UnoconvServ = env('UNOCONV_SERV',null);
 
       if (($UnoconvServ != null) && ($UnoconvServ != "")) {
-        $client = new Client(['base_uri' =>  $UnoconvServ]);
-
-        $multipart = [];
-        if (!is_array($filenames)) $filenames = [$filenames];
-        foreach($filenames as $filename) {
-          $multipart[] = [
-            'name'     => 'files',
-            'contents' => Storage::get($filename),
-            'filename' => basename($filename)
-          ];
-        }
-
         try {
-          $response = $client->request('POST', 'convert/merge', [
-            'multipart' => $multipart,
-          ]);
-          if ($response->getStatusCode() == 200) {
-            Storage::put($outputFilename,$response->getBody());
-            $success = true;
+          $client = new Client($UnoconvServ, new \Http\Adapter\Guzzle6\Client());
+          $files = [];
+          foreach($filenames as $filename) {
+            $files[] = DocumentFactory::makeFromPath(basename($filename), storage_path('app/'.$filename));
           }
+          $request = new MergeRequest($files);
+          $client->store($request, $outputFilename);
         } catch (\Exception $e) {
 
         }
