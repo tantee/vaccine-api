@@ -262,7 +262,8 @@ class PrintController extends Controller
               DocumentFactory::makeFromPath(basename($filename), storage_path('app/'.$filename))
           ];
           $request = new OfficeRequest($files);
-          $client->store($request, $outputFilename);
+          $client->store($request, storage_path('app/'.$outputFilename));
+          $success = true;
         } catch (\Exception $e) {
 
         }
@@ -282,7 +283,8 @@ class PrintController extends Controller
             $files[] = DocumentFactory::makeFromPath(basename($filename), storage_path('app/'.$filename));
           }
           $request = new MergeRequest($files);
-          $client->store($request, $outputFilename);
+          $client->store($request, storage_path('app/'.$outputFilename));
+          $success = true;
         } catch (\Exception $e) {
 
         }
