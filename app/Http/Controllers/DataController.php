@@ -366,7 +366,6 @@ class DataController extends Controller
           }
 
           if (isset($request->with)) $returnModels = $returnModels->with($request->with);
-          array_push($errorTexts,["errorText" => $returnModels->toSql()]);
           if (isset($request->orderBy)) {
             $orderBy = explode(",",$request->orderBy,2);
             if (count($orderBy)==1) array_push($orderBy,"ASC");
