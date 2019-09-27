@@ -13,4 +13,18 @@ class ArrayType
     {
         return array_keys($array) !== range(0, count($array) - 1);
     }
+
+    public static function keyExists($key, $array)
+    {
+        $result = array_key_exists($key, $array);
+        if ($result) return $result;
+
+        foreach ($array as $subarray) {
+            if (is_array($subarray)) {
+                    $result = array_key_exists_r($key, $subarray);
+            }
+            if ($result) return $result;
+        }
+        return $result;
+    }
 }

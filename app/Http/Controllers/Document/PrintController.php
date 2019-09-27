@@ -13,6 +13,7 @@ use App\Document\clsMasterItem;
 use App\Document\clsPlugin;
 use App\Http\Controllers\Patient\PatientController;
 use App\Http\Controllers\Document\DocumentController;
+use App\Utilities\ArrayType;
 
 class PrintController extends Controller
 {
@@ -56,7 +57,8 @@ class PrintController extends Controller
     }
 
     public static function printDocument($documentId,$templateCode=null) {
-      return base64_encode(self::printDocumentRaw($documentId,$templateCode));
+      if (is_array($documentId)) return base64_encode(self::printDocumentMultipleRaw($documentId));
+      else return base64_encode(self::printDocumentRaw($documentId,$templateCode));
     }
 
     public static function genericPrintDocument($hn,$encounterId,$templateCode,$data,$documentId=null) {
@@ -87,6 +89,39 @@ class PrintController extends Controller
       $data['updated_by'] = $document->updated_by;
       
       return self::genericPrintDocumentRaw($document->hn,$document->encounterId,$templateCode,$data,$document->id);
+    }
+
+    public static function printDocumentMultipleRaw($documentIds) {
+      $tmpUniqId = uniqid();
+      $tmpDirectory = 'tmp/'.$tmpUniqId;
+      $tmpFilenamePDF = $tmpDirectory.'/output.pdf';
+
+      $returnData = null;
+      
+      Storage::makeDirectory($tmpDirectory);
+
+      if (ArrayType::isMultiDimension($documentIds)) {
+        if (ArrayType::keyExists('documentId',$documentIds)) $documentIds = array_pluck($documentIds,'documentId');
+        else $documentIds = array_pluck($documentIds,'id');
+      }
+
+      $filenames = [];
+      foreach($documentIds as $key => $documentId) {
+        $rawData = self::printDocumentRaw($documentId);
+        $filename = $tmpDirectory.'/'.$key.'.pdf';
+        if ($rawData != null) {
+          Storage::put($filename,$rawData);
+          $filenames[] = $filename;
+        }
+      }
+      
+      if (self::convertToPDF($tmpFilename,$tmpFilenamePDF)) {
+        $returnData = Storage::get($tmpFilenamePDF);
+      }
+
+      Storage::deleteDirectory($tmpDirectory);
+
+      return $returnData;
     }
 
     public static function genericPrintDocumentRaw($hn,$encounterId,$templateCode,$data,$documentId=null) {
@@ -228,6 +263,38 @@ class PrintController extends Controller
                     'filename' => basename($filename)
                 ],
               ]
+          ]);
+          if ($response->getStatusCode() == 200) {
+            Storage::put($outputFilename,$response->getBody());
+            $success = true;
+          }
+        } catch (\Exception $e) {
+
+        }
+      }
+      return $success;
+    }
+
+    private static function mergePDF($filenames,$outputFilename) {
+      $success = false;
+      $UnoconvServ = env('UNOCONV_SERV',null);
+
+      if (($UnoconvServ != null) && ($UnoconvServ != "")) {
+        $client = new Client(['base_uri' =>  $UnoconvServ]);
+
+        $multipart = [];
+        if (!is_array($filenames)) $filenames = [$filenames];
+        foreach($filenames as $filename) {
+          $multipart[] = [
+            'name'     => 'files[]',
+            'contents' => Storage::get($filename),
+            'filename' => basename($filename)
+          ];
+        }
+
+        try {
+          $response = $client->request('POST', 'convert/merge', [
+            'multipart' => $multipart,
           ]);
           if ($response->getStatusCode() == 200) {
             Storage::put($outputFilename,$response->getBody());
