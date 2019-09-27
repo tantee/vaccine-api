@@ -258,7 +258,7 @@ class PrintController extends Controller
         try {
           $client = new Client($UnoconvServ, new \Http\Adapter\Guzzle6\Client());
           $files = [
-              DocumentFactory::makeFromPath(basename($filename), storage_path('app/'.$filename));
+              DocumentFactory::makeFromPath(basename($filename), storage_path('app/'.$filename))
           ];
           $request = new OfficeRequest($files);
           $client->store($request, $outputFilename);

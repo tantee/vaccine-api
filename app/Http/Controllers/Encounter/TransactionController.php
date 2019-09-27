@@ -65,6 +65,9 @@ class TransactionController extends Controller
                 })->flatten(1)->sortBy("categoryInsurance");
 
                 $detailCgd = $detailCgd->map(function ($row,$key){
+                    $row = $row->map(function($row) {
+                        return $row->except(['invoiceId','soldPatientsInsurancesId','soldPrice','soldDiscount','soldTotalPrice','soldTotalDiscount','soldFinalPrice']);
+                    });
                     return [[
                         "categoryCgd" => $key,
                         "transactions" => $row
