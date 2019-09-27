@@ -21,7 +21,7 @@ class ArrayType
 
         foreach ($array as $subarray) {
             if (is_array($subarray)) {
-                    $result = array_key_exists_r($key, $subarray);
+                    $result = self::keyExists($key, $subarray);
             }
             if ($result) return $result;
         }
