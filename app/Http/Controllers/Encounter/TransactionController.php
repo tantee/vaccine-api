@@ -55,6 +55,7 @@ class TransactionController extends Controller
                 })->flatten(1)->sortBy("categoryCgd");
 
                 $detailInsurance = $detailInsurance->map(function ($row,$key){
+                    $row = $row->except(['invoiceId','soldPatientsInsurancesId','soldPrice','soldDiscount','soldTotalPrice','soldTotalDiscount','soldFinalPrice']);
                     return [[
                         "categoryInsurance" => $key,
                         "transactions" => $row
@@ -68,7 +69,6 @@ class TransactionController extends Controller
                     ]];
                 })->flatten(1)->sortBy("categoryCgd");
                 
-
                 $invoiceData = [
                     "raw" => $item->toArray(),
                     "detailInsurance" => $detailInsurance->toArray(),
@@ -147,7 +147,7 @@ class TransactionController extends Controller
 
                 $paymentData["amountOutstanding"] = $payment->amountDue - $payment->amountPaid;
                 $paymentData["invoiceId"] = $invoice->invoiceId;
-                $paymentData["receiptDate"] = Carbon::now();
+                $paymentData["receiptDateTime"] = Carbon::now();
                 $paymentData["cashiersPeriods"] = \App\Models\Accounting\CashiersPeriods::find($cashiersPeriodsId);
 
                 $paymentData = array_merge($invoice->document->data,$paymentData);
@@ -197,7 +197,7 @@ class TransactionController extends Controller
         $transactions = array_map(function ($value) {
             return array_except($value,'id');
         }, $transactions);
-        
+
         $validationRule = [
           'hn' => 'required',
           'encounterId' => 'required',
