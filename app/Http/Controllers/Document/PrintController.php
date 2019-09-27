@@ -286,7 +286,7 @@ class PrintController extends Controller
         if (!is_array($filenames)) $filenames = [$filenames];
         foreach($filenames as $filename) {
           $multipart[] = [
-            'name'     => 'files[]',
+            'name'     => 'files',
             'contents' => Storage::get($filename),
             'filename' => basename($filename)
           ];

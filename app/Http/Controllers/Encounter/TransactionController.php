@@ -38,13 +38,13 @@ class TransactionController extends Controller
                 $detailCgd = $item->groupBy('categoryCgd');
 
                 $summaryInsurance = $detailInsurance->map(function ($row,$key){
-                    return [[
+                    return [
                         "categoryInsurance" => $key,
                         "totalPrice" => $row->sum('totalPrice'),
                         "totalDiscount" => $row->sum('totalDiscount'),
                         "finalPrice" => $row->sum('finalPrice'),
-                    ]];
-                })->flatten(1)->sortBy("categoryInsurance");
+                    ];
+                })->sortBy("categoryInsurance");
                 $summaryCgd = $detailCgd->map(function ($row,$key){
                     return [[
                         "categoryCgd" => $key,
@@ -55,12 +55,12 @@ class TransactionController extends Controller
                 })->flatten(1)->sortBy("categoryCgd");
 
                 $detailInsurance = $detailInsurance->map(function ($row,$key){
-                    $row = $row->except(['invoiceId','soldPatientsInsurancesId','soldPrice','soldDiscount','soldTotalPrice','soldTotalDiscount','soldFinalPrice']);
-                    return [[
+                    $filtered = $row->except(['invoiceId','soldPatientsInsurancesId','soldPrice','soldDiscount','soldTotalPrice','soldTotalDiscount','soldFinalPrice']);
+                    return [
                         "categoryInsurance" => $key,
-                        "transactions" => $row
-                    ]];
-                })->flatten(1)->sortBy("categoryInsurance");
+                        "transactions" => $filtered->all()
+                    ];
+                })->sortBy("categoryInsurance");
 
                 $detailCgd = $detailCgd->map(function ($row,$key){
                     return [[
