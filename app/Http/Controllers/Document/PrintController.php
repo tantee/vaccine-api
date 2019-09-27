@@ -69,7 +69,7 @@ class PrintController extends Controller
       return base64_encode(self::genericPrintDocumentRaw($hn,$encounterId,$templateCode,$data,$documentId));
     }
 
-    public static function printDocumentRaw($documentId,$templateCode=null) {
+    public static function printDocumentRaw($documentId,$templateCode=null,$toPdf=true) {
       $document = \App\Models\Document\Documents::find($documentId);
       if ($document == null) return null;
 
@@ -92,7 +92,7 @@ class PrintController extends Controller
       $data['updated_at'] = $document->updated_at;
       $data['updated_by'] = $document->updated_by;
       
-      return self::genericPrintDocumentRaw($document->hn,$document->encounterId,$templateCode,$data,$document->id);
+      return self::genericPrintDocumentRaw($document->hn,$document->encounterId,$templateCode,$data,$document->id,$toPdf);
     }
 
     public static function printDocumentMultipleRaw($documentIds) {
@@ -111,15 +111,15 @@ class PrintController extends Controller
 
       $filenames = [];
       foreach($documentIds as $key => $documentId) {
-        $rawData = self::printDocumentRaw($documentId);
-        $filename = $tmpDirectory.'/'.$key.'.pdf';
+        $rawData = self::printDocumentRaw($documentId,null,false);
+        $filename = $tmpDirectory.'/'.$key;
         if ($rawData != null) {
           Storage::put($filename,$rawData);
           $filenames[] = $filename;
         }
       }
       
-      if (self::mergePDF($filenames,$tmpFilenamePDF)) {
+      if (self::convertToPDF($filenames,$tmpFilenamePDF)) {
         $returnData = Storage::get($tmpFilenamePDF);
       }
 
@@ -128,7 +128,7 @@ class PrintController extends Controller
       return $returnData;
     }
 
-    public static function genericPrintDocumentRaw($hn,$encounterId,$templateCode,$data,$documentId=null) {
+    public static function genericPrintDocumentRaw($hn,$encounterId,$templateCode,$data,$documentId=null,$toPdf=true) {
       $tmpUniqId = uniqid();
       $tmpDirectory = 'tmp/'.$tmpUniqId;
       $tmpFilename = $tmpDirectory.'/output.docx';
@@ -226,8 +226,10 @@ class PrintController extends Controller
 
         if (isset($hn) && isset($templateCode) && isset($documentId)) Storage::copy($tmpFilename,'/documents/'.$hn.'/'.$templateCode.'/raw/'.$documentId.'_'.$tmpUniqId.'.docx');
 
-        if (self::convertToPDF($tmpFilename,$tmpFilenamePDF)) {
+        if ($toPdf && self::convertToPDF($tmpFilename,$tmpFilenamePDF)) {
           $returnData = Storage::get($tmpFilenamePDF);
+        } else {
+          $returnData = Storage::get($tmpFilename);
         }
       }
 
@@ -251,16 +253,19 @@ class PrintController extends Controller
       }
     }
 
-    private static function convertToPDF($filename,$outputFilename) {
+    private static function convertToPDF($filenames,$outputFilename) {
       $success = false;
       $UnoconvServ = env('UNOCONV_SERV',null);
+      
+      if (!is_array($filenames)) $filenames = [$filenames];
 
       if (($UnoconvServ != null) && ($UnoconvServ != "")) {
         try {
           $client = new Client($UnoconvServ, new \Http\Adapter\Guzzle6\Client());
-          $files = [
-              DocumentFactory::makeFromPath(basename($filename), storage_path('app/'.$filename))
-          ];
+          $files = [];
+          foreach($filenames as $filename) {
+            $files[] = DocumentFactory::makeFromPath(basename($filename), storage_path('app/'.$filename));
+          }
           $request = new OfficeRequest($files);
           $client->store($request, storage_path('app/'.$outputFilename));
           $success = true;
@@ -274,6 +279,8 @@ class PrintController extends Controller
     private static function mergePDF($filenames,$outputFilename) {
       $success = false;
       $UnoconvServ = env('UNOCONV_SERV',null);
+
+      if (!is_array($filenames)) $filenames = [$filenames];
 
       if (($UnoconvServ != null) && ($UnoconvServ != "")) {
         try {
