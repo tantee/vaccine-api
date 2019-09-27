@@ -115,7 +115,7 @@ class PrintController extends Controller
         }
       }
       
-      if (self::convertToPDF($tmpFilename,$tmpFilenamePDF)) {
+      if (self::mergePDF($filenames,$tmpFilenamePDF)) {
         $returnData = Storage::get($tmpFilenamePDF);
       }
 
