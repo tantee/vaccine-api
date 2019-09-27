@@ -32,6 +32,10 @@ class AccountingInvoices extends Model
         return $this->hasOne('App\Models\Document\Documents','id','documentId');
     }
 
+    public function Patient() {
+        return $this->hasOne('App\Models\Patient\Patients','hn','hn');
+    }
+
     public function getAmountOutstandingAttribute() {
         return ($this->amountDue - $this->amountPaid >= 0) ? $this->amountDue - $this->amountPaid : 0;
     }
