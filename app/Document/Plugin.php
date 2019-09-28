@@ -48,5 +48,8 @@ class clsPlugin
     if ($ope == 'formatcurr') {
       $Value = number_format($Value,2);
     }
+    if ($ope == 'insuranceName') {
+      $Value = $Value["condition"]["insuranceName"];
+    }
   }
 }
