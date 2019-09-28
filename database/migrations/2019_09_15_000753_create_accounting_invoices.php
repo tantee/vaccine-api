@@ -17,6 +17,7 @@ class CreateAccountingInvoices extends Migration
             $table->string('invoiceId')->primary();
             $table->string('hn',20);
             $table->integer('patientsInsurancesId')->nullable();
+            $table->decimal('amount',10,2);
             $table->decimal('amountDue',10,2);
             $table->decimal('amountPaid',10,2)->default(0);
             $table->integer('documentId')->nullable();

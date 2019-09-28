@@ -93,6 +93,7 @@ class TransactionController extends Controller
                 $invoice = new \App\Models\Accounting\AccountingInvoices();
                 $invoice->hn = $hn;
                 $invoice->patientsInsurancesId = is_numeric($key) ? $key : null;
+                $invoice->amount = $invoiceData["grandFinalPrice"];
                 $invoice->amountDue = ($insurance && !$insurance->condition->isChargeToPatient) ? 0 : $invoiceData["grandFinalPrice"];
                 $invoice->save();
 

@@ -63,6 +63,7 @@ class AccountingInvoices extends Model
     }
 
     protected $casts = [
+        "amount" => "float",
         "amountDue" => "float",
         "amountPaid" => "float",
     ];
