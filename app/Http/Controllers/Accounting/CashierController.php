@@ -74,6 +74,7 @@ class CashierController extends Controller
             return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
         } else {
             $period->finalCash = $finalCash;
+            $peroid->endDateTime = Carbon::now();
             $period->save();
             $returnModels = $period;
         }

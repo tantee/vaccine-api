@@ -17,7 +17,7 @@ class CreatePatientsTransactions extends Migration
             $table->increments('id');
             $table->string('hn',20);
             $table->string('encounterId',50);
-            $table->string('invoiceId',50)->nullable(); //Invoice Id? Unique ID?
+            $table->string('invoiceId',50)->nullable();
             $table->timestamp('transactionDateTime')->useCurrent();
             $table->string('categoryInsurance',50)->nullable();
             $table->string('categoryCgd',50)->nullable();

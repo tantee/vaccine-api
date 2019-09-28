@@ -24,6 +24,7 @@ class CreateAccountingPayments extends Migration
             $table->decimal('amountDue',10,2);
             $table->decimal('amountPaid',10,2);
             $table->integer('documentId')->nullable();
+            $table->string('note')->nullable();
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->string('deleted_by')->nullable();

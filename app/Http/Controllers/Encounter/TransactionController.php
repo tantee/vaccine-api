@@ -211,4 +211,37 @@ class TransactionController extends Controller
         ];
         return DataController::createModel($transactions,\App\Models\Patient\PatientsTransactions::class,$validationRule);
     }
+
+    public static function voidInvoice($invoiceId,$note) {
+        $success = true;
+        $errorTexts = [];
+        $returnModels = [];
+
+        $invoice = \App\Models\Accounting\AccountingInvoices::find($invoiceId);
+        if ($invoice!=null) {
+            if ($invoice->payments->count()>0) {
+                $success = false;
+                array_push($errorTexts,["errorText" => 'Cannot void paid invoice']);
+            }
+            if ($success) {
+                $invoice->note = $note;
+                $invoice->save();
+
+                $invoice->transactions->update([
+                    'invoiceId'=>null,
+                    'soldPatientsInsurancesId'=>null,
+                    'soldPrice'=>null,
+                    'soldDiscount'=>null,
+                    'soldTotalPrice'=>null,
+                    'soldTotalDiscount'=>null,
+                    'soldFinalPrice'=>null,
+                ]);
+                $invoice->delete();
+            }
+        } else {
+            $success = false;
+            array_push($errorTexts,["errorText" => 'Invoice not found']);
+        }
+        return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
+    }
 }
