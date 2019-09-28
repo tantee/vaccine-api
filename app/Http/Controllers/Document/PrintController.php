@@ -112,7 +112,7 @@ class PrintController extends Controller
       $filenames = [];
       foreach($documentIds as $key => $documentId) {
         $rawData = self::printDocumentRaw($documentId,null,false);
-        $filename = $tmpDirectory.'/'.$key;
+        $filename = $tmpDirectory.'/'.$key.'.docx';
         if ($rawData != null) {
           Storage::put($filename,$rawData);
           $filenames[] = $filename;
@@ -203,7 +203,6 @@ class PrintController extends Controller
       $templatePath = null;
       if ($template != null && $template->printTemplate!=null && Storage::exists($template->printTemplate)) $templatePath = $template->printTemplate;
       else if (Storage::exists('/default/documents/'.$templateCode.'.docx')) $templatePath = '/default/documents/'.$templateCode.'.docx';
-      else if (Storage::exists('/default/documents/'.$templateCode.'.xlsx')) $templatePath = '/default/documents/'.$templateCode.'.xlsx';
 
       if ($templatePath!=null) {
         $TBS = new \clsTinyButStrong();
