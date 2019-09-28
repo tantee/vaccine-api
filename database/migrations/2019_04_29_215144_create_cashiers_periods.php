@@ -25,6 +25,7 @@ class CreateCashiersPeriods extends Migration
             $table->string('deleted_by')->nullable();
             $table->SoftDeletes();
             $table->timestamps();
+            $table->index(['cashierId']);
         });
     }
 

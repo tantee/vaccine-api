@@ -22,7 +22,18 @@ class CashiersPeriods extends Model
     }
 
     public function getPaymentSummaryAttribute() {
-        return ($this->amountDue - $this->amountPaid >= 0) ? $this->amountDue - $this->amountPaid : 0;
+        $summary = $this->payments->groupBy('paymentMethod')->map(function ($row,$key){
+            return [[
+                "paymentMethod" => $key,
+                "amountPaid" => $row->sum('amountPaid'),
+            ]];
+        })->flatten(1)->sortBy("paymentMethod");
+        return $summary;
+    }
+
+    public function getCurrentCashAttribute() {
+        $cash = $this->payment_summary->firstWhere('paymentMethod','cash');
+        return $this->initialCash + $cash['amountPaid'];
     }
 
     public function toArray()
@@ -32,6 +43,16 @@ class CashiersPeriods extends Model
 
         return $toArray;
     }
+
+    protected $dates = [
+        'startDateTime',
+        'endDateTime',
+    ];
+
+    protected $casts = [
+        "initialCash" => "float",
+        "finalCash" => "float",
+    ];
 
     protected $with = ['Payments'];
 }
