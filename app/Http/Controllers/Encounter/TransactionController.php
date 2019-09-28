@@ -56,7 +56,7 @@ class TransactionController extends Controller
 
                 $detailInsurance = $detailInsurance->map(function ($row,$key){
                     $row = $row->map(function($row) {
-                        return $row->except(['invoiceId','soldPatientsInsurancesId','soldPrice','soldDiscount','soldTotalPrice','soldTotalDiscount','soldFinalPrice']);
+                        return array_except($row,['invoiceId','soldPatientsInsurancesId','soldPrice','soldDiscount','soldTotalPrice','soldTotalDiscount','soldFinalPrice']);
                     });
                     return [[
                         "categoryInsurance" => $key,
@@ -66,7 +66,7 @@ class TransactionController extends Controller
 
                 $detailCgd = $detailCgd->map(function ($row,$key){
                     $row = $row->map(function($row) {
-                        return $row->except(['invoiceId','soldPatientsInsurancesId','soldPrice','soldDiscount','soldTotalPrice','soldTotalDiscount','soldFinalPrice']);
+                        return array_except($row,['invoiceId','soldPatientsInsurancesId','soldPrice','soldDiscount','soldTotalPrice','soldTotalDiscount','soldFinalPrice']);
                     });
                     return [[
                         "categoryCgd" => $key,
