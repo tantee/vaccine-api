@@ -244,4 +244,20 @@ class TransactionController extends Controller
         }
         return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }
+
+    public static function voidPayment($receiptId,$note) {
+        $success = true;
+        $errorTexts = [];
+        $returnModels = [];
+
+        $payment = \App\Models\Accounting\AccountingPayments::where($receiptId);
+        if ($payment->count() > 0) {
+            $payment->update('note',$note);
+            $payment->delete();
+        } else {
+            $success = false;
+            array_push($errorTexts,["errorText" => 'Receipt not found']);
+        }
+        return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
+    }
 }

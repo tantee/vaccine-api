@@ -244,7 +244,8 @@ class PrintController extends Controller
             if ($key=="patientData") $TBS->MergeField($key,$value,false,$currPrm);
             else if ($key=="documentData") $TBS->MergeField($key,$value,false,$currPrm);
             else if ($key=="encounterData") $TBS->MergeField($key,$value,false,$currPrm);
-            else if (!$TBS->MergeBlock($key,$value)) $TBS->MergeField($key,$value,false,$currPrm);
+            else if (ArrayType::isAssociative($value)) $TBS->MergeField($key,$value,false,$currPrm);
+            else $TBS->MergeBlock($key,$value);
           } else {
             $TBS->MergeField($key,$value,false,$currPrm);
           }

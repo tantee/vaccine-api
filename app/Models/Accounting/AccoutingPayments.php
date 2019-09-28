@@ -45,6 +45,11 @@ class AccountingPayments extends Model
             $model->invoice->save();
         });
 
+        static::deleted(function($model) {
+            $model->invoice->amountPaid = $model->invoice->payments->sum('amountPaid');
+            $model->invoice->save();
+        });
+
         parent::boot();
     }
 }
