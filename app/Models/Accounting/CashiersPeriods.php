@@ -40,6 +40,7 @@ class CashiersPeriods extends Model
     {
         $toArray = parent::toArray();
         $toArray['paymentSummary'] = $this->payment_summary;
+        $toArray['currentCash'] = $this->current_cash;
 
         return $toArray;
     }
