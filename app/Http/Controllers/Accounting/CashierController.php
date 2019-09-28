@@ -21,7 +21,7 @@ class CashierController extends Controller
             return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
         }
 
-        $period = CashiersPeriods::where('cashierId',$cashierId)->active();
+        $period = CashiersPeriods::where('cashierId',$cashierId)->active()->first();
         if ($period==null) {
             $period = new CashiersPeriods();
             $period->currentPeriod = Carbon::now();
@@ -45,7 +45,7 @@ class CashierController extends Controller
             return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
         }
 
-        $period = CashiersPeriods::where('cashierId',$cashierId)->active();
+        $period = CashiersPeriods::where('cashierId',$cashierId)->active()->first();
         if ($period==null) {
             $success = false;
             array_push($errorTexts,["errorText" => 'No active period for this cashierId']);
@@ -53,6 +53,31 @@ class CashierController extends Controller
             $returnModels = $period;
         }
         
+        return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
+    }
+
+    public static function closeCashierPeriod($cashierId,$finalCash) {
+        $success = true;
+        $errorTexts = [];
+        $returnModels = [];
+
+        if ($cashierId == null) {
+            $success = false;
+            array_push($errorTexts,["errorText" => 'No cashierId provided']);
+            return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
+        }
+
+        $period = CashiersPeriods::where('cashierId',$cashierId)->active()->first();
+        if ($period==null) {
+            $success = false;
+            array_push($errorTexts,["errorText" => 'No active period for this cashierId']);
+            return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
+        } else {
+            $period->finalCash = $finalCash;
+            $period->save();
+            $returnModels = $period;
+        }
+
         return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }
 }
