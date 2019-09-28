@@ -29,7 +29,7 @@ class CashierController extends Controller
             $period->initialCash = $initialCash;
             $period->save();
         }
-        $returnModels = $peroid;
+        $returnModels = $period;
 
         return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }
@@ -50,7 +50,7 @@ class CashierController extends Controller
             $success = false;
             array_push($errorTexts,["errorText" => 'No active period for this cashierId']);
         } else {
-            $returnModels = $peroid;
+            $returnModels = $period;
         }
         
         return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
