@@ -24,7 +24,7 @@ class CashierController extends Controller
         $period = CashiersPeriods::where('cashierId',$cashierId)->active()->first();
         if ($period==null) {
             $period = new CashiersPeriods();
-            $period->currentPeriod = Carbon::now();
+            $period->startDateTime = Carbon::now();
             $period->cashierId = $cashierId;
             $period->initialCash = $initialCash;
             $period->save();
