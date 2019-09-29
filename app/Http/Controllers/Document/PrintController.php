@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Document;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -241,6 +242,7 @@ class PrintController extends Controller
       if (is_array($data)) {
         foreach($data as $key=>$value) {
           if (\is_array($value)) {
+            Log::info($key."=".$TBS->GetBlockSource($key));
             if ($key=="patientData") $TBS->MergeField($key,$value,false,$currPrm);
             else if ($key=="documentData") $TBS->MergeField($key,$value,false,$currPrm);
             else if ($key=="encounterData") $TBS->MergeField($key,$value,false,$currPrm);
