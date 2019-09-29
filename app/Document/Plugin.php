@@ -53,10 +53,10 @@ class clsPlugin
     if ($ope == 'currtext') {
       if (isset($PrmLst['lang']) && ($PrmLst['lang']=="en" || $PrmLst['lang']=="en")) {
         $convert = new NumberEng();
-        $Value = $convert->convertNumber($Value);
+        $Value = $convert->convertNumber((float)$Value);
       } else {
         $convert = new NumberThai();
-        $Value = $convert->convertBaht($Value);
+        $Value = $convert->convertBaht((float)$Value);
       }
     }
   }

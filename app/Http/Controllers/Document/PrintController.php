@@ -242,11 +242,10 @@ class PrintController extends Controller
       if (is_array($data)) {
         foreach($data as $key=>$value) {
           if (\is_array($value)) {
-            Log::info($key."=".$TBS->GetBlockSource($key));
             if ($key=="patientData") $TBS->MergeField($key,$value,false,$currPrm);
             else if ($key=="documentData") $TBS->MergeField($key,$value,false,$currPrm);
             else if ($key=="encounterData") $TBS->MergeField($key,$value,false,$currPrm);
-            else if (ArrayType::isAssociative($value)) $TBS->MergeField($key,$value,false,$currPrm);
+            else if (!$TBS->GetBlockSource($key)) $TBS->MergeField($key,$value,false,$currPrm);
             else $TBS->MergeBlock($key,$value);
           } else {
             $TBS->MergeField($key,$value,false,$currPrm);
