@@ -4,6 +4,8 @@ namespace App\Document;
 
 use Carbon\Carbon;
 use App\Http\Controllers\Master\MasterController;
+use Rundiz\Number\NumberThai;
+use Rundiz\Number\NumberEng;
 
 define('TBS_CAHPLUGIN','\App\Document\clsPlugin');
 
@@ -48,8 +50,14 @@ class clsPlugin
     if ($ope == 'formatcurr') {
       $Value = number_format($Value,2);
     }
-    if ($ope == 'insuranceName') {
-      $Value = $Value["condition"]["insuranceName"];
+    if ($ope == 'currtext') {
+      if (isset($PrmLst['lang']) && ($PrmLst['lang']=="en" || $PrmLst['lang']=="en")) {
+        $convert = new Rundiz\Number\NumberEng();
+        $Value = $convert->convertNumber($Value);
+      } else {
+        $convert = new Rundiz\Number\NumberThai();
+        $Value = $convert->convertBaht($Value);
+      }
     }
   }
 }

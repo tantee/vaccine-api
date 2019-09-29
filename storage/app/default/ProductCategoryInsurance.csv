@@ -1,15 +1,15 @@
 ﻿itemCode,itemValue,ItemValueEN,filterText
 1,ค่ารักษาพยาบาล,Medical Services,
 1.1,ค่าบริการทางการแพทย์,Hospital Medical Expenses,1
-1.1.1,ค่ายาและสารอาหารทางเส้นเลือด,Drugs and Parenteral Nutrition,1.1
-1.1.2,ค่าเวชภัณฑ์,Medical Supplies,1.1
-1.1.3,ค่าบริการโลหิตและส่วนประกอบของโลหิต,Blood Transfusion Services and Blood Components,1.1
-1.1.4,ค่าตรวจวินิจฉัยทางเทคนิคการแพทย์และพยาธิวิทยา,Laboratory Investigation and Pathology,1.1
-1.1.5,ค่าตรวจวินิจฉัยและการรักษาทางรังสีวิทยา,Diagnostic Radiology and Radiotherapy,1.1
-1.1.6,ค่าตรวจวินิจฉัยโดยวิธีพิเศษอื่นๆ,Special Diagnostics,1.1
-1.1.7,ค่าอุปกรณ์ของใช้และเครื่องมือทางการแพทย์,Medical Equipment,1.1
-1.1.8,ค่าห้องผ่าตัดและห้องคลอด,Operating Theater and Delivery Room,1.1
-1.1.9,ค่าบริการทางทันตกรรม,Dental Services,1.1
+1.1.01,ค่ายาและสารอาหารทางเส้นเลือด,Drugs and Parenteral Nutrition,1.1
+1.1.02,ค่าเวชภัณฑ์,Medical Supplies,1.1
+1.1.03,ค่าบริการโลหิตและส่วนประกอบของโลหิต,Blood Transfusion Services and Blood Components,1.1
+1.1.04,ค่าตรวจวินิจฉัยทางเทคนิคการแพทย์และพยาธิวิทยา,Laboratory Investigation and Pathology,1.1
+1.1.05,ค่าตรวจวินิจฉัยและการรักษาทางรังสีวิทยา,Diagnostic Radiology and Radiotherapy,1.1
+1.1.06,ค่าตรวจวินิจฉัยโดยวิธีพิเศษอื่นๆ,Special Diagnostics,1.1
+1.1.07,ค่าอุปกรณ์ของใช้และเครื่องมือทางการแพทย์,Medical Equipment,1.1
+1.1.08,ค่าห้องผ่าตัดและห้องคลอด,Operating Theater and Delivery Room,1.1
+1.1.09,ค่าบริการทางทันตกรรม,Dental Services,1.1
 1.1.10,ค่าบริการทางกายภาพบำบัด,Physical Therapy,1.1
 1.1.11,ค่าบริการฝังเข็ม,Acupuncture,1.1
 1.1.12,ค่าบริการการพยาบาลของผู้ประกอบวิชาชีพการพยาบาลและการผดุงครรภ์,Nursing and Midwifery Charge,1.1

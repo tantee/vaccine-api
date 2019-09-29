@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8341fdc645d35867c799c6fa630c3e2a",
+    "content-hash": "a983c2bff3d4ebda67a472cb4ad99eb2",
     "packages": [
         {
             "name": "adldap2/adldap2",
@@ -3792,6 +3792,52 @@
                 "uuid"
             ],
             "time": "2018-07-19T23:38:55+00:00"
+        },
+        {
+            "name": "rundiz/number",
+            "version": "v1.1.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Rundiz/number.git",
+                "reference": "a851f94b5b63a86792304e360933e0bf85b1464b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Rundiz/number/zipball/a851f94b5b63a86792304e360933e0bf85b1464b",
+                "reference": "a851f94b5b63a86792304e360933e0bf85b1464b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Rundiz\\Number\\": "Rundiz/Number"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Vee W.",
+                    "email": "kawewong@gmail.com",
+                    "homepage": "http://rundiz.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Number conversion (number to text) (Thai and English)",
+            "keywords": [
+                "convert number",
+                "num to text",
+                "number",
+                "number conversion",
+                "number convert",
+                "number to text"
+            ],
+            "time": "2018-09-30T03:42:14+00:00"
         },
         {
             "name": "santigarcor/laratrust",

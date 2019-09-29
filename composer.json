@@ -22,6 +22,7 @@
         "nesbot/carbon": "2.22.0 as 1.34.0",
         "phpoffice/phpword": "^0.16.0",
         "picqer/php-barcode-generator": "^0.3.0",
+        "rundiz/number": "^1.1",
         "santigarcor/laratrust": "5.2.*",
         "simplesoftwareio/simple-qrcode": "^2.0",
         "thecodingmachine/gotenberg-php-client": "^5.0",
