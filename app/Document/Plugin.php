@@ -52,10 +52,10 @@ class clsPlugin
     }
     if ($ope == 'currtext') {
       if (isset($PrmLst['lang']) && ($PrmLst['lang']=="en" || $PrmLst['lang']=="en")) {
-        $convert = new Rundiz\Number\NumberEng();
+        $convert = new NumberEng();
         $Value = $convert->convertNumber($Value);
       } else {
-        $convert = new Rundiz\Number\NumberThai();
+        $convert = new NumberThai();
         $Value = $convert->convertBaht($Value);
       }
     }
