@@ -87,6 +87,7 @@ class PrintController extends Controller
       $data['documentFolder'] = $document->folder;
       $data['documentNote'] = $document->note;
       $data['documentStatus'] = $document->status;
+      $data['documentPatientAge'] = $document->patient_age;
 
       $data['created_at'] = $document->created_at;
       $data['created_by'] = $document->created_by;
@@ -170,6 +171,7 @@ class PrintController extends Controller
         $patientData['primaryMobileNo'] = $patient->primaryMobileNo;
         $patientData['primaryTelephoneNo'] = $patient->primaryTelephoneNo;
         $patientData['primaryEmail'] = $patient->primaryEmail;
+        $patientData['insurances'] = $patient->insurances->toArray();
 
         if ($patient->Photos->count()>0) $patientData['photo'] = storage_path('app/'.$patient->Photos->first()->storagePath);
 

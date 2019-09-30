@@ -47,6 +47,27 @@ class clsPlugin
         $Value = implode(" ",$tmpName);
       }
     }
+    if ($ope == "formataddress") {
+      if (\is_array($Value)) {
+        $tmpAddress = [];
+
+        $isThai = $Value['country'] == "TH";
+
+        if (!empty($Value['address'])) $tmpAddress[] = $Value['address'];
+        if (!empty($Value['village'])) $tmpAddress[] = $Value['village'];
+        if (!empty($Value['moo'])) $tmpAddress[] = $Value['moo'];
+        if (!empty($Value['trok'])) $tmpAddress[] = $Value['trok'];
+        if (!empty($Value['soi'])) $tmpAddress[] = $Value['soi'];
+        if (!empty($Value['street'])) $tmpAddress[] = $Value['street'];
+        if (!empty($Value['subdistrict'])) $tmpAddress[] = ($isThai) ? MasterController::translateMaster('$Subdistrict',$Value['subdistrict']) : $Value['subdistrict'];
+        if (!empty($Value['district'])) $tmpAddress[] = ($isThai) ? MasterController::translateMaster('$District',$Value['district']) : $Value['district'];;
+        if (!empty($Value['province'])) $tmpAddress[] = ($isThai) ? MasterController::translateMaster('$Province',$Value['province']) : $Value['province'];
+        if (!empty($Value['country'])) $tmpAddress[] = MasterController::translateMaster('$Country',$Value['country']);
+        if (!empty($Value['postCode'])) $tmpAddress[] = $Value['postCode'];
+
+        $Value = implode(" ",$tmpAddress);
+      }
+    }
     if ($ope == 'formatcurr') {
       $Value = number_format($Value,2);
     }
