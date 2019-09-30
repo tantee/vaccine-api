@@ -21,7 +21,7 @@ class PatientsTransactions extends Model
     }
 
     public function Encounter() {
-        return $this->hasOne('App\Models\Registration\Encounters','encounterId','encounterId');
+        return $this->hasOne('App\Models\Registration\Encounters','encounterId','encounterId')->without(['patient']);
     }
 
     public function getOrderLocationAttribute() {
