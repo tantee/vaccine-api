@@ -188,6 +188,7 @@ class PrintController extends Controller
         $encounterData['locationName'] = $encounter->Location->locationName;
         $encounterData['doctorNameTH'] = $encounter->Doctor->nameTH;
         $encounterData['doctorNameEN'] = $encounter->Doctor->nameEN;
+        $encounterData['doctorLicenseNo'] = $encounter->Doctor->licenseNo;
 
         $data['encounterData'] = $encounterData;
       }

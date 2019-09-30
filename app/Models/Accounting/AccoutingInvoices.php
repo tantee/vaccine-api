@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UserStamps;
 use App\Http\Controllers\Master\IdController;
+use Carbon\Carbon;
 
 class AccountingInvoices extends Model
 {
@@ -18,6 +19,10 @@ class AccountingInvoices extends Model
 
     public function scopeUnpaid($query) {
         return $query->whereColumn('amountDue','>','amountPaid');
+    }
+
+    public function scopeRecent($query) {
+        return $query->where('created_at','>',Carbon::now()->subHours(env('INVOICE_RECENT_HOURS', '24')));
     }
 
     public function Transactions() {
