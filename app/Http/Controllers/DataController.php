@@ -191,6 +191,8 @@ class DataController extends Controller
 
           if (isset($request->key)) $returnModels = $returnModels->find($request->key);
 
+          if (isset($request->scope)) $returnModels = $returnModels->{$request->scope}();
+
           if (isset($request->with)) $returnModels = $returnModels->with($request->with);
 
           if (!isset($request->key)) {
@@ -204,6 +206,7 @@ class DataController extends Controller
               $returnModels = $returnModels->paginate($request->perPage)->appends(['perPage'=>$request->perPage]);
               if (isset($request->orderBy)) $returnModels->appends(['orderBy'=>$request->orderBy]);
               if (isset($request->with)) $returnModels->appends(['with'=>$request->with]);
+              if (isset($request->scope)) $returnModels->appends(['scope'=>$request->scope]);
             }
             else $returnModels = $returnModels->get();
           }
@@ -353,6 +356,8 @@ class DataController extends Controller
       if ($success) {
         try {
           $returnModels = new $model;
+          if (isset($request->scope)) $returnModels = $returnModels->{$request->scope}();
+          
           foreach($data as $row) {
             $column = explode('$',$row[0]);
             if (count($column)==1) {
