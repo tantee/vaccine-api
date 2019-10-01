@@ -71,6 +71,19 @@ class clsPlugin
     if ($ope == 'formatcurr') {
       $Value = number_format($Value,2);
     }
+    if ($ope == 'formatinsurnace') {
+      if (is_array($Value)) {
+        if (count($Value)==0) {
+          $Value = "เงินสด";
+        } else {
+          $tmpInsuranceName = [];
+          foreach($Value as $insurance) {
+            $tmpInsuranceName[] = $insurance["condition"]["insuranceName"]; 
+          }
+          $Value = implode(",",$tmpInsuranceName);
+        }
+      }
+    }
     if ($ope == 'currtext') {
       if (isset($PrmLst['lang']) && ($PrmLst['lang']=="en" || $PrmLst['lang']=="en")) {
         $convert = new NumberEng();
