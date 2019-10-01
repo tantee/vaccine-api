@@ -4,22 +4,39 @@ before_script:
 stages:
   - build
   - tag
-  - deploy
+  - deploy_test
+  - deploy_prod
 
 docker_build:
   stage: build
   script:
     - docker build -t cah-api .
+  tags: 
+    - cah-test
 
 docker_tag:
   stage: tag
   script:
     - docker tag cah-api docker.canceralliance.co.th/cah-api:latest
     - docker push docker.canceralliance.co.th/cah-api:latest
+  tags: 
+    - cah-test
     
-docker_deploy:
-  stage: deploy
+docker_deploy_test:
+  stage: deploy_test
+  script:
+    - cd /var/local/cah/ && docker-compose up -d
+    - docker container prune -f
+    - docker image prune -f
+  tags: 
+    - cah-test
+
+docker-deploy_prod:
+  stage: deploy_prod
   script:
     - docker stack deploy -c /var/local/cah/docker-compose.yml cah-his
     - docker container prune -f
     - docker image prune -f
+  tags: 
+    - cah-api
+  when: manual
