@@ -129,7 +129,7 @@ class TransactionController extends Controller
         return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }
 
-    public static function createPayment($cashiersPeriodsId,$invoiceId,$paymentMethod,$paymentDetail=null,$paymentAccount=null,$amountPaid) {
+    public static function createPayment($cashiersPeriodsId,$invoiceId,$paymentMethod,$amountPaid,$paymentDetail=null,$paymentAccount=null) {
         $success = true;
         $errorTexts = [];
         $returnModels = [];
@@ -174,7 +174,7 @@ class TransactionController extends Controller
         return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }
 
-    public static function createTransactionPayment($hn,$transactions,$cashiersPeriodsId,$paymentMethod,$paymentDetail=null,$paymentAccount=null,$amountPaid) {
+    public static function createTransactionPayment($hn,$transactions,$cashiersPeriodsId,$paymentMethod,$amountPaid,$paymentDetail=null,$paymentAccount=null) {
         $success = true;
         $errorTexts = [];
         $returnModels = [];
@@ -182,7 +182,7 @@ class TransactionController extends Controller
         $invoice = self::createInvoice($hn,$transactions);
         if ($invoice["success"]) {
             if (count($invoice["returnModels"])==1) {
-                return self::createPayment($cashiersPeriodsId,$invoice["returnModels"][0]->invoiceId,$paymentMethod,$paymentDetail,$paymentAccount,$amountPaid);
+                return self::createPayment($cashiersPeriodsId,$invoice["returnModels"][0]->invoiceId,$paymentMethod,$amountPaid,$paymentDetail,$paymentAccount);
             } else if (count($invoice["returnModels"])>1) {
                 $success = false;
                 array_push($errorTexts,["errorText" => 'Transcations are split to multiple invoices']);
