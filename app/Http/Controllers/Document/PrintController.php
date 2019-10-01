@@ -215,7 +215,7 @@ class PrintController extends Controller
         $TBS->Plugin(clsPlugin::class);
         $TBS->NoErr = true;
 
-        $TBS->LoadTemplate(storage_path('app/'.$templatePath),\OPENTBS_ALREADY_UTF8);
+        $TBS->LoadTemplate(storage_path('app/'.$templatePath),\OPENTBS_DEFAULT);
         self::merge($TBS,$data,$currPrm);
 
         $subfiles = $TBS->PlugIn(OPENTBS_GET_HEADERS_FOOTERS);
