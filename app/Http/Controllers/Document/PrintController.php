@@ -293,7 +293,7 @@ class PrintController extends Controller
           }
 
         } catch (\Exception $e) {
-
+          throw $e;
         }
       }
       return $success;
