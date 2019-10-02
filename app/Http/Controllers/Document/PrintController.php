@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Document;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\App;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -19,6 +20,11 @@ use TheCodingMachine\Gotenberg\Client;
 use TheCodingMachine\Gotenberg\DocumentFactory;
 use TheCodingMachine\Gotenberg\MergeRequest;
 use TheCodingMachine\Gotenberg\OfficeRequest;
+
+use Uvinum\PDFWatermark\Pdf;
+use Uvinum\PDFWatermark\Watermark;
+use Uvinum\PDFWatermark\FpdiPdfWatermarker as PDFWatermarker;
+use Uvinum\PDFWatermark\Position;
 
 class PrintController extends Controller
 {
@@ -172,6 +178,7 @@ class PrintController extends Controller
         $patientData['primaryTelephoneNo'] = $patient->primaryTelephoneNo;
         $patientData['primaryEmail'] = $patient->primaryEmail;
         $patientData['insurances'] = $patient->insurances->toArray();
+        $patientData['allergies'] = null;
 
         if ($patient->Photos->count()>0) $patientData['photo'] = storage_path('app/'.$patient->Photos->first()->storagePath);
 
@@ -215,7 +222,7 @@ class PrintController extends Controller
         $TBS->Plugin(clsPlugin::class);
         $TBS->NoErr = true;
 
-        $TBS->LoadTemplate(storage_path('app/'.$templatePath),\OPENTBS_DEFAULT);
+        $TBS->LoadTemplate(storage_path('app/'.$templatePath),\OPENTBS_ALREADY_UTF8);
         self::merge($TBS,$data,$currPrm);
 
         $subfiles = $TBS->PlugIn(OPENTBS_GET_HEADERS_FOOTERS);
@@ -234,6 +241,8 @@ class PrintController extends Controller
         } else {
           $returnData = Storage::get($tmpFilename);
         }
+
+
       }
 
       Storage::deleteDirectory($tmpDirectory);
@@ -272,7 +281,17 @@ class PrintController extends Controller
           }
           $request = new OfficeRequest($files);
           $client->store($request, storage_path('app/'.$outputFilename));
+          
           $success = true;
+          
+          if (!App::environment('PROD')) {
+            $tmpOriginal = dirname($outputFilename).'/original.pdf';
+            Storage::move($outputFilename, $tmpOriginal);
+            if (!self::watermarkPDF($tmpOriginal,$outputFilename,'test')) {
+              $success = false;
+            }
+          }
+
         } catch (\Exception $e) {
 
         }
@@ -300,6 +319,29 @@ class PrintController extends Controller
 
         }
       }
+      return $success;
+    }
+
+    private static function watermarkPDF($filename,$outputFilename,$watermarkName) {
+      $success = false;
+      $watermaskFile = null;
+
+      if (Storage::exists('/default/watermarks/'.$watermarkName.'.png')) $watermaskFile = storage_path('app/public/default/watermarks/'.$watermarkName.'.png');
+      if ($watermarkFile==null && Storage::exists('/default/watermarks/'.$watermarkName.'.jpg')) $watermaskFile = storage_path('app/public/default/watermarks/'.$watermarkName.'.jpg');
+
+      if ($watermarkFile!==null) {
+        try {
+          $pdf = new Pdf($filename);
+          $watermark = new Watermark($watermarkFile); 
+          $watermarker = new PDFWatermarker($pdf, $watermark);
+          $watermarker->setPosition(new Position('MiddleCenter'));
+          $watermarker->savePdf(storage_path('app/'.$outputFilename));
+          $success = true;
+        } catch (\Exception $e) {
+
+        }
+      }
+      
       return $success;
     }
 }
