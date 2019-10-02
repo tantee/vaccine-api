@@ -330,7 +330,7 @@ class PrintController extends Controller
           $pdf = new Pdf(storage_path('app/'.$filename));
           $watermark = new Watermark($watermarkFile); 
           $watermarker = new PDFWatermarker($pdf, $watermark);
-          $watermarker->setPosition(new Position('MiddleCenter'));
+          $watermarker->setPosition(new Position('TopCenter'));
           $watermarker->setAsBackground();
           $watermarker->savePdf(storage_path('app/'.$outputFilename));
           $success = true;
