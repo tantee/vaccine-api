@@ -17,6 +17,10 @@ class AccountingPayments extends Model
         return $this->hasOne('App\Models\Document\Documents','id','documentId');
     }
 
+    public function CashierPeriod() {
+        return $this->hasOne('App\Models\Document\cashiersPeriods','id','cashiersPeriodsId');
+    }
+
     public function Invoice() {
         return $this->belongsTo('App\Models\Accounting\AccountingInvoices','invoiceId','invoiceId');
     }
@@ -25,10 +29,15 @@ class AccountingPayments extends Model
         return ($this->amountDue - $this->amountPaid >= 0) ? $this->amountDue - $this->amountPaid : 0;
     }
 
+    public function getCashierIdAttrbute() {
+        return $this->CashierPeriod->cashierId;
+    }
+
     public function toArray()
     {
         $toArray = parent::toArray();
         $toArray['amountOutstanding'] = $this->amount_outstanding;
+        $toArray['cashierId'] = $this->cashier_id;
 
         return $toArray;
     }
