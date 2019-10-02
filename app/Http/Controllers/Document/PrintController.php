@@ -242,7 +242,6 @@ class PrintController extends Controller
           $returnData = Storage::get($tmpFilename);
         }
 
-
       }
 
       Storage::deleteDirectory($tmpDirectory);
@@ -287,12 +286,9 @@ class PrintController extends Controller
           if (!App::environment('PROD')) {
             $tmpOriginal = dirname($outputFilename).'/original.pdf';
             Storage::move($outputFilename, $tmpOriginal);
-            if (!self::watermarkPDF($tmpOriginal,$outputFilename,'test')) {
-              $success = false;
-            }
+            $success = self::watermarkPDF($tmpOriginal,$outputFilename,'test');
           }
         } catch (\Exception $e) {
-          throw $e;
           $success = false;
         }
       }
@@ -331,14 +327,13 @@ class PrintController extends Controller
 
       if ($watermarkFile!=null) {
         try {
-          $pdf = new Pdf($filename);
+          $pdf = new Pdf(storage_path('app/'.$filename));
           $watermark = new Watermark($watermarkFile); 
           $watermarker = new PDFWatermarker($pdf, $watermark);
           $watermarker->setPosition(new Position('MiddleCenter'));
           $watermarker->savePdf(storage_path('app/'.$outputFilename));
           $success = true;
         } catch (\Exception $e) {
-          throw $e;
           $success = false;
         }
       }
