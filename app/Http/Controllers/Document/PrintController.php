@@ -329,14 +329,15 @@ class PrintController extends Controller
       if (Storage::exists('/default/watermarks/'.$watermarkName.'.png')) $watermaskFile = storage_path('app/public/default/watermarks/'.$watermarkName.'.png');
       if ($watermarkFile==null && Storage::exists('/default/watermarks/'.$watermarkName.'.jpg')) $watermaskFile = storage_path('app/public/default/watermarks/'.$watermarkName.'.jpg');
 
-      if ($watermarkFile!==null) {
+      if ($watermarkFile!=null) {
+        $pdf = new Pdf($filename);
+        $watermark = new Watermark($watermarkFile); 
+        $watermarker = new PDFWatermarker($pdf, $watermark);
+        $watermarker->setPosition(new Position('MiddleCenter'));
+        $watermarker->savePdf(storage_path('app/'.$outputFilename));
+        $success = true;
         try {
-          $pdf = new Pdf($filename);
-          $watermark = new Watermark($watermarkFile); 
-          $watermarker = new PDFWatermarker($pdf, $watermark);
-          $watermarker->setPosition(new Position('MiddleCenter'));
-          $watermarker->savePdf(storage_path('app/'.$outputFilename));
-          $success = true;
+
         } catch (\Exception $e) {
 
         }
