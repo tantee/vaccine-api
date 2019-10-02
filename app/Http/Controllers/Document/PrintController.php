@@ -289,6 +289,7 @@ class PrintController extends Controller
             $success = self::watermarkPDF($tmpOriginal,$outputFilename,'test');
           }
         } catch (\Exception $e) {
+          throw $e;
           $success = false;
         }
       }
@@ -312,6 +313,7 @@ class PrintController extends Controller
           $client->store($request, storage_path('app/'.$outputFilename));
           $success = true;
         } catch (\Exception $e) {
+          throw $e;
           $success = false;
         }
       }
@@ -334,6 +336,7 @@ class PrintController extends Controller
           $watermarker->savePdf(storage_path('app/'.$outputFilename));
           $success = true;
         } catch (\Exception $e) {
+          throw $e;
           $success = false;
         }
       }
