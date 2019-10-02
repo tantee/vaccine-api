@@ -171,6 +171,7 @@ class PrintController extends Controller
         $patientData['sex'] = $patient->sex;
         $patientData['maritalStatus'] = $patient->maritalStatus;
         $patientData['dateOfBirth'] = $patient->dateOfBirth;
+        $patientData['age'] = $patient->age;
         $patientData['nationality'] = $patient->nationality;
         $patientData['race'] = $patient->race;
         $patientData['religion'] = $patient->religion;
