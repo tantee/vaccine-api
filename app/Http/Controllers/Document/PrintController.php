@@ -292,6 +292,7 @@ class PrintController extends Controller
             }
           }
         } catch (\Exception $e) {
+          throw $e;
           $success = false;
         }
       }
@@ -337,6 +338,7 @@ class PrintController extends Controller
           $watermarker->savePdf(storage_path('app/'.$outputFilename));
           $success = true;
         } catch (\Exception $e) {
+          throw $e;
           $success = false;
         }
       }
