@@ -322,8 +322,8 @@ class PrintController extends Controller
       $success = false;
       $watermarkFile = null;
 
-      if (Storage::exists('/default/watermarks/'.$watermarkName.'.png')) $watermarkFile = storage_path('app/public/default/watermarks/'.$watermarkName.'.png');
-      if ($watermarkFile==null && Storage::exists('/default/watermarks/'.$watermarkName.'.jpg')) $watermarkFile = storage_path('app/public/default/watermarks/'.$watermarkName.'.jpg');
+      if (Storage::exists('/default/watermarks/'.$watermarkName.'.png')) $watermarkFile = storage_path('app/default/watermarks/'.$watermarkName.'.png');
+      if ($watermarkFile==null && Storage::exists('/default/watermarks/'.$watermarkName.'.jpg')) $watermarkFile = storage_path('app/default/watermarks/'.$watermarkName.'.jpg');
 
       if ($watermarkFile!=null) {
         try {
@@ -334,6 +334,7 @@ class PrintController extends Controller
           $watermarker->savePdf(storage_path('app/'.$outputFilename));
           $success = true;
         } catch (\Exception $e) {
+          throw $e;
           $success = false;
         }
       }
