@@ -28,6 +28,7 @@
         "thecodingmachine/gotenberg-php-client": "^5.0",
         "tinybutstrong/opentbs": "^1.9",
         "tom-lingham/searchy": "^2.0",
+        "uvinum/pdf-watermarker": "^1.0",
         "venturecraft/revisionable": "1.*"
     },
     "require-dev": {
