@@ -75,11 +75,13 @@ class Encounters extends Model
             }
 
             if ($model->clinicCode != $original['clinicCode'] || $model->doctorCode != $original['doctorCode'] || $model->locationCode != $original['locationCode'] || $model->locationSubunitCode != $original['locationSubunitCode']) {
-                array_push($model->locationLog,["clinicCode"=>$model->clinicCode,
+                $tempLocationLog = $model->locationLog; 
+                array_push($tempLocationLog,["clinicCode"=>$model->clinicCode,
                 "doctorCode"=>$model->doctorCode,
                 "locationCode"=>$model->locationCode,
                 "locationSubunitCode"=>$model->locationSubunitCode,
                 "locationDateTime"=>Carbon::now()->toIso8601String()]);
+                $model->locationLog = $tempLocationLog;
             }
         });
 
