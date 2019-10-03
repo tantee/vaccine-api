@@ -24,6 +24,10 @@ class PatientsTransactions extends Model
         return $this->hasOne('App\Models\Registration\Encounters','encounterId','encounterId')->without(['patient']);
     }
 
+    public function Invoice() {
+        return $this->hasOne('App\Models\Accounting\AccountingInvoices','invoiceId','invoiceId');
+    }
+
     public function getOrderLocationAttribute() {
         return \App\Models\Master\Locations::find($this->order_location_code);
     }
