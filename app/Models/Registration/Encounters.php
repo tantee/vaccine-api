@@ -75,7 +75,7 @@ class Encounters extends Model
             }
 
             if ($model->clinicCode != $original['clinicCode'] || $model->doctorCode != $original['doctorCode'] || $model->locationCode != $original['locationCode'] || $model->locationSubunitCode != $original['locationSubunitCode']) {
-                $tempLocationLog = $model->locationLog; 
+                $tempLocationLog = array_wrap($model->locationLog); 
                 array_push($tempLocationLog,["clinicCode"=>$model->clinicCode,
                 "doctorCode"=>$model->doctorCode,
                 "locationCode"=>$model->locationCode,
