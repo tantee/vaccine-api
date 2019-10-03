@@ -32,7 +32,7 @@ class CreateProducts extends Migration
             $table->decimal('cgdPrice',10,2)->nullable();
             $table->string('accountCodeStock')->nullable();
             $table->string('accountCodeCost')->nullable();
-            $table->string('accountCodeIncome');
+            $table->string('accountCodeIncome')->nullable();
             $table->enum('productType',['medicine','supply','procedure','service','laboratory','radiology']);
             $table->json('specification');
             $table->boolean('isActive')->default(true);
