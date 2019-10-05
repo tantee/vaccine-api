@@ -64,7 +64,7 @@ class Encounters extends Model
             }
         });
 
-        static::saving(function($model) {
+        static::updating(function($model) {
             $original = $model->getOriginal();
             if ($model->status != $original['status'] || $model->currectLocation != $original['currentLocation']) {
                 $tempStatusLog =  array_wrap($model->statusLog);
