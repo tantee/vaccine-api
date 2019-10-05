@@ -54,6 +54,22 @@ class Encounters extends Model
                     $model->encounterId = IdController::issueId("Encounter",$prefix,3,'',false);
                 }
             }
+
+            $tempStatusLog =  [];
+            array_push($tempStatusLog,[
+                "status"=>$model->status,
+                "location"=>$model->currectLocation,
+                "statusDateTime"=>Carbon::now()->toIso8601String()
+            ]);
+            $model->statusLog = $tempStatusLog;
+
+            $tempLocationLog = []; 
+            array_push($tempLocationLog,["clinicCode"=>$model->clinicCode,
+            "doctorCode"=>$model->doctorCode,
+            "locationCode"=>$model->locationCode,
+            "locationSubunitCode"=>$model->locationSubunitCode,
+            "locationDateTime"=>Carbon::now()->toIso8601String()]);
+            $model->locationLog = $tempLocationLog;
         });
 
         static::created(function($model) {
