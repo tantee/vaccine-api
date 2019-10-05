@@ -64,14 +64,16 @@ class Encounters extends Model
             }
         });
 
-        static::updating(function($model) {
+        static::saving(function($model) {
             $original = $model->getOriginal();
             if ($model->status != $original['status'] || $model->currectLocation != $original['currentLocation']) {
-                array_push($model->statusLog,[
+                $tempStatusLog =  array_wrap($model->statusLog);
+                array_push($tempStatusLog,[
                     "status"=>$model->status,
                     "location"=>$model->currectLocation,
                     "statusDateTime"=>Carbon::now()->toIso8601String()
                 ]);
+                $model->statusLog = $tempStatusLog;
             }
 
             if ($model->clinicCode != $original['clinicCode'] || $model->doctorCode != $original['doctorCode'] || $model->locationCode != $original['locationCode'] || $model->locationSubunitCode != $original['locationSubunitCode']) {
