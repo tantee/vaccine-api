@@ -5,10 +5,11 @@ namespace App\Models\Patient;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UserStamps;
+use Awobaz\Compoships\Compoships;
 
 class PatientsTransactions extends Model
 {
-    use SoftDeletes,UserStamps;
+    use SoftDeletes,UserStamps,Compoships;
 
     protected $guarded = [];
 
