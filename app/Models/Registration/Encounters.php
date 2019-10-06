@@ -6,12 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UserStamps;
 use App\Http\Controllers\Master\IdController;
+use Awobaz\Compoships\Compoships;
 use Carbon\Carbon;
 
 class Encounters extends Model
 {
     //
-    use SoftDeletes,UserStamps;
+    use SoftDeletes,UserStamps,Compoships;
 
     protected $primaryKey = 'encounterId';
     public $incrementing = false;
@@ -35,7 +36,7 @@ class Encounters extends Model
     }
 
     public function Transactions() {
-      return $this->hasMany('App\Models\Patient\PatientsTransactions','hn','hn')->where('encounterId',$this->encounterId);
+      return $this->hasMany('App\Models\Patient\PatientsTransactions',['hn','encounterId'],['hn','encounterId']);
     }
 
     public function fromAppointment() {
