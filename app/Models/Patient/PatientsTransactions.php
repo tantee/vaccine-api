@@ -56,7 +56,7 @@ class PatientsTransactions extends Model
         $returnInsurance = null;
 
         if (!$this->isForceSelfPay) {
-            if ($this->soldPatientsInsurancesId != null) return \App\Models\Patient\PatientsInsurances::find($this->soldPatientsInsurancesId);
+            if ($this->soldPatientsInsurancesId !== null) return \App\Models\Patient\PatientsInsurances::find($this->soldPatientsInsurancesId);
 
             $Insurances = \App\Models\Patient\PatientsInsurances::where('hn',$this->hn)->activeAt($this->transactionDateTime)->get();
 
@@ -97,7 +97,7 @@ class PatientsTransactions extends Model
                         }
                     }
                 }
-                if ($returnInsurance != null) break;
+                if ($returnInsurance !== null) break;
             }
         }
 
@@ -105,59 +105,59 @@ class PatientsTransactions extends Model
     }
 
     public function getPriceAttribute() {
-        if ($this->soldPrice != null) return $this->soldPrice;
+        if ($this->soldPrice !== null) return $this->soldPrice;
         $insurance = $this->Insurance;
         if ($insurance == null) return $this->Product->price1;
         else {
             $price = 'price'.$insurance->Condition->priceLevel;
-            return ($this->Product->$price!=null) ? $this->Product->$price : $this->Product->price1;
+            return ($this->Product->$price!==null) ? $this->Product->$price : $this->Product->price1;
         }
     }
 
     public function getDiscountAttribute() {
-        if ($this->soldDiscount != null) return $this->soldDiscount;
+        if ($this->soldDiscount !== null) return $this->soldDiscount;
         $insurance = $this->Insurance;
         if ($insurance == null) return 0;
         else return $insurance->Condition->discount;
     }
 
     public function getTotalDiscountAttribute() {
-        if ($this->soldTotalDiscount != null) return $this->soldTotalDiscount;
+        if ($this->soldTotalDiscount !== null) return $this->soldTotalDiscount;
         return round(($this->price*$this->quantity*$this->discount/100),2);
     }
 
     public function getTotalPriceAttribute() {
-        if ($this->soldTotalPrice != null) return $this->soldTotalPrice;
+        if ($this->soldTotalPrice !== null) return $this->soldTotalPrice;
         return round($this->price*$this->quantity,2);
     }
 
     public function getFinalPriceAttribute() {
-        if ($this->soldFinalPrice != null) return $this->soldFinalPrice;
+        if ($this->soldFinalPrice !== null) return $this->soldFinalPrice;
         return round(($this->price*$this->quantity)-($this->price*$this->quantity*$this->discount/100),2);
     }
 
     public function getCategoryInsuranceAttribute($value) {
-        if ($value != null) return $value;
+        if ($value !== null) return $value;
         else return $this->product->categoryInsurance;
     }
 
     public function getCategoryCgdAttribute($value) {
-        if ($value != null) return $value;
+        if ($value !== null) return $value;
         else return $this->Product->categoryCgd;
     }
 
     public function getOrderDoctorCodeAttribute($value) {
-        if ($value != null) return $value;
+        if ($value !== null) return $value;
         else return $this->Encounter->doctorCode;
     }
 
     public function getOrderClinicCodeAttribute($value) {
-        if ($value != null) return $value;
+        if ($value !== null) return $value;
         else return $this->Encounter->clinicCode;
     }
 
     public function getOrderLocationCodeAttribute($value) {
-        if ($value != null) return $value;
+        if ($value !== null) return $value;
         else return $this->Encounter->locationCode;
     }
 
