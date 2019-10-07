@@ -18,7 +18,7 @@ class PatientsTransactions extends Model
     }
 
     public function Product() {
-        return $this->hasOne('App\Models\Master\Products','productCode','productCode');
+        return $this->hasOne('App\Models\Master\Products','productCode','productCode')->withTrashed();
     }
 
     public function Encounter() {
