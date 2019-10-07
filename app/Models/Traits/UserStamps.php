@@ -17,6 +17,7 @@ trait UserStamps {
     static::deleting(function($model) {
       if (Auth::guard('api')->check()) $model->deleted_by = Auth::guard('api')->user()->username;
       else $model->deleted_by = '0';
+      $model->save();
     });
     static::restoring(function($model) {
       $model->deleted_by = null;
