@@ -89,14 +89,19 @@ class DocumentController extends Controller
 
             $data = array_only($data,['base64string']);
             
-            if ($document->isScanned && ($isAppend || Carbon::now()->diffInMinute($document->updated_at)<=5)) array_push($document->data,$data);
-            else {
-              if (!empty($document->data)) {
-                array_push($document->revision,[
+            if ($document->isScanned && ($isAppend || Carbon::now()->diffInMinute($document->updated_at)<=5)) {
+              $oldData = $document->data;
+              array_push($oldData,$data);
+              $document->data = $oldData;
+            } else {
+              if (!empty($oldData)) {
+                $oldRevision = $document->revision;
+                array_push($oldRevision,[
                   "data" => $document->data,
                   "updated_by" => $document->updated_by,
                   "updated_at" => $document->updated_at,
                 ]);
+                $document->revision = $oldRevision;
               }
               $document->data = [$data];
             }

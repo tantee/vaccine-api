@@ -29,6 +29,8 @@ SV01,ค่าบริการโรงพยาบาล,Service charges,serv
 SV02,ค่าบริการทางการพยาบาล,Nursing charges,service
 SV03,ค่าบริการทางการแพทย์,Medical charges,service
 SV04,ค่าธรรมเนียมแพทย์,Doctor fees,service
+SV05,ค่าอุปกรณ์ทางการแพทย์,Device fees,service
+SV06,ค่าบริการการตรวจพิเศษ,Investigation fees,service
 SV99,ค่าบริการและค่าธรรมเนียมอื่นๆ,Other fees,service
 L01,การตรวจทางโลหิตวิทยา,Hematology,laboratory
 L02,การตรวจสารเคมีในเลือด,Blood chemistry,laboratory
@@ -38,6 +40,7 @@ L05,การตรวจอุจจาระ,Stool examination,laboratory
 L06,การตรวจทางพยาธิวิทยา,Pathology,laboratory
 L07,การตรวจทางเซลล์วิทยา,Cytology,laboratory
 L08,การตรวจเชื่อ และเพาะเชื่อ,Microbiology,laboratory
+L09,การตรวจทางไวรัสวิทยา,Virology,laboratory
 L99,การตรวจอื่นๆ,Other laboratory testing,laboratory
 R01,การตรวจเอกซเรย์,Radiograph,radiology
 R02,การตรวจเอกซเรย์คอมพิวเตอร์,CT Scan,radiology
