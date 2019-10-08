@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Document;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\Master\IdController;
@@ -68,6 +69,7 @@ class DocumentController extends Controller
           }
 
           if (isset($QRCodeData['DocId'])) {
+            Log::info('DocID '.$QRCodeData['DocId']);
             $document = \App\Models\Document\Documents::find($QRCodeData['DocId']);
           } else if ($hn!=null) {
             $document = self::addDocument($hn,'default_scan',null,$category,$encounterId,$referenceId);
@@ -93,6 +95,7 @@ class DocumentController extends Controller
               $oldData = $document->data;
               array_push($oldData,$data);
               $document->data = $oldData;
+              Log::info('Document Append');
             } else {
               if (!empty($oldData)) {
                 $oldRevision = $document->revision;
@@ -102,6 +105,7 @@ class DocumentController extends Controller
                   "updated_at" => $document->updated_at,
                 ]);
                 $document->revision = $oldRevision;
+                Log::info('Save revision');
               }
               $document->data = [$data];
             }
