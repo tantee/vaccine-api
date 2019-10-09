@@ -12,7 +12,7 @@ trait UserStamps {
     });
     static::updating(function($model) {
       $original = $model->getOriginal();
-      if (!isset($original['deleted_by']) || $model->deleted_by == $original['deleted_by']) {
+      if (array_key_exists('deleted_by',$original) && $model->deleted_by == $original['deleted_by']) {
         if (Auth::guard('api')->check()) $model->updated_by = Auth::guard('api')->user()->username;
         else $model->updated_by = '0';
       } else {
