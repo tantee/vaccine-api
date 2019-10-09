@@ -23,7 +23,7 @@ class Documents extends Model
     }
 
     public function Encounter() {
-      return $this->belongsTo('App\Models\Registration\Encounters','encounterId','encounterId');
+      return $this->belongsTo('App\Models\Registration\Encounters','encounterId','encounterId')->without(['patient']);
     }
 
     public function getPatientAgeAttribute() {
