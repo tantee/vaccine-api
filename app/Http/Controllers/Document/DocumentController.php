@@ -63,14 +63,12 @@ class DocumentController extends Controller
           try {
             $QRCodeReader = new \Zxing\QrReader($tmpData,\Zxing\QrReader::SOURCE_TYPE_BLOB);
             $QRCodeData = $QRCodeReader->text();
-            $QRCodeData = \json_decode($qrCodeData,true);
-            Log::info('QrCode',$QRCodeData);
+            $QRCodeData = \json_decode($QRCodeData,true);
           } catch(\Exception $e) {
             $QRCodeData = [];
           }
 
           if (isset($QRCodeData['DocId'])) {
-            Log::info('DocID '.$QRCodeData['DocId']);
             $document = \App\Models\Document\Documents::find($QRCodeData['DocId']);
           } else if ($hn!=null) {
             $document = self::addDocument($hn,'default_scan',null,$category,$encounterId,$referenceId);
@@ -92,22 +90,11 @@ class DocumentController extends Controller
 
             $data = array_only($data,['base64string']);
             
-            if ($document->isScanned && ($isAppend || Carbon::now()->diffInMinute($document->updated_at)<=5)) {
-              $oldData = $document->data;
+            if ($document->isScanned && ($isAppend || Carbon::now()->diffInMinutes($document->updated_at)<=5)) {
+              $oldData = array_wrap($document->data);
               array_push($oldData,$data);
               $document->data = $oldData;
-              Log::info('Document Append');
             } else {
-              if (!empty($oldData)) {
-                $oldRevision = $document->revision;
-                array_push($oldRevision,[
-                  "data" => $document->data,
-                  "updated_by" => $document->updated_by,
-                  "updated_at" => $document->updated_at,
-                ]);
-                $document->revision = $oldRevision;
-                Log::info('Save revision Append');
-              }
               $document->data = [$data];
             }
             $document->isScanned = true;

@@ -35,6 +35,23 @@ class Documents extends Model
       return $interval->forHumans(['parts'=>2]);
     }
 
+    public static function boot() {
+        static::updating(function($model) {
+            $original = $model->getOriginal();
+            if ($model->data != $original['data']) {
+                $oldRevision =  array_wrap($model->revision);
+                array_push($oldRevision,[
+                  "data" => $model->data,
+                  "updated_by" => ($model->updated_by!==null) ? $model->updated_by : $model->created_by,
+                  "updated_at" => $model->updated_at,
+                ]);
+                $model->revision = $oldRevision;
+            }
+        });
+
+        parent::boot();
+    }
+
     protected $casts = [
       'data' => 'array',
       'revision' => 'array',
