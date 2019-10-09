@@ -4,34 +4,23 @@ namespace App\Utilities;
 
 class Image
 {
-    function scaleImageFileToBlob($file) {
+    public static function scaleBlobImage($imageBlob,$max_width,$max_height) {
 
-        $source_pic = $file;
-        $max_width = 200;
-        $max_height = 200;
-
-        list($width, $height, $image_type) = getimagesize($file);
-
-        switch ($image_type)
-        {
-            case 1: $src = imagecreatefromgif($file); break;
-            case 2: $src = imagecreatefromjpeg($file);  break;
-            case 3: $src = imagecreatefrompng($file); break;
-            default: return '';  break;
-        }
+        list($width, $height, $image_type) = getimagesizefromstring ($imageBlob);
+        $src = imagecreatefromstring($imageBlob);
 
         $x_ratio = $max_width / $width;
         $y_ratio = $max_height / $height;
 
-        if( ($width <= $max_width) && ($height <= $max_height) ){
+        if( ($width <= $max_width) && ($height <= $max_height) ) {
             $tn_width = $width;
             $tn_height = $height;
-            }elseif (($x_ratio * $height) < $max_height){
-                $tn_height = ceil($x_ratio * $height);
-                $tn_width = $max_width;
-            }else{
-                $tn_width = ceil($y_ratio * $width);
-                $tn_height = $max_height;
+        } elseif (($x_ratio * $height) < $max_height) {
+            $tn_height = ceil($x_ratio * $height);
+            $tn_width = $max_width;
+        } else {
+            $tn_width = ceil($y_ratio * $width);
+            $tn_height = $max_height;
         }
 
         $tmp = imagecreatetruecolor($tn_width,$tn_height);

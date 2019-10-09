@@ -59,6 +59,7 @@ class DocumentController extends Controller
           $tmpData = (count($tmpData)==1) ? $tmpData[0] : $tmpData[1];
 
           $tmpData = base64_decode($tmpData);
+          $tmpData = \App\Utilities\Image::scaleBlobImage($mpData,1000,1000);
 
           try {
             $QRCodeReader = new \Zxing\QrReader($tmpData,\Zxing\QrReader::SOURCE_TYPE_BLOB);

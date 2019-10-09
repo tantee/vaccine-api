@@ -41,9 +41,9 @@ class Documents extends Model
             if ($model->data != $original['data']) {
                 $oldRevision =  array_wrap($model->revision);
                 array_push($oldRevision,[
-                  "data" => $model->data,
-                  "updated_by" => ($model->updated_by!==null) ? $model->updated_by : $model->created_by,
-                  "updated_at" => $model->updated_at,
+                  "data" => $original['data'],
+                  "updated_by" => ($original['updated_by']!==null) ? $original['updated_by'] : $original['created_by'],
+                  "updated_at" => $original['updated_at'],
                 ]);
                 $model->revision = $oldRevision;
             }
