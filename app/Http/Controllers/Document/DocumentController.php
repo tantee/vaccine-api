@@ -64,6 +64,7 @@ class DocumentController extends Controller
             $QRCodeReader = new \Zxing\QrReader($tmpData,\Zxing\QrReader::SOURCE_TYPE_BLOB);
             $QRCodeData = $QRCodeReader->text();
             $QRCodeData = \json_decode($qrCodeData,true);
+            Log::info('QrCode',$QRCodeData);
           } catch(\Exception $e) {
             $QRCodeData = [];
           }
@@ -105,7 +106,7 @@ class DocumentController extends Controller
                   "updated_at" => $document->updated_at,
                 ]);
                 $document->revision = $oldRevision;
-                Log::info('Save revision');
+                Log::info('Save revision Append');
               }
               $document->data = [$data];
             }
