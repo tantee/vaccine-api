@@ -42,6 +42,7 @@ class Documents extends Model
                 $oldRevision =  array_wrap($model->revision);
                 array_push($oldRevision,[
                   "data" => $original['data'],
+                  "isScanned" => $original['isScanned'],
                   "updated_by" => ($original['updated_by']!==null) ? $original['updated_by'] : $original['created_by'],
                   "updated_at" => $original['updated_at'],
                 ]);
