@@ -15,15 +15,16 @@ class DocumentController extends Controller
 {
     //
     public static function addDocument($hn,$templateCode,$data,$category=null,$encounterId=null,$referenceId=null,$folder=null) {
-      return self::addDocuments([
-        'referenceId' => $referenceId,
+      $documentData = [
         'hn' => $hn,
         'templateCode' => $templateCode,
         'data' => $data,
-        'category' => $category,
-        'encounterId' => $encounterId,
-        'folder' => $folder,
-      ]);
+      ];
+      if ($category!==null) $documentData['category'] = $category;
+      if ($referenceId!==null) $documentData['referenceId'] = $referenceId;
+      if ($encounterId!==null) $documentData['encounterId'] = $encounterId;
+      if ($folder!==null) $documentData['folder'] = $folder;
+      return self::addDocuments($documentData);
     }
 
     public static function addDocuments($documents) {
