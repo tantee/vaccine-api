@@ -224,6 +224,8 @@ class PrintController extends Controller
         $TBS->Plugin(clsMasterItem::class);
         $TBS->Plugin(clsPlugin::class);
         $TBS->NoErr = true;
+        
+        $TBS->TplVars['tmpDirectory'] = $tmpDirectory;
 
         $TBS->LoadTemplate(storage_path('app/'.$templatePath),\OPENTBS_ALREADY_UTF8);
         self::merge($TBS,$data,$currPrm);

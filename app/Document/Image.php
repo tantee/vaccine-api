@@ -37,9 +37,9 @@ class Image
       }
     }
 
-    public static function Asset($FieldName, &$CurrVal,&$CurrPrm) {
+    public static function Asset($FieldName, &$CurrVal,&$CurrPrm,&$TBS) {
       $tmpUniqId = uniqid();
-      $tmpDirectory = $CurrPrm['tmpDirectory'];
+      $tmpDirectory = $TBS->TplVars['tmpDirectory'];
 
       $asset = \App\Models\Asset\Assets::find($CurrVal);
       $tmpFilename = $tmpDirectory.'/'.$tmpUniqId.'.'.\App\Utilities\File::guessExtension($asset->mimeType);
