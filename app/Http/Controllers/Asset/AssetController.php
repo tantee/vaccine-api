@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Asset;
 use Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\File\MimeType\ExtensionGuesser;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\DataController;
 

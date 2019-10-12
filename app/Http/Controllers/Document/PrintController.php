@@ -81,8 +81,10 @@ class PrintController extends Controller
       if ($document == null) return null;
 
       if ($templateCode == null)  $templateCode = $document->templateCode;
+      if ($document->isScanned) $templateCode = "default_scan";
 
-      $data = $document->data;
+      if (ArrayType::isAssociative($document->data)) $data = $document->data;
+      else $data = ["data" => $document->data];
 
       $data['qrCodeData'] = \json_encode(['DocId' => $document->id]);
 

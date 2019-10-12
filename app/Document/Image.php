@@ -2,6 +2,8 @@
 
 namespace App\Document;
 
+use Illuminate\Support\Facades\Storage;
+
 class Image
 {
     public static function Base64($FieldName, &$CurrVal,&$CurrPrm) {
@@ -32,6 +34,21 @@ class Image
         file_put_contents($tmpImageFile,$content);
 
         $CurrVal = $tmpImageFile;
+      }
+    }
+
+    public static function Asset($FieldName, &$CurrVal,&$CurrPrm) {
+      $tmpUniqId = uniqid();
+      $tmpDirectory = $CurrPrm['tmpDirectory'];
+
+      $asset = \App\Models\Asset\Assets::find($CurrVal);
+      $tmpFilename = $tmpDirectory.'/'.$tmpUniqId.'.'.\App\Utilities\File::guessExtension($asset->mimeType);
+
+      if ($asset !== null) {
+        $content = Storage::disk($asset->storage)->get($asset->storagePath);
+        Storage::put($tmpFilename,$content);
+
+        $CurrVal = storage_path('app/'.$tmpFilename);
       }
     }
 }
