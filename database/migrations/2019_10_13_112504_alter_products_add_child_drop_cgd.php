@@ -15,7 +15,7 @@ class AlterProductsAddChildDropCgd extends Migration
     {
         Schema::table('products', function (Blueprint $table) {
             $table->dropColumn(['cgdCode','cgdAccount','cgdPrice']);
-            $table->json('childProducts')->nullable()->default(new Expression('(JSON_ARRAY())'))->after('specification');
+            $table->json('childProducts')->nullable()->after('specification');
         });
     }
 
