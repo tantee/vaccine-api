@@ -199,7 +199,7 @@ class PatientsTransactions extends Model
         });
 
         static::deleting(function($model) {
-            $model->childTransactions->delete();
+            $model->childTransactions()->delete();
         });
 
         parent::boot();
