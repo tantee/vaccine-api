@@ -78,31 +78,23 @@ class PatientsTransactions extends Model
                     $returnInsurance = $PatientInsurance;
                     foreach(collect($Insurance->conditions)->sortBy('conditionPriority') as $condition) {
                         if ($condition['coverage']=="allow") {
-                            if (($condition['conditionType']=="categoryInsurance" && $condition['conditionCode']==$this->categoryInsurance) ||
-                                ($condition['conditionType']=="categoryCgd" && $condition['conditionCode']==$this->categoryCgd) ||
-                                ($condition['conditionType']=="productCode" && $condition['conditionCode']==$this->productCode)) break;
+                            if ($this->$condition['conditionType'] == $condition['conditionCode']) break;
                         } else {
-                            if (($condition['conditionType']=="categoryInsurance" && $condition['conditionCode']==$this->categoryInsurance) ||
-                                ($condition['conditionType']=="categoryCgd" && $condition['conditionCode']==$this->categoryCgd) ||
-                                ($condition['conditionType']=="productCode" && $condition['conditionCode']==$this->productCode)) {
-                                    $returnInsurance = null;
-                                    break;
-                                }
+                            if ($this->$condition['conditionType'] == $condition['conditionCode']) {
+                                $returnInsurance = null;
+                                break;
+                            }
                         }
                     }
                 } else {
                     foreach(collect($Insurance->conditions)->sortBy('conditionPriority') as $condition) {
                         if ($condition['coverage']=="allow") {
-                            if (($condition['conditionType']=="categoryInsurance" && $condition['conditionCode']==$this->categoryInsurance) ||
-                                ($condition['conditionType']=="categoryCgd" && $condition['conditionCode']==$this->categoryCgd) ||
-                                ($condition['conditionType']=="productCode" && $condition['conditionCode']==$this->productCode)) {
-                                    $returnInsurance = $PatientInsurance;
-                                    break;
-                                }
+                            if ($this->$condition['conditionType'] == $condition['conditionCode']) {
+                                $returnInsurance = $PatientInsurance;
+                                break;
+                            }
                         } else {
-                            if (($condition['conditionType']=="categoryInsurance" && $condition['conditionCode']==$this->categoryInsurance) ||
-                                ($condition['conditionType']=="categoryCgd" && $condition['conditionCode']==$this->categoryCgd) ||
-                                ($condition['conditionType']=="productCode" && $condition['conditionCode']==$this->productCode)) break;
+                            if ($this->$condition['conditionType'] == $condition['conditionCode']) break;
                         }
                     }
                 }
