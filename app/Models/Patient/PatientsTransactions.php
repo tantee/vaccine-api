@@ -29,6 +29,14 @@ class PatientsTransactions extends Model
         return $this->hasOne('App\Models\Accounting\AccountingInvoices','invoiceId','invoiceId');
     }
 
+    public function childTransactions() {
+        return $this->hasMany('App\Models\Patient\PatientsTransactions','parentTransactionId','id');
+    }
+
+    public function parentTransaction() {
+        return $this->belongTo('App\Models\Patient\PatientsTransactions','id','parentTransactionId');
+    }
+
     public function getOrderLocationAttribute() {
         return \App\Models\Master\Locations::find($this->order_location_code);
     }
@@ -179,6 +187,22 @@ class PatientsTransactions extends Model
         $toArray['finalPrice'] = $this->final_price;
         
         return $toArray;
+    }
+
+    public static function boot() {
+        static::created(function($model) {
+            if ($model->Product !== null) {
+                if ($model->Product->childProducts && count($model->Product->childProducts)>0) {
+                    \App\Http\Controllers\Encounter\TransactionController::addTransactions($model->hn,$model->encounterId,$model->Product->childProducts,$model->id);
+                }
+            }
+        });
+
+        static::deleting(function($model) {
+            $model->childTransactions->delete();
+        });
+
+        parent::boot();
     }
 
     protected $dates = [

@@ -74,7 +74,7 @@ class Encounters extends Model
         });
 
         static::created(function($model) {
-            if ($model->Clinic != null) {
+            if ($model->Clinic !== null) {
                 if (count($model->Clinic->autoCharge)>0) {
                     \App\Http\Controllers\Encounter\TransactionController::addTransactions($model->hn,$model->encounterId,$model->Clinic->autoCharge);
                 }
