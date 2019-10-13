@@ -95,7 +95,8 @@ class PatientController extends Controller
             $docApplicationData = [
               'hn' => $hn,
               'templateCode' => 'application_form',
-              'data' => $data
+              'data' => $data,
+              'folder' => 'personal',
             ];
             $returnResults['document_application'] = DataController::createModel($docApplicationData,\App\Models\Document\Documents::class,[],[],true);
 
