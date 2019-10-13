@@ -196,11 +196,11 @@ class TransactionController extends Controller
         }
     }
 
-    public static function addTransactions($hn,$encounterId,$transactions,$parentTransaction=null) {
+    public static function addTransactions($hn,$encounterId,$transactions,$parentTransactionId=null) {
         data_fill($transactions,"*.hn",$hn);
         data_fill($transactions,"*.encounterId",$encounterId);
 
-        if ($parentTransaction!==null) data_fill($transactions,"*.parentTransaction",$parentTransaction);
+        if ($parentTransactionId!==null) data_fill($transactions,"*.parentTransactionId",$parentTransactionId);
 
         $transactions = array_map(function ($value) {
             return array_except($value,'id');
