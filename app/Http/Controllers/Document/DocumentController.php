@@ -45,7 +45,7 @@ class DocumentController extends Controller
       return $document;
     }
 
-    public static function addScannedDocuments($documentData,$hn=null,$category=null,$encounterId=null,$referenceId=null,$isAppend=false) {
+    public static function addScannedDocuments($documentData,$hn=null,$category=null,$encounterId=null,$referenceId=null,$folder=null,$isAppend=false) {
       $success = true;
       $errorTexts = [];
       $returnModels = [];
@@ -73,7 +73,7 @@ class DocumentController extends Controller
           if (isset($QRCodeData['DocId'])) {
             $document = \App\Models\Document\Documents::find($QRCodeData['DocId']);
           } else if ($hn!=null) {
-            $document = self::addDocument($hn,'default_scan',null,$category,$encounterId,$referenceId);
+            $document = self::addDocument($hn,'default_scan',null,$category,$encounterId,$referenceId,$folder);
             if ($document["success"]) {
               $document = $document["returnModels"][0];
             } else {
@@ -89,6 +89,7 @@ class DocumentController extends Controller
           if ($success) {
             if (isset($data['category']) && $data['category']!=null && $data['category']!='') $document->category = $data['category'];
             if (isset($data['referenceId']) && $data['referenceId']!=null && $data['referenceId']!='') $document->referenceId = $data['referenceId'];
+            if (isset($data['folder']) && $data['folder']!=null && $data['folder']!='') $document->folder = $data['folder'];
 
             $data = array_only($data,['base64string']);
             
