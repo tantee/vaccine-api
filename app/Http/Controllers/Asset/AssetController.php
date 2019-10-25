@@ -86,6 +86,20 @@ class AssetController extends Controller
       return $returnData;
     }
 
+    public static function getAsset($id) {
+      $asset = \App\Models\Asset\Assets::find($id);
+
+      if ($asset!=null && Storage::disk($asset->storage)->exists($asset->storagePath)) {
+        if ($asset->storage == 'local') {
+          return response()->file(storage_path('app/'.$asset->storagePath), ['Content-Type'=>$asset->mimeType]);
+        } else {
+          return response(Storage::disk($asset->storage)->get($asset->storagePath))->header('Content-Type',$asset->mimeType);
+        }
+      }
+      
+      return response('Asset not found',404);
+    }
+
     public static function getAssetBase64($id,$md5hash=null) {
       $success = true;
       $errorTexts = [];
