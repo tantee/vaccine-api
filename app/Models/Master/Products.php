@@ -28,4 +28,8 @@ class Products extends Model
     public function scopeActive($query) {
       return $query->where('isActive',true);
     }
+
+    public function scopeSelectable($query) {
+      return $query->where('isActive',true)->where('isHidden',false);
+    }
 }
