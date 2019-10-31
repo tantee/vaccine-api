@@ -13,7 +13,7 @@ use App\Utilities\ArrayType;
 
 class DataController extends Controller
 {
-    public static function createModel($data,$model,$validatorRule=[],$fillable=[],$parentTransaction=false) {
+    public static function createModel($data,$model,$validatorRule=[],$fillable=[],$parentTransaction=false,$returnWith=null) {
       $success = true;
       $errorTexts = [];
       $returnModels = [];
@@ -49,7 +49,9 @@ class DataController extends Controller
         try {
           foreach ($data as $dataItem) {
             $newItem = array_only($dataItem,$fillable);
-            $createdModel = $model::create($newItem)->fresh();
+            $createdModel = $model::create($newItem);
+            if ($returnWith!=null) $createdModel->with($returnWith);
+            $createdModel->fresh();
             array_push($returnModels,$createdModel);
           }
           $success = true;
@@ -65,7 +67,78 @@ class DataController extends Controller
       return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }
 
-    public static function updateModel($data,$model,$returnData = false,$override = false,$validatorRule=[],$fillable=[],$parentTransaction=false) {
+    public static function replaceModel($data,$model,$validatorRule=[],$fillable=[],$parentTransaction=false,$returnWith=null) {
+      $success = true;
+      $errorTexts = [];
+      $returnModels = [];
+      $keyField = "";
+
+      if ($success) {
+        if (array_keys($data) !== range(0, count($data) - 1)) $data = array($data);
+      }
+
+      if ($success && !empty($validatorRule)) {
+        foreach ($data as $rows => $dataItem) {
+          $validator = Validator::make($dataItem, $validatorRule);
+          if ($validator->fails()) {
+            foreach($validator->errors()->getMessages() as $key => $value) {
+              foreach($value as $message) array_push($errorTexts,["errorText"=>$message,"field" => $key,"rows"=>$rows]);
+            }
+            $success = false;
+          }
+        }
+      }
+
+      if ($success) {
+        $tempModel = new $model;
+        $keyField = $tempModel->getKeyName();
+      }
+
+      if ($success && empty($fillable)) {
+        $tempModel = new $model;
+        $fillable =  Schema::getColumnListing($tempModel->getTable());
+        if ($tempModel->getFillable() != []) {
+          $fillable = array_intersect($fillable,$tempModel->getFillable());
+        } else {
+          $fillable = array_diff($fillable,$tempModel->getGuarded());
+        }
+      }
+
+      if ($success) {
+        if (!$parentTransaction) DB::beginTransaction();
+        try {
+          foreach ($data as $dataItem) {
+            $newItem = array_only($dataItem,$fillable);
+            if (isset($data[$keyField])) {
+              $existModel = $model::find($data[$keyField]);
+              if ($existModel != null) {
+                $existModel->fill($newItem);
+                $existModel->save();
+                if ($returnWith!=null) $existModel->with($returnWith);
+                $existModel->fresh();
+                array_push($returnModels,$existModel);
+              }
+            } else {
+              $createdModel = $model::create($newItem);
+              if ($returnWith!=null) $createdModel->with($returnWith);
+              $createdModel->fresh();
+              array_push($returnModels,$createdModel);
+            }
+          }
+          $success = true;
+        } catch (\Exception $e) {
+          if (!$parentTransaction) DB::rollBack();
+          $returnModels = [];
+          $success = false;
+          array_push($errorTexts,["errorText" => $e->getMessage()]);
+        }
+        if (!$parentTransaction) DB::commit();
+      }
+
+      return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
+    }
+
+    public static function updateModel($data,$model,$returnData = false,$override = false,$validatorRule=[],$fillable=[],$parentTransaction=false,$returnWith=null) {
       $success = true;
       $errorTexts = [];
       $returnModels = [];
@@ -144,7 +217,10 @@ class DataController extends Controller
             };
             $tempModel = $tempModel->orWhere($row['updateWhere']);
           }
-          if ($returnData) $returnModels = $tempModel->get();
+          if ($returnData) {
+            if ($returnWith!=null) $tempModel->with($returnWith);
+            $returnModels = $tempModel->get();
+          }
         } catch (\Exception $e) {
           if (!$parentTransaction) DB::rollBack();
           $success = false;
@@ -171,7 +247,31 @@ class DataController extends Controller
       }
 
       if ($success) {
-        $return = DataController::createModel($request->data,$model,$validatorRule,$fillable);
+        $return = DataController::createModel($request->data,$model,$validatorRule,$fillable,false,(isset($request->with)) ? $request->with : null);
+        $success = $return["success"];
+        $errorTexts = $return["errorTexts"];
+        $returnModels = $return["returnModels"];
+      }
+
+      return new \App\Http\Resources\ExtendedResourceCollection(collect($returnModels),$success,$errorTexts);
+    }
+
+    public static function replaceModelByRequest(Request $request,$model,$validatorRule=[],$fillable=[]) {
+      $success = true;
+      $errorTexts = [];
+      $returnModels = [];
+
+      $createDataValidator = Validator::make($request->all(),[
+        'data' => 'required|array',
+      ]);
+
+      if ($createDataValidator->fails()) {
+        foreach($createDataValidator->errors()->all() as $value) array_push($errorTexts,["errorText"=>$value]);
+        $success = false;
+      }
+
+      if ($success) {
+        $return = DataController::replaceModel($request->data,$model,$validatorRule,$fillable,false,(isset($request->with)) ? $request->with : null);
         $success = $return["success"];
         $errorTexts = $return["errorTexts"];
         $returnModels = $return["returnModels"];
@@ -295,7 +395,7 @@ class DataController extends Controller
         if (isset($request->returnData)) $returnData = $request->returnData;
         if (isset($request->override)) $override = $request->override;
 
-        $return = DataController::updateModel($request->data,$model,$returnData,$override,$validatorRule,$fillable);
+        $return = DataController::updateModel($request->data,$model,$returnData,$override,$validatorRule,$fillable,false,(isset($request->with)) ? $request->with : null);
         $success = $return["success"];
         $errorTexts = $return["errorTexts"];
         $returnModels = $return["returnModels"];
