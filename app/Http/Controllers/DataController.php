@@ -108,6 +108,8 @@ class DataController extends Controller
         if (!$parentTransaction) DB::beginTransaction();
         try {
           foreach ($data as $dataItem) {
+            array_push($errorTexts,["errorText" => "in replace"]);
+            array_push($errorTexts,["errorText" => $data]);
             $newItem = array_only($dataItem,$fillable);
             if (isset($data[$keyField])) {
               $existModel = $model::find($data[$keyField]);
