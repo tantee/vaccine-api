@@ -50,7 +50,7 @@ class DataController extends Controller
           foreach ($data as $dataItem) {
             $newItem = array_only($dataItem,$fillable);
             $createdModel = $model::create($newItem);
-            $createdModel->fresh();
+            $createdModel->refresh();
             if ($returnWith!=null) $createdModel->with($returnWith);
             array_push($returnModels,$createdModel);
           }
