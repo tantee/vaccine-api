@@ -50,8 +50,8 @@ class DataController extends Controller
           foreach ($data as $dataItem) {
             $newItem = array_only($dataItem,$fillable);
             $createdModel = $model::create($newItem);
-            if ($returnWith!=null) $createdModel->with($returnWith);
             $createdModel->fresh();
+            if ($returnWith!=null) $createdModel->with($returnWith);
             array_push($returnModels,$createdModel);
           }
           $success = true;
@@ -108,12 +108,8 @@ class DataController extends Controller
         if (!$parentTransaction) DB::beginTransaction();
         try {
           foreach ($data as $dataItem) {
-            array_push($errorTexts,["errorText" => "in replace"]);
-            array_push($errorTexts,["errorText" => $keyField]);
-            array_push($errorTexts,["errorText" => $data]);
             $newItem = array_only($dataItem,$fillable);
             if (isset($dataItem[$keyField]) && $dataItem[$keyField]!=null) {
-              array_push($errorTexts,["errorText" => "in old item"]);
               $existModel = $model::find($dataItem[$keyField]);
               if ($existModel != null) {
                 $existModel->fill($newItem);
