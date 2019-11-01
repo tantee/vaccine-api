@@ -112,7 +112,7 @@ class DataController extends Controller
             array_push($errorTexts,["errorText" => $keyField]);
             array_push($errorTexts,["errorText" => $data]);
             $newItem = array_only($dataItem,$fillable);
-            if (isset($data[$keyField]) && $data[$keyField]!=null) {
+            if (isset($data->$keyField) && $data->$keyField!=null) {
               array_push($errorTexts,["errorText" => "in old item"]);
               $existModel = $model::find($data[$keyField]);
               if ($existModel != null) {
