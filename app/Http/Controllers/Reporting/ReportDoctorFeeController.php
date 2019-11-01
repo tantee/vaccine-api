@@ -20,17 +20,14 @@ class ReportDoctorFeeController extends Controller
 
         $transactions = $transactions->with(['invoice'])->get();
 
-        $transactions = $transactions->groupBy('OrderDoctor');
+        $transactions = $transactions->groupBy('OrderDoctorCode');
 
-        // $transactions = $transactions->map(function ($row,$key){
-        //     $row = $row->map(function($row) {
-        //         return array_except($row,['invoiceId','soldPatientsInsurancesId','soldPrice','soldDiscount','soldTotalPrice','soldTotalDiscount','soldFinalPrice']);
-        //     });
-        //     return [[
-        //         "categoryInsurance" => $key,
-        //         "transactions" => $row
-        //     ]];
-        // })->flatten(1)->sortBy("categoryInsurance");
+        $transactions = $transactions->map(function ($row,$key){
+            return [[
+                "OrderDoctor" => $key,
+                "transactions" => $row
+            ]];
+        })->flatten(1)->sortBy("OrderDoctor");
 
         return $transactions;
     }
