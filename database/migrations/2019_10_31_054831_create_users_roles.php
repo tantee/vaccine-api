@@ -17,6 +17,9 @@ class CreateUsersRoles extends Migration
             $table->increments('id');
             $table->integer('userId');
             $table->string('roleId',50);
+            $table->string('created_by')->nullable();
+            $table->string('updated_by')->nullable();
+            $table->string('deleted_by')->nullable();
             $table->timestamps();
             $table->unique(['userId','roleId']);
         });

@@ -17,6 +17,10 @@ class CreatePermissions extends Migration
             $table->string('permissionId',50)->primary();
             $table->string('description')->nullable();
             $table->boolean('defaultValue')->default(false);
+            $table->string('created_by')->nullable();
+            $table->string('updated_by')->nullable();
+            $table->string('deleted_by')->nullable();
+            $table->SoftDeletes();
             $table->timestamps();
         });
     }

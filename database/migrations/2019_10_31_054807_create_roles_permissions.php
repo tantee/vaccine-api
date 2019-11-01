@@ -18,6 +18,9 @@ class CreateRolesPermissions extends Migration
             $table->integer('roleId');
             $table->string('permissionId',50);
             $table->boolean('value');
+            $table->string('created_by')->nullable();
+            $table->string('updated_by')->nullable();
+            $table->string('deleted_by')->nullable();
             $table->timestamps();
             $table->unique(['roleId','permissionId']);
         });

@@ -18,6 +18,9 @@ class CreateUsersPermissions extends Migration
             $table->integer('userId');
             $table->string('permissionId',50);
             $table->boolean('value');
+            $table->string('created_by')->nullable();
+            $table->string('updated_by')->nullable();
+            $table->string('deleted_by')->nullable();
             $table->timestamps();
             $table->unique(['userId','permissionId']);
         });

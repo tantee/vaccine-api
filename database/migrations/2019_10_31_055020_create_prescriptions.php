@@ -15,12 +15,17 @@ class CreatePrescriptions extends Migration
     {
         Schema::create('prescriptions', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('hn',20);
+            $table->string('encounterId',50);
             $table->integer('documentId');
             $table->json('label');
-            $table->boolean('isLabeled')->default(false);
-            $table->json('dispend');
-            $table->boolean('isDepended')->default(false);
+            $table->json('dispensing');
             $table->string('status');
+            $table->json('statusLog')->nullable();
+            $table->string('created_by')->nullable();
+            $table->string('updated_by')->nullable();
+            $table->string('deleted_by')->nullable();
+            $table->SoftDeletes();
             $table->timestamps();
         });
     }

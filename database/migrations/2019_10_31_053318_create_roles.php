@@ -16,6 +16,10 @@ class CreateRoles extends Migration
         Schema::create('roles', function (Blueprint $table) {
             $table->string('roleId',50)->primary();
             $table->string('roleName');
+            $table->string('created_by')->nullable();
+            $table->string('updated_by')->nullable();
+            $table->string('deleted_by')->nullable();
+            $table->SoftDeletes();
             $table->timestamps();
         });
     }
