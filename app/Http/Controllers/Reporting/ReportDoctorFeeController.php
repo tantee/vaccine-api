@@ -14,11 +14,23 @@ class ReportDoctorFeeController extends Controller
         $to = Carbon::parse($endDate)->endOfDay()->toDateTimeString();
 
         $transactions = \App\Models\Patient\PatientsTransactions::where('productCode','LIKE','DF%')
-                            ->whereDate('transactionDateTime',[$from,$to]);
+                            ->whereBetween('transactionDateTime',[$from,$to]);
 
         if ($invoiced) $transactions = $transactions->whereNotNull('invoiceId');
 
         $transactions = $transactions->with(['invoice'])->get();
+
+        $transactions = $transactions->groupBy('OrderDoctor');
+
+        // $transactions = $transactions->map(function ($row,$key){
+        //     $row = $row->map(function($row) {
+        //         return array_except($row,['invoiceId','soldPatientsInsurancesId','soldPrice','soldDiscount','soldTotalPrice','soldTotalDiscount','soldFinalPrice']);
+        //     });
+        //     return [[
+        //         "categoryInsurance" => $key,
+        //         "transactions" => $row
+        //     ]];
+        // })->flatten(1)->sortBy("categoryInsurance");
 
         return $transactions;
     }
