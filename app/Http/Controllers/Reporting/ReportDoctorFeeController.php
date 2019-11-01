@@ -20,6 +20,6 @@ class ReportDoctorFeeController extends Controller
 
         $transactions = $transactions->with(['invoice'])->get();
 
-        return $transctions;
+        return $transactions;
     }
 }
