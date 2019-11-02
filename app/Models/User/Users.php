@@ -19,4 +19,12 @@ class Users extends Model
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function Permissions() {
+        return $this->hasMany('App\Models\User\UsersPermissions','id','userId');
+    }
+
+    public function Roles() {
+        return $this->belongsToMany('App\Models\User\Roles', 'users_roles', 'userId', 'roleId');
+    }
 }
