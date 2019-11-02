@@ -24,10 +24,10 @@ class ReportDoctorFeeController extends Controller
 
         $transactions = $transactions->map(function ($row,$key){
             return [[
-                "OrderDoctor" => $key,
+                "orderDoctor" => $key,
                 "transactions" => $row
             ]];
-        })->flatten(1)->sortBy("OrderDoctor");
+        })->flatten(1)->sortBy("orderDoctor");
 
         return [
             "reportBeginDate" => $beginDate,
