@@ -29,6 +29,10 @@ class ReportDoctorFeeController extends Controller
             ]];
         })->flatten(1)->sortBy("OrderDoctor");
 
-        return $transactions;
+        return [
+            "reportBeginDate" => $beginDate,
+            "reportEndDate" => $endDate,
+            "report" => $transactions->toArray()
+        ];
     }
 }
