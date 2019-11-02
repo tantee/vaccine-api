@@ -11,6 +11,10 @@ class Roles extends Model
     //
     use SoftDeletes,UserStamps;
 
+    protected $primaryKey = 'roleId';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     protected $guarded = [];
 
     public function Permissions() {
