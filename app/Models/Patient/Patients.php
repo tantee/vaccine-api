@@ -96,4 +96,6 @@ class Patients extends Model
     ];
 
     protected $appends = ['name_th','name_en','name_real_th','name_real_en','age'];
+
+    protected $hidden = ['personIdDetail'];
 }
