@@ -26,7 +26,8 @@ class ReportDoctorFeeController extends Controller
             return [[
                 "orderDoctor" => $key,
                 "orderDoctorNameTH" => $row[0]->orderDoctor->nameTH,
-                "transactions" => $row
+                "transactions" => $row,
+                "grandFinalPrice" => $row->sum('finalPrice'),
             ]];
         })->flatten(1)->sortBy("orderDoctor");
 
