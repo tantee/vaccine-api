@@ -25,6 +25,7 @@ class ReportDoctorFeeController extends Controller
         $transactions = $transactions->map(function ($row,$key){
             return [[
                 "orderDoctor" => $key,
+                "orderDoctorNameTH" => $row[0]->orderDoctor->nameTH,
                 "transactions" => $row
             ]];
         })->flatten(1)->sortBy("orderDoctor");
