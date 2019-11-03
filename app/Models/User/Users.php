@@ -28,7 +28,7 @@ class Users extends Model
             if (isset($role["roleId"])) {
                 $tmpRole = \App\Models\User\Roles::find($role["roleId"]);
                 if ($tmpRole != null) {
-                    $tmpPermissions = array_merge($tmpPermissions,collect($tmpRole->permissions)->pluck('permissionId'));
+                    $tmpPermissions = $tmpPermissions->merge(collect($tmpRole->permissions)->pluck('permissionId'));
                 }
             }
         }
