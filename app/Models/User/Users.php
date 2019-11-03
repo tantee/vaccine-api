@@ -32,6 +32,7 @@ class Users extends Model
                 }
             }
         }
+        $tmpPermissions = $tmpPermissions->unique()->values()->all();
         
         return $tmpPermissions;
     }
