@@ -16,7 +16,6 @@ class CreatePermissions extends Migration
         Schema::create('permissions', function (Blueprint $table) {
             $table->string('permissionId',50)->primary();
             $table->string('description')->nullable();
-            $table->boolean('defaultValue')->default(false);
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->string('deleted_by')->nullable();

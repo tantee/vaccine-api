@@ -17,7 +17,7 @@ class Roles extends Model
 
     protected $guarded = [];
 
-    public function Permissions() {
-        return $this->hasMany('App\Models\User\RolesPermissions','roleId','roleId');
-    }
+    protected $casts = [
+      'permissions' => 'array',
+    ];
 }

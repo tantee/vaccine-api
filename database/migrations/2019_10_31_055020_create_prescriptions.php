@@ -18,7 +18,7 @@ class CreatePrescriptions extends Migration
             $table->string('hn',20);
             $table->string('encounterId',50);
             $table->integer('documentId');
-            $table->json('label');
+            $table->json('labels');
             $table->json('dispensing');
             $table->string('status');
             $table->json('statusLog')->nullable();

@@ -1,15 +1,21 @@
 <?php
 
-namespace App\Models\User;
+namespace App\Models\Pharmacy;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UserStamps;
 
-class RolesPermissions extends Model
+class Prescriptions extends Model
 {
     //
     use SoftDeletes,UserStamps;
-    
+
     protected $guarded = [];
+
+    protected $casts = [
+      'labels' => 'array',
+      'dispensing' => 'array',
+      'statusLog' => 'array',
+    ];
 }

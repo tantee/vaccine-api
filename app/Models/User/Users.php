@@ -8,7 +8,7 @@ class Users extends Model
 {
     //
     protected $fillable = [
-        'name','username', 'email', 'doctorCode',
+        'name','username', 'email', 'doctorCode','roles','permissions'
     ];
 
     /**
@@ -20,11 +20,8 @@ class Users extends Model
         'password', 'remember_token',
     ];
 
-    public function Permissions() {
-        return $this->hasMany('App\Models\User\UsersPermissions','id','userId');
-    }
-
-    public function Roles() {
-        return $this->belongsToMany('App\Models\User\Roles', 'users_roles', 'userId', 'roleId');
-    }
+    protected $casts = [
+      'roles' => 'array',
+      'permissions' => 'array',
+    ];
 }
