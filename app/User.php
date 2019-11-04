@@ -62,6 +62,10 @@ class User extends Authenticatable
         return $tmpPermissions;
     }
 
+    public function getRolesAttribute($value) {
+        return collect($value)->pluck("roleId")->toArray();
+    }
+
     protected $casts = [
       'roles' => 'array',
       'permissions' => 'array',
