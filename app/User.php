@@ -43,4 +43,31 @@ class User extends Authenticatable
     public function validateForPassportPasswordGrant($password) {
         return true;
     }
+
+    public function getPermissionsAttribute($value) {
+
+        $tmpPermissions = collect($value)->pluck('permissionId');
+
+        foreach(array_wrap($this->roles) as $role) {
+            if (isset($role["roleId"])) {
+                $tmpRole = \App\Models\User\Roles::find($role["roleId"]);
+                if ($tmpRole != null) {
+                    $tmpPermissions = $tmpPermissions->merge(collect($tmpRole->permissions)->pluck('permissionId'));
+                }
+            }
+        }
+
+        $tmpPermissions = $tmpPermissions->unique()->values()->all();
+
+        return $tmpPermissions;
+    }
+
+    public function getRolesAttribute($value) {
+        return collect($value)->pluck('roleId');
+    }
+
+    protected $casts = [
+      'roles' => 'array',
+      'permissions' => 'array',
+    ];
 }
