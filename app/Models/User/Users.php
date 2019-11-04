@@ -24,14 +24,14 @@ class Users extends Model
 
         $tmpPermissions = collect($this->permissions)->pluck('permissionId');
 
-        collect($this->roles)->each(function ($item, $key) {
-            if (isset($item["roleId"])) {
-                $tmpRole = \App\Models\User\Roles::find($item["roleId"]);
+        foreach(array_wrap($this->roles) as $role) {
+            if (isset($role["roleId"])) {
+                $tmpRole = \App\Models\User\Roles::find($role["roleId"]);
                 if ($tmpRole != null) {
                     $tmpPermissions = $tmpPermissions->merge(collect($tmpRole->permissions)->pluck('permissionId'));
                 }
             }
-        });
+        }
         
         $tmpPermissions = $tmpPermissions->unique()->values()->all();
 
