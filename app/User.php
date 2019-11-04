@@ -44,31 +44,13 @@ class User extends Authenticatable
         return true;
     }
 
-    public function getAllPermissionsAttribute() {
-
-        $tmpPermissions = collect($this->permissions)->pluck('permissionId');
-
-        foreach(array_wrap($this->roles) as $role) {
-            if (isset($role["roleId"])) {
-                $tmpRole = \App\Models\User\Roles::find($role["roleId"]);
-                if ($tmpRole != null) {
-                    $tmpPermissions = $tmpPermissions->merge(collect($tmpRole->permissions)->pluck('permissionId'));
-                }
-            }
-        }
-
-        $tmpPermissions = $tmpPermissions->unique()->values()->all();
-
-        return $tmpPermissions;
-    }
-
     public function getRolesAttribute($value) {
-        return collect($value)->pluck("roleId")->unique()->values()->all();
+        return collect(json_decode($value,true))->pluck("roleId")->unique()->values()->all();
     }
 
     public function getPermissionsAttribute($value) {
 
-        $tmpPermissions = collect($value)->pluck('permissionId');
+        $tmpPermissions = collect(json_decode($value,true))->pluck('permissionId');
 
         foreach(array_wrap($this->roles) as $role) {
             $tmpRole = \App\Models\User\Roles::find($role);
@@ -81,11 +63,4 @@ class User extends Authenticatable
 
         return $tmpPermissions;
     }
-
-    protected $casts = [
-      'roles' => 'array',
-      'permissions' => 'array',
-    ];
-
-    protected $appends = ['all_permissions'];
 }
