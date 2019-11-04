@@ -45,15 +45,12 @@ class User extends Authenticatable
     }
 
     public function getPermissionsAttribute($value) {
-
         $tmpPermissions = collect($value)->pluck('permissionId');
 
         foreach(array_wrap($this->roles) as $role) {
-            if (isset($role["roleId"])) {
-                $tmpRole = \App\Models\User\Roles::find($role["roleId"]);
-                if ($tmpRole != null) {
-                    $tmpPermissions = $tmpPermissions->merge(collect($tmpRole->permissions)->pluck('permissionId'));
-                }
+            $tmpRole = \App\Models\User\Roles::find($role);
+            if ($tmpRole != null) {
+                $tmpPermissions = $tmpPermissions->merge(collect($tmpRole->permissions)->pluck('permissionId'));
             }
         }
 
@@ -63,7 +60,7 @@ class User extends Authenticatable
     }
 
     public function getRolesAttribute($value) {
-        return collect($value)->pluck('roleId');
+        return collect($value)->pluck('roleId')->toArray();
     }
 
     protected $casts = [
