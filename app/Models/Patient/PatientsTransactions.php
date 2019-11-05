@@ -73,7 +73,6 @@ class PatientsTransactions extends Model
             $Insurances = \App\Models\Patient\PatientsInsurances::where('hn',$this->hn)->activeAt($this->transactionDateTime)->orderBy('priority')->get();
 
             foreach($Insurances as $PatientInsurance) {
-
                 foreach (collect($PatientInsurance->policies)->sortBy('priority') as $Policy) {
                     $Insurance = \App\Models\Master\Insurances::find($Policy["insuranceCode"]);
 
@@ -113,50 +112,6 @@ class PatientsTransactions extends Model
 
         return $returnInsurance;
     }
-
-    // public function getInsuranceAttribute() {
-    //     $returnInsurance = null;
-
-    //     if (!$this->isForceSelfPay) {
-    //         if ($this->soldPatientsInsurancesId !== null) return \App\Models\Patient\PatientsInsurances::find($this->soldPatientsInsurancesId);
-
-    //         $Insurances = \App\Models\Patient\PatientsInsurances::where('hn',$this->hn)->activeAt($this->transactionDateTime)->get();
-
-    //         foreach($Insurances as $PatientInsurance) {
-    //             $Insurance = $PatientInsurance->Condition;
-    //             if ($this->Encounter->encounterType == "IMP" && !$Insurance->isApplyToIpd) break;
-    //             if ($this->Encounter->encounterType != "IMP" && !$Insurance->isApplyToOpd) break;
-
-    //             if ($Insurance->isCoverageAll) {
-    //                 $returnInsurance = $PatientInsurance;
-    //                 foreach(collect($Insurance->conditions)->sortBy('conditionPriority') as $condition) {
-    //                     if ($condition['coverage']=="allow") {
-    //                         if ($this->{$condition['conditionType']} == $condition['conditionCode']) break;
-    //                     } else {
-    //                         if ($this->{$condition['conditionType']} == $condition['conditionCode']) {
-    //                             $returnInsurance = null;
-    //                             break;
-    //                         }
-    //                     }
-    //                 }
-    //             } else {
-    //                 foreach(collect($Insurance->conditions)->sortBy('conditionPriority') as $condition) {
-    //                     if ($condition['coverage']=="allow") {
-    //                         if ($this->{$condition['conditionType']} == $condition['conditionCode']) {
-    //                             $returnInsurance = $PatientInsurance;
-    //                             break;
-    //                         }
-    //                     } else {
-    //                         if ($this->{$condition['conditionType']} == $condition['conditionCode']) break;
-    //                     }
-    //                 }
-    //             }
-    //             if ($returnInsurance !== null) break;
-    //         }
-    //     }
-
-    //     return $returnInsurance;
-    // }
 
     public function getPriceAttribute() {
         if ($this->soldPrice !== null) return $this->soldPrice;
