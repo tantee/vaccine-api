@@ -44,6 +44,4 @@ class PatientsInsurances extends Model
       'limitPerIpd' => 'float',
       'policies' => 'array',
     ];
-
-    protected $with = ['Condition'];
 }
