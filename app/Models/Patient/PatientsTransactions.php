@@ -163,7 +163,7 @@ class PatientsTransactions extends Model
         $insurance = $this->Insurance;
         if ($insurance["Policy"] == null) return $this->Product->price1;
         else {
-            $price = 'price'.$insurance["Policy"]->Condition->priceLevel;
+            $price = 'price'.$insurance["Policy"]->priceLevel;
             return ($this->Product->$price!==null) ? $this->Product->$price : $this->Product->price1;
         }
     }
@@ -172,7 +172,7 @@ class PatientsTransactions extends Model
         if ($this->soldDiscount !== null) return $this->soldDiscount;
         $insurance = $this->Insurance;
         if ($insurance["Policy"] == null) return 0;
-        else return $insurance["Policy"]->Condition->discount;
+        else return $insurance["Policy"]->discount;
     }
 
     public function getTotalDiscountAttribute() {
