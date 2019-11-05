@@ -177,6 +177,12 @@ class MasterGroupsSeeder extends Seeder
             'description' => 'ชนิดของการนัด',
             'propertiesTemplate' => null,
           ],
+          [
+            'groupKey' => '$PayerType',
+            'groupName' => 'ชนิดผู้ชำระค่าใช้จ่าย',
+            'description' => 'ชนิดผู้ชำระค่าใช้จ่าย',
+            'propertiesTemplate' => null,
+          ],
         ];
 
         

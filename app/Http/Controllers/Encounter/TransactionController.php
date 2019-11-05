@@ -106,7 +106,8 @@ class TransactionController extends Controller
                 $itemCollection->each(function($itemTransaction,$key) use ($invoice) {
                     $itemTransaction->update([
                         "invoiceId" => $invoice->invoiceId,
-                        "soldPatientsInsurancesId" => ($itemTransaction->insurance) ? $itemTransaction->insurance->id : null,
+                        "soldPatientsInsurancesId" => ($itemTransaction->insurance && $itemTransaction->insurance["PatientsInsurances"]) ? $itemTransaction->insurance["PatientsInsurances"]->id : null,
+                        "soldInsuranceCode" => ($itemTransaction->insurance && $itemTransaction->insurance["Policy"]) ? $itemTransaction->insurance["Policy"]->insuranceCode : null,
                         "soldPrice" => $itemTransaction->price,
                         "soldDiscount" => $itemTransaction->discount,
                         "soldTotalPrice" => $itemTransaction->total_price,

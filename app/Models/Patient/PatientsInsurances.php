@@ -16,8 +16,8 @@ class PatientsInsurances extends Model
     protected $guarded = [];
     protected $toStores = ['documents'];
 
-    public function Condition() {
-        return $this->hasOne('App\Models\Master\Insurances','insuranceCode','insuranceCode');
+    public function Payer() {
+        return $this->hasOne('App\Models\Master\Payers','payerCode','payerCode');
     }
 
     public function scopeActive($query) {
@@ -42,6 +42,7 @@ class PatientsInsurances extends Model
       'limitToConfirm' => 'float',
       'limitPerOpd' => 'float',
       'limitPerIpd' => 'float',
+      'policies' => 'array',
     ];
 
     protected $with = ['Condition'];

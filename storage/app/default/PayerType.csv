@@ -1,0 +1,9 @@
+itemCode,itemValue,itemValueEN
+10,ประกันสังคม,Social Security
+20,ประกันสุขภาพถ้วนหน้า,Universal Coverage
+30,ประกันสุขภาพ,Health Insurance
+40,ข้าราชการ,Government officer
+41,ข้าราชการ (ท้องถิ่น),Government officer (Local)
+50,รัฐวิสาหกิจ,State enterprises
+60,สวัสดิการบริษัท,Company welfare
+99,เงินสด,Self pay
