@@ -367,10 +367,10 @@ class PrintController extends Controller
             $headers = $section->getHeaders();
             if (count($headers)==0) {
               $header = $section->addHeader();
-              $header->addWatermark($watermarkFile, array('marginTop' => 200, 'marginLeft' => 55));
+              //$header->addWatermark($watermarkFile, array('marginTop' => 200, 'marginLeft' => 55));
             } else {
               foreach($headers as $header) {
-                $header->addWatermark($watermarkFile, array('marginTop' => 200, 'marginLeft' => 55));
+                //$header->addWatermark($watermarkFile, array('marginTop' => 200, 'marginLeft' => 55));
               }
             }
           }
