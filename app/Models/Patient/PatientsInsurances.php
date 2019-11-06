@@ -20,6 +20,14 @@ class PatientsInsurances extends Model
         return $this->hasOne('App\Models\Master\Payers','payerCode','payerCode');
     }
 
+    public function Invoices() {
+        return $this->hasMany('App\Models\Accounting\AccountingInvoices','patientsInsurancesId','id');
+    }
+
+    public function getAmountAttribute() {
+        return $this->Invoices()->sum('amount');
+    }
+
     public function scopeActive($query) {
       return $query->whereDate('beginDate','<=',Carbon::now())->where(function ($query) {
         $query->whereDate('endDate','>=',Carbon::now())->orWhereNull('endDate');
