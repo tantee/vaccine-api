@@ -17,7 +17,7 @@ class AlterPatientsInsurancesMultiplePolicies extends Migration
             $table->dropColumn(['insuranceCode','contractPayer1','contractPayer2']);
             $table->string('payerType',50)->after('hn');
             $table->string('payerCode',50)->nullable()->after('payerType');
-            $table->string('policies',50)->nullable()->after('payerCode');
+            $table->json('policies',50)->nullable()->after('payerCode');
             $table->boolean('isChargeToPatient')->default(true)->after('payerCode');
         });
     }
