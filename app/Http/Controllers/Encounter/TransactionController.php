@@ -24,7 +24,7 @@ class TransactionController extends Controller
 
         if ($transactions != null) {
             $transactions = $transactions->groupBy(function ($item, $key) {
-                return ($item->insurance==null) ? null : $item->insurance->id;
+                return ($item->insurance['PatientsInsurances']==null) ? null : $item->insurance["PatientsInsurances"]->id;
             });
 
             $transactions->each(function($itemCollection,$key) use (&$hn,&$success,&$errorTexts,&$returnModels) {

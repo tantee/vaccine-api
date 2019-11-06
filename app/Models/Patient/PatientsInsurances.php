@@ -54,4 +54,6 @@ class PatientsInsurances extends Model
     ];
 
     protected $with = ['payer'];
+
+    protected $appends = ['amount'];
 }
