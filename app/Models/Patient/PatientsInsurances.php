@@ -25,7 +25,7 @@ class PatientsInsurances extends Model
     }
 
     public function getAmountAttribute() {
-        return $this->Invoices()->sum('amount');
+        return (float)$this->Invoices()->sum('amount');
     }
 
     public function scopeActive($query) {
