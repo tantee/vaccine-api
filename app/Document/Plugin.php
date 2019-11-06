@@ -76,9 +76,9 @@ class clsPlugin
       if (isset($PrmLst['full'])) $full = (boolean)$PrmLst['full'];
       else $full = false;
 
-      if (ArrayType::isAssociative($Value)) $Value = [$Value];
-
       if (is_array($Value)) {
+        if (ArrayType::isAssociative($Value))$Value = [$Value];
+        
         if (count($Value)==0) {
           $Value = "เงินสด";
         } else {
