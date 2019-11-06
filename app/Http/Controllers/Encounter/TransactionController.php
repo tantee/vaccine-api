@@ -227,11 +227,14 @@ class TransactionController extends Controller
                 array_push($errorTexts,["errorText" => 'Cannot void paid invoice']);
             }
             if ($success) {
-                $invoice->document->data["isVoid"] = true;
-                $invoice->document->data["note"] = $note;
+                $tmpDocumentData = $invoice->document->data;
+                $tmpDocumentData["isVoid"] = true;
+                $tmpDocumentData["note"] = $note;
+                $invoice->document->data = $tmpDocumentData;
                 $invoice->isVoid = true;
+                $invoice->isVoidDateTime = Carbon::now();
                 $invoice->note = $note;
-                $invoice->save();
+                $invoice->push();
 
                 $invoice->transactions->update([
                     'invoiceId'=>null,
@@ -260,11 +263,14 @@ class TransactionController extends Controller
         $payments = \App\Models\Accounting\AccountingPayments::where('receiptId',$receiptId)->get();
         if ($payments->count() > 0) {
             $payments->each(function($payment,$key) use ($note) {
-                $payment->document->data["isVoid"] = true;
-                $payment->document->data["note"] = $note;
+                $tmpDocumentData = $payment->document->data;
+                $tmpDocumentData["isVoid"] = true;
+                $tmpDocumentData["note"] = $note;
+                $payment->document->data = $tmpDocumentData;
                 $payment->isVoid = true;
                 $payment->isVoidDateTime = Carbon::now();
-                $payment->save();
+                $payment->note = $note;
+                $payment->push();
             });
             $returnModels = $payments;
         } else {
