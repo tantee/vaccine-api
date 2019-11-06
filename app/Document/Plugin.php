@@ -78,17 +78,21 @@ class clsPlugin
 
       if (is_array($Value)) {
         if (ArrayType::isAssociative($Value))$Value = [$Value];
-        
+
         if (count($Value)==0) {
           $Value = "เงินสด";
         } else {
           $tmpInsuranceNames = [];
           foreach($Value as $insurance) {
-            $tmpInsuranceName = \App\Http\Controllers\Master\MasterController::translateMaster('$PayerType',$insurance["payerType"]);
-            if ($insurance["payer"] !== null && $full) {
-              $tmpInsuranceName .= " (".$insurance["payer"]["payerName"].")";
+            if (isset($insurance["payerType"])) {
+              $tmpInsuranceName = \App\Http\Controllers\Master\MasterController::translateMaster('$PayerType',$insurance["payerType"]);
+              if ($insurance["payer"] !== null && $full) {
+                $tmpInsuranceName .= " (".$insurance["payer"]["payerName"].")";
+              }
+              $tmpInsuranceNames[] = $tmpInsuranceName;
+            } else if (isset($insurance["condition"])) {
+              $tmpInsuranceNames[] = $insurance["condition"]["insuranceName"];
             }
-            $tmpInsuranceNames[] = $tmpInsuranceName;
           }
           $Value = implode(",",$tmpInsuranceNames);
         }
