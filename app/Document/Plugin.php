@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Http\Controllers\Master\MasterController;
 use Rundiz\Number\NumberThai;
 use Rundiz\Number\NumberEng;
+use App\Utilities\ArrayType;
 
 define('TBS_CAHPLUGIN','\App\Document\clsPlugin');
 
@@ -72,15 +73,24 @@ class clsPlugin
       $Value = number_format($Value,2);
     }
     if ($ope == 'formatinsurance') {
+      if (isset($PrmLst['full'])) $full = (boolean)$PrmLst['full'];
+      else $full = false;
+
+      if (ArrayType::isAssociative($Value)) $Value = [$Value];
+
       if (is_array($Value)) {
         if (count($Value)==0) {
           $Value = "เงินสด";
         } else {
-          $tmpInsuranceName = [];
+          $tmpInsuranceNames = [];
           foreach($Value as $insurance) {
-            $tmpInsuranceName[] = $insurance["condition"]["insuranceName"]; 
+            $tmpInsuranceName = \App\Http\Controllers\Master\MasterController::translateMaster('$PayerType',$insurance["payerType"]);
+            if ($insurance["payer"] !== null && $full) {
+              $tmpInsuranceName .= " (".$insurance["payer"]["payerName"].")";
+            }
+            $tmpInsuranceNames[] = $tmpInsuranceName;
           }
-          $Value = implode(",",$tmpInsuranceName);
+          $Value = implode(",",$tmpInsuranceNames);
         }
       }
     }

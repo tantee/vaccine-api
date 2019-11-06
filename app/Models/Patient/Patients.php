@@ -28,7 +28,7 @@ class Patients extends Model
     }
 
     public function Insurances() {
-      return $this->hasMany('App\Models\Patient\PatientsInsurances','hn','hn')->active();
+      return $this->hasMany('App\Models\Patient\PatientsInsurances','hn','hn')->active()->orderBy('priority');
     }
 
     public function Transactions() {
