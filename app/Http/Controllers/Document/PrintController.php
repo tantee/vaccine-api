@@ -26,6 +26,8 @@ use Uvinum\PDFWatermark\Watermark;
 use Uvinum\PDFWatermark\FpdiPdfWatermarker as PDFWatermarker;
 use Uvinum\PDFWatermark\Position;
 
+use PhpOffice\PhpWord\Settings;
+
 class PrintController extends Controller
 {
     public static function printBlankDocument($documentTemplate,$hn=null,$encounterId=null,$referenceId=null,$data=null,$folder=null) {
