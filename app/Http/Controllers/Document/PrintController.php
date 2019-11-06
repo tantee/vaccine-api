@@ -26,8 +26,6 @@ use Uvinum\PDFWatermark\Watermark;
 use Uvinum\PDFWatermark\FpdiPdfWatermarker as PDFWatermarker;
 use Uvinum\PDFWatermark\Position;
 
-use PhpOffice\PhpWord\Settings;
-
 class PrintController extends Controller
 {
     public static function printBlankDocument($documentTemplate,$hn=null,$encounterId=null,$referenceId=null,$data=null,$folder=null) {
@@ -241,8 +239,6 @@ class PrintController extends Controller
 
         $TBS->Show(\OPENTBS_FILE,storage_path('app/'.$tmpFilename));
 
-        self::watermarkWord($tmpFilename,'void');
-
         if (isset($hn) && isset($templateCode) && isset($documentId)) Storage::copy($tmpFilename,'/documents/'.$hn.'/'.$templateCode.'/raw/'.$documentId.'_'.$tmpUniqId.'.docx');
 
         if ($toPdf && self::convertToPDF($tmpFilename,$tmpFilenamePDF)) {
@@ -349,39 +345,6 @@ class PrintController extends Controller
         }
       }
       
-      return $success;
-    }
-
-    private static function watermarkWord($filename,$watermarkName) {
-      $success = false;
-      $watermarkFile = null;
-
-      if (Storage::exists('/default/watermarks/'.$watermarkName.'.png')) $watermarkFile = storage_path('app/default/watermarks/'.$watermarkName.'.png');
-      if ($watermarkFile==null && Storage::exists('/default/watermarks/'.$watermarkName.'.jpg')) $watermarkFile = storage_path('app/default/watermarks/'.$watermarkName.'.jpg');
-
-      if ($watermarkFile!=null) {
-        try {
-          $phpWord = \PhpOffice\PhpWord\IOFactory::load(storage_path('app/'.$filename));
-          $sections = $phpWord->getSections();
-          foreach ($sections as $section) {
-            $headers = $section->getHeaders();
-            if (count($headers)==0) {
-              $header = $section->addHeader();
-              //$header->addWatermark($watermarkFile, array('marginTop' => 200, 'marginLeft' => 55));
-            } else {
-              foreach($headers as $header) {
-                //$header->addWatermark($watermarkFile, array('marginTop' => 200, 'marginLeft' => 55));
-              }
-            }
-          }
-          $phpWord->save(storage_path('app/'.$filename), 'Word2007');
-          $success = true;
-        } catch (\Exception $e) {
-          throw $e;
-          $success = false;
-        }
-      }
-
       return $success;
     }
 }

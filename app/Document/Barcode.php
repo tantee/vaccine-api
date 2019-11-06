@@ -12,8 +12,8 @@ class Barcode
 
         $tmpUniqId = uniqid();
         $tmpDirectory = $CurrPrm['tmpDirectory'];
-        $tmpBarcodeFile = storage_path('app/'.$tmpDirectory.'/'.$tmpUniqId.'.png');
-        QrCode::encoding('UTF-8')->size(300)->margin(0)->format('png')->errorCorrection('H')->generate($CurrVal,$tmpBarcodeFile);
+        $tmpBarcodeFile = storage_path('app/'.$tmpDirectory.'/'.$tmpUniqId.'.svg');
+        QrCode::encoding('UTF-8')->size(300)->margin(0)->errorCorrection('H')->generate($CurrVal,$tmpBarcodeFile);
 
         $CurrVal = $tmpBarcodeFile;
       }
@@ -25,8 +25,8 @@ class Barcode
 
         $tmpUniqId = uniqid();
         $tmpDirectory = $CurrPrm['tmpDirectory'];
-        $tmpBarcodeFile = storage_path('app/'.$tmpDirectory.'/'.$tmpUniqId.'.png');
-        $barcode = new \Picqer\Barcode\BarcodeGeneratorPNG();
+        $tmpBarcodeFile = storage_path('app/'.$tmpDirectory.'/'.$tmpUniqId.'.svg');
+        $barcode = new \Picqer\Barcode\BarcodeGeneratorSVG();
         file_put_contents($tmpBarcodeFile,$barcode->getBarcode($CurrVal, $barcode::TYPE_CODE_39));
 
         $CurrVal = $tmpBarcodeFile;
@@ -39,8 +39,8 @@ class Barcode
 
         $tmpUniqId = uniqid();
         $tmpDirectory = $CurrPrm['tmpDirectory'];
-        $tmpBarcodeFile = storage_path('app/'.$tmpDirectory.'/'.$tmpUniqId.'.png');
-        $barcode = new \Picqer\Barcode\BarcodeGeneratorPNG();
+        $tmpBarcodeFile = storage_path('app/'.$tmpDirectory.'/'.$tmpUniqId.'.svg');
+        $barcode = new \Picqer\Barcode\BarcodeGeneratorSVG();
         file_put_contents($tmpBarcodeFile,$barcode->getBarcode($CurrVal, $barcode::TYPE_CODE_128));
 
         $CurrVal = $tmpBarcodeFile;
