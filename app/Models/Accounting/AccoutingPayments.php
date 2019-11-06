@@ -50,12 +50,12 @@ class AccountingPayments extends Model
         });
 
         static::saved(function($model) {
-            $model->invoice->amountPaid = $model->invoice->payments->sum('amountPaid');
+            $model->invoice->amountPaid = $model->invoice->payments->where("isVoid",false)->sum('amountPaid');
             $model->invoice->save();
         });
 
         static::deleted(function($model) {
-            $model->invoice->amountPaid = $model->invoice->payments->sum('amountPaid');
+            $model->invoice->amountPaid = $model->invoice->payments->where("isVoid",false)->sum('amountPaid');
             $model->invoice->save();
         });
 

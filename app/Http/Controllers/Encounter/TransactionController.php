@@ -227,6 +227,9 @@ class TransactionController extends Controller
                 array_push($errorTexts,["errorText" => 'Cannot void paid invoice']);
             }
             if ($success) {
+                $invoice->document->data["isVoid"] = true;
+                $invoice->document->data["note"] = $note;
+                $invoice->isVoid = true;
                 $invoice->note = $note;
                 $invoice->save();
 
@@ -239,7 +242,8 @@ class TransactionController extends Controller
                     'soldTotalDiscount'=>null,
                     'soldFinalPrice'=>null,
                 ]);
-                $invoice->delete();
+
+                $returnModels = $invoice;
             }
         } else {
             $success = false;
@@ -253,10 +257,16 @@ class TransactionController extends Controller
         $errorTexts = [];
         $returnModels = [];
 
-        $payment = \App\Models\Accounting\AccountingPayments::where($receiptId);
-        if ($payment->count() > 0) {
-            $payment->update('note',$note);
-            $payment->delete();
+        $payments = \App\Models\Accounting\AccountingPayments::where($receiptId)->get();
+        if ($payments->count() > 0) {
+            $payments->each(function($payment,$key) use ($note) {
+                $payment->document->data["isVoid"] = true;
+                $payment->document->data["note"] = $note;
+                $payment->isVoid = true;
+                $payment->isVoidDateTime = Carbon::now();
+                $payment->save();
+            });
+            $returnModels = $payments;
         } else {
             $success = false;
             array_push($errorTexts,["errorText" => 'Receipt not found']);

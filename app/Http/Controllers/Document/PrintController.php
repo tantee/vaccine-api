@@ -119,17 +119,22 @@ class PrintController extends Controller
         else $documentIds = array_pluck($documentIds,'id');
       }
 
+      $toPdf = (boolean)\App\Models\Document\Documents::whereIn('id',$documentIds)->where('data->isVoid',true)->count();
+
       $filenames = [];
       foreach($documentIds as $key => $documentId) {
-        $rawData = self::printDocumentRaw($documentId,null,false);
-        $filename = $tmpDirectory.'/'.$key.'.docx';
+        $rawData = self::printDocumentRaw($documentId,null,$toPdf);
+        if ($toPdf) $filename = $tmpDirectory.'/'.$key.'.pdf';
+        else $filename = $tmpDirectory.'/'.$key.'.docx';
         if ($rawData != null) {
           Storage::put($filename,$rawData);
           $filenames[] = $filename;
         }
       }
-      
-      if (self::convertToPDF($filenames,$tmpFilenamePDF)) {
+
+      $pdfFunction = ($toPdf) ? "mergePDF" : "convertToPDF";
+
+      if (self::$pdfFunction($filenames,$tmpFilenamePDF)) {
         $returnData = Storage::get($tmpFilenamePDF);
       }
 
@@ -242,7 +247,20 @@ class PrintController extends Controller
         if (isset($hn) && isset($templateCode) && isset($documentId)) Storage::copy($tmpFilename,'/documents/'.$hn.'/'.$templateCode.'/raw/'.$documentId.'_'.$tmpUniqId.'.docx');
 
         if ($toPdf && self::convertToPDF($tmpFilename,$tmpFilenamePDF)) {
-          $returnData = Storage::get($tmpFilenamePDF);
+          if (isset($data['isVoid']) && $data['isVoid']) {
+
+            $tmpOriginal = dirname($tmpFilenamePDF).'/original.pdf';
+            Storage::move($tmpFilenamePDF, $tmpOriginal);
+
+            if (self::watermarkPDF($tmpOriginal,$tmpFilenamePDF,'void')) {
+              $returnData = Storage::get($tmpFilenamePDF);
+            } else {
+              $returnData = Storage::get($tmpOriginal);
+            }
+
+          } else {
+            $returnData = Storage::get($tmpFilenamePDF);
+          }
         } else {
           $returnData = Storage::get($tmpFilename);
         }
