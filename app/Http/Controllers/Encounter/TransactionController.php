@@ -257,7 +257,7 @@ class TransactionController extends Controller
         $errorTexts = [];
         $returnModels = [];
 
-        $payments = \App\Models\Accounting\AccountingPayments::where($receiptId)->get();
+        $payments = \App\Models\Accounting\AccountingPayments::where('receiptId',$receiptId)->get();
         if ($payments->count() > 0) {
             $payments->each(function($payment,$key) use ($note) {
                 $payment->document->data["isVoid"] = true;
