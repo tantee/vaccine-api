@@ -249,7 +249,7 @@ class TransactionController extends Controller
                     ]);
                 });
 
-                $returnModels = $invoice;
+                array_push($returnModels,$invoice);
             }
         } else {
             $success = false;
