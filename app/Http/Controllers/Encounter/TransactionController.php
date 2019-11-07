@@ -237,15 +237,17 @@ class TransactionController extends Controller
                 $invoice->note = $note;
                 $invoice->save();
 
-                $invoice->transactions->update([
-                    'invoiceId'=>null,
-                    'soldPatientsInsurancesId'=>null,
-                    'soldPrice'=>null,
-                    'soldDiscount'=>null,
-                    'soldTotalPrice'=>null,
-                    'soldTotalDiscount'=>null,
-                    'soldFinalPrice'=>null,
-                ]);
+                $invoice->transactions->each(function($itemTransaction,$key) {
+                    $itemTransaction->update([
+                        'invoiceId'=>null,
+                        'soldPatientsInsurancesId'=>null,
+                        'soldPrice'=>null,
+                        'soldDiscount'=>null,
+                        'soldTotalPrice'=>null,
+                        'soldTotalDiscount'=>null,
+                        'soldFinalPrice'=>null,
+                    ]);
+                });
 
                 $returnModels = $invoice;
             }
