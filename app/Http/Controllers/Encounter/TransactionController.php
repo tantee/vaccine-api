@@ -27,7 +27,7 @@ class TransactionController extends Controller
                 return ($item->insurance['PatientsInsurances']==null) ? null : $item->insurance["PatientsInsurances"]->id;
             });
 
-            $transactions->each(function($itemCollection,$key) use (&$hn,&$success,&$errorTexts,&$returnModels) {
+            $transactions->each(function($itemCollection,$key) use (&$hn,&$success,&$errorTexts,&$returnModels,$cashiersPeriodsId) {
                 $item = collect($itemCollection->toArray())->map(function($row) {
                     return array_except($row,['insurance','encounter']);
                 })->sortBy("transactionDateTime");
