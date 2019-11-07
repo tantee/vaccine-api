@@ -231,10 +231,11 @@ class TransactionController extends Controller
                 $tmpDocumentData["isVoid"] = true;
                 $tmpDocumentData["note"] = $note;
                 $invoice->document->data = $tmpDocumentData;
+                $invoice->document->save();
                 $invoice->isVoid = true;
                 $invoice->isVoidDateTime = Carbon::now();
                 $invoice->note = $note;
-                $invoice->push();
+                $invoice->save();
 
                 $invoice->transactions->update([
                     'invoiceId'=>null,
@@ -267,10 +268,11 @@ class TransactionController extends Controller
                 $tmpDocumentData["isVoid"] = true;
                 $tmpDocumentData["note"] = $note;
                 $payment->document->data = $tmpDocumentData;
+                $payment->document->save();
                 $payment->isVoid = true;
                 $payment->isVoidDateTime = Carbon::now();
                 $payment->note = $note;
-                $payment->push();
+                $payment->save();
             }
             $returnModels = $payments;
         } else {

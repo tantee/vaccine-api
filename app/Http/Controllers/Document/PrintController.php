@@ -257,7 +257,7 @@ class PrintController extends Controller
             } else {
               $returnData = Storage::get($tmpOriginal);
             }
-
+            Storage::delete($tmpOriginal);
           } else {
             $returnData = Storage::get($tmpFilenamePDF);
           }
@@ -310,6 +310,7 @@ class PrintController extends Controller
             $tmpOriginal = dirname($outputFilename).'/original.pdf';
             Storage::move($outputFilename, $tmpOriginal);
             $success = self::watermarkPDF($tmpOriginal,$outputFilename,'test');
+            Storage::delete($tmpOriginal);
           }
         } catch (\Exception $e) {
           $success = false;
