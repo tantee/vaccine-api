@@ -114,7 +114,7 @@ class PatientsTransactions extends Model
     }
 
     public function getPriceAttribute() {
-        if ($this->soldPrice !== null) return $this->soldPrice;
+        if ($this->invoiceId !== null) return $this->soldPrice;
         $insurance = $this->Insurance;
         if ($insurance["Policy"] == null) return $this->Product->price1;
         else {
@@ -124,24 +124,24 @@ class PatientsTransactions extends Model
     }
 
     public function getDiscountAttribute() {
-        if ($this->soldDiscount !== null) return $this->soldDiscount;
+        if ($this->invoiceId !== null) return $this->soldDiscount;
         $insurance = $this->Insurance;
         if ($insurance["Policy"] == null) return 0;
         else return $insurance["Policy"]->discount;
     }
 
     public function getTotalDiscountAttribute() {
-        if ($this->soldTotalDiscount !== null) return $this->soldTotalDiscount;
+        if ($this->invoiceId !== null) return $this->soldTotalDiscount;
         return round(($this->price*$this->quantity*$this->discount/100),2);
     }
 
     public function getTotalPriceAttribute() {
-        if ($this->soldTotalPrice !== null) return $this->soldTotalPrice;
+        if ($this->invoiceId !== null) return $this->soldTotalPrice;
         return round($this->price*$this->quantity,2);
     }
 
     public function getFinalPriceAttribute() {
-        if ($this->soldFinalPrice !== null) return $this->soldFinalPrice;
+        if ($this->invoiceId !== null) return $this->soldFinalPrice;
         return round(($this->price*$this->quantity)-($this->price*$this->quantity*$this->discount/100),2);
     }
 
