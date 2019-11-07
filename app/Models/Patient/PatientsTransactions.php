@@ -83,7 +83,7 @@ class PatientsTransactions extends Model
                         $returnInsurance = ["PatientsInsurances"=>$PatientInsurance,"Policy"=>$Insurance];
                         foreach(collect($Insurance->conditions)->sortBy('conditionPriority') as $condition) {
                             if ($condition['coverage']=="allow") {
-                                if ($this->{$condition['conditionType']} == $condition['conditionCode']) break;
+                                if ($this->{$condition['conditionType']} == $condition['conditionCode']) break 2;
                             } else {
                                 if ($this->{$condition['conditionType']} == $condition['conditionCode']) {
                                     $returnInsurance = null;
@@ -96,7 +96,7 @@ class PatientsTransactions extends Model
                             if ($condition['coverage']=="allow") {
                                 if ($this->{$condition['conditionType']} == $condition['conditionCode']) {
                                     $returnInsurance = ["PatientsInsurances"=>$PatientInsurance,"Policy"=>$Insurance];
-                                    break;
+                                    break 2;
                                 }
                             } else {
                                 if ($this->{$condition['conditionType']} == $condition['conditionCode']) break;
