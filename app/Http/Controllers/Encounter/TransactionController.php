@@ -262,7 +262,7 @@ class TransactionController extends Controller
 
         $payments = \App\Models\Accounting\AccountingPayments::where('receiptId',$receiptId)->get();
         if ($payments->count() > 0) {
-            $payments->each(function($payment,$key) use ($note) {
+            foreach($payments as $payment) {
                 $tmpDocumentData = $payment->document->data;
                 $tmpDocumentData["isVoid"] = true;
                 $tmpDocumentData["note"] = $note;
@@ -271,7 +271,7 @@ class TransactionController extends Controller
                 $payment->isVoidDateTime = Carbon::now();
                 $payment->note = $note;
                 $payment->push();
-            });
+            }
             $returnModels = $payments;
         } else {
             $success = false;
