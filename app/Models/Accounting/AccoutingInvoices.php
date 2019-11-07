@@ -22,7 +22,7 @@ class AccountingInvoices extends Model
     }
 
     public function scopeRecent($query) {
-        return $query->where('created_at','>',Carbon::now()->subHours(env('INVOICE_RECENT_HOURS', '24')))->whereHas('Payments', function ($query) {
+        return $query->where('created_at','>',Carbon::now()->subHours(env('INVOICE_RECENT_HOURS', '24')))->orWhereHas('Payments', function ($query) {
             $query->where('created_at','>',Carbon::now()->subHours(env('INVOICE_RECENT_HOURS', '24')));
         });
     }
