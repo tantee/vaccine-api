@@ -21,8 +21,20 @@ class CashiersPeriods extends Model
         return $this->hasMany('App\Models\Accounting\AccountingPayments','cashiersPeriodsId','id');
     }
 
+    public function voidPayments() {
+        return $this->hasMany('App\Models\Accounting\AccountingPayments','isVoidCashiersPeriodsId','id');
+    }
+
+    public function Invoices() {
+        return $this->hasMany('App\Models\Accounting\AccountingInvoices','cashiersPeriodsId','id');
+    }
+
+    public function voidInvoices() {
+        return $this->hasMany('App\Models\Accounting\AccountingInvoices','isVoidCashiersPeriodsId','id');
+    }
+
     public function getPaymentSummaryAttribute() {
-        $summary = $this->payments->groupBy('paymentMethod')->map(function ($row,$key){
+        $summary = $this->payments->where('isVoid',false)->groupBy('paymentMethod')->map(function ($row,$key){
             return [[
                 "paymentMethod" => $key,
                 "amountPaid" => $row->sum('amountPaid'),

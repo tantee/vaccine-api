@@ -12,7 +12,7 @@ use Carbon\Carbon;
 
 class TransactionController extends Controller
 {
-    public static function createInvoice($hn,$transactions) {
+    public static function createInvoice($hn,$transactions,$cashiersPeriodsId=null) {
         $success = true;
         $errorTexts = [];
         $returnModels = [];
@@ -91,6 +91,7 @@ class TransactionController extends Controller
                 ];
 
                 $invoice = new \App\Models\Accounting\AccountingInvoices();
+                $invoice->cashiersPeriodsId = $cashiersPeriodsId;
                 $invoice->hn = $hn;
                 $invoice->patientsInsurancesId = is_numeric($key) ? $key : null;
                 $invoice->amount = $invoiceData["grandFinalPrice"];
@@ -180,7 +181,7 @@ class TransactionController extends Controller
         $errorTexts = [];
         $returnModels = [];
 
-        $invoice = self::createInvoice($hn,$transactions);
+        $invoice = self::createInvoice($hn,$transactions,$cashiersPeriodsId);
         if ($invoice["success"]) {
             if (count($invoice["returnModels"])==1) {
                 return self::createPayment($cashiersPeriodsId,$invoice["returnModels"][0]->invoiceId,$paymentMethod,$amountPaid,$paymentDetail,$paymentAccount);
@@ -215,7 +216,7 @@ class TransactionController extends Controller
         return DataController::createModel($transactions,\App\Models\Patient\PatientsTransactions::class,$validationRule);
     }
 
-    public static function voidInvoice($invoiceId,$note) {
+    public static function voidInvoice($invoiceId,$note,$isVoidCashiersPeriodsId) {
         $success = true;
         $errorTexts = [];
         $returnModels = [];
@@ -234,6 +235,7 @@ class TransactionController extends Controller
                 $invoice->document->save();
                 $invoice->isVoid = true;
                 $invoice->isVoidDateTime = Carbon::now();
+                $invoice->isVoidCashiersPeriodsId = $isVoidCashiersPeriodsId;
                 $invoice->note = $note;
                 $invoice->save();
 
@@ -259,7 +261,7 @@ class TransactionController extends Controller
         return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }
 
-    public static function voidPayment($receiptId,$note) {
+    public static function voidPayment($receiptId,$note,$isVoidCashiersPeriodsId) {
         $success = true;
         $errorTexts = [];
         $returnModels = [];
@@ -274,6 +276,7 @@ class TransactionController extends Controller
                 $payment->document->save();
                 $payment->isVoid = true;
                 $payment->isVoidDateTime = Carbon::now();
+                $payment->isVoidCashiersPeriodsId = $isVoidCashiersPeriodsId;
                 $payment->note = $note;
                 $payment->save();
             }
