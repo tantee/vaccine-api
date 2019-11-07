@@ -14,7 +14,7 @@ class AlterAccountingInvoicesAddVoidCashiersPeriodsId extends Migration
     public function up()
     {
         Schema::table('accounting_invoices', function (Blueprint $table) {
-            $table->integer('cashiersPeriodsId')->nullable()->after('id');
+            $table->integer('cashiersPeriodsId')->nullable()->after('hn');
             $table->integer('isVoidCashiersPeriodsId')->nullable()->after('isVoidDateTime');
         });
     }
