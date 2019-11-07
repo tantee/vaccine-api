@@ -29,7 +29,7 @@ class AccountingPayments extends Model
         return ($this->amountDue - $this->amountPaid >= 0) ? $this->amountDue - $this->amountPaid : 0;
     }
 
-    public function getCashierIdAttrbute() {
+    public function getCashierIdAttribute() {
         return $this->CashierPeriod->cashierId;
     }
 

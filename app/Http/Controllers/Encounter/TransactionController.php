@@ -246,6 +246,7 @@ class TransactionController extends Controller
                         'soldTotalPrice'=>null,
                         'soldTotalDiscount'=>null,
                         'soldFinalPrice'=>null,
+                        'isRevised'=>true,
                     ]);
                 });
 
