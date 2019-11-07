@@ -18,7 +18,7 @@ class AccountingInvoices extends Model
     protected $guarded = [];
 
     public function scopeUnpaid($query) {
-        return $query->whereColumn('amountDue','>','amountPaid');
+        return $query->whereColumn('amountDue','>','amountPaid')->where('isVoid',false);
     }
 
     public function scopeRecent($query) {
