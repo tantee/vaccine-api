@@ -222,7 +222,7 @@ class TransactionController extends Controller
 
         $invoice = \App\Models\Accounting\AccountingInvoices::find($invoiceId);
         if ($invoice!=null) {
-            if ($invoice->payments->count()>0) {
+            if ($invoice->payments->where('isVoid',false)->count()>0) {
                 $success = false;
                 array_push($errorTexts,["errorText" => 'Cannot void paid invoice']);
             }
