@@ -18,7 +18,7 @@ class AccountingPayments extends Model
     }
 
     public function CashierPeriod() {
-        return $this->hasOne('App\Models\Document\cashiersPeriods','id','cashiersPeriodsId');
+        return $this->hasOne('App\Models\Accounting\CashiersPeriods','id','cashiersPeriodsId');
     }
 
     public function Invoice() {
