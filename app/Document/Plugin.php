@@ -76,12 +76,10 @@ class clsPlugin
       if (isset($PrmLst['full'])) $full = (boolean)$PrmLst['full'];
       else $full = false;
 
-      if (is_array($Value)) {
-        if (ArrayType::isAssociative($Value))$Value = [$Value];
+      if (is_array($Value) && count($Value)>0) {
+        if (count($Value)>0) {
+          if (ArrayType::isAssociative($Value))$Value = [$Value];
 
-        if (count($Value)==0) {
-          $Value = "เงินสด";
-        } else {
           $tmpInsuranceNames = [];
           foreach($Value as $insurance) {
             if (isset($insurance["payerType"])) {
@@ -94,7 +92,10 @@ class clsPlugin
               $tmpInsuranceNames[] = $insurance["condition"]["insuranceName"];
             }
           }
+
           $Value = implode(",",$tmpInsuranceNames);
+        } else {
+          $Value = "เงินสด";
         }
       }
     }
