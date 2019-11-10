@@ -50,7 +50,7 @@ class DataController extends Controller
           foreach ($data as $dataItem) {
             $newItem = array_only($dataItem,$fillable);
             $createdModel = $model::create($newItem)->fresh();
-            if ($returnWith!=null) $createdModel->with($returnWith);
+            if ($returnWith!=null) $createdModel->load($returnWith);
             array_push($returnModels,$createdModel);
           }
           $success = true;
@@ -118,9 +118,8 @@ class DataController extends Controller
                 array_push($returnModels,$existModel);
               }
             } else {
-              $createdModel = $model::create($newItem);
-              if ($returnWith!=null) $createdModel->with($returnWith);
-              $createdModel->fresh();
+              $createdModel = $model::create($newItem)->fresh();
+              if ($returnWith!=null) $createdModel->load($returnWith);
               array_push($returnModels,$createdModel);
             }
           }
