@@ -1,6 +1,7 @@
 FROM richarvey/nginx-php-fpm:latest
 
 ENV APP_ENV=DEV
+ENV APP_DEBUG=true
 ENV DB_CONNECTION mysql
 ENV DB_HOST mysql
 ENV DB_PORT 3306
