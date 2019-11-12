@@ -2,6 +2,7 @@
 
 namespace App\Models\Master;
 
+use Watson\Rememberable\Rememberable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UserStamps;
@@ -9,7 +10,7 @@ use App\Models\Traits\UserStamps;
 class Locations extends Model
 {
     //
-    use SoftDeletes,UserStamps;
+    use SoftDeletes,UserStamps,Rememberable;
 
     protected $primaryKey = 'locationCode';
     public $incrementing = false;
@@ -20,4 +21,23 @@ class Locations extends Model
     protected $casts = [
       'subunits' => 'array',
     ];
+
+    public static function boot() {
+        static::saved(function($model) {
+            $model::flushCache();
+        });
+
+        static::deleted(function($model) {
+            $model::flushCache();
+        });
+
+        static::restored(function($model) {
+            $model::flushCache();
+        });
+
+        parent::boot();
+    }
+
+    protected $rememberFor = 60;
+    protected $rememberCacheTag = 'locations_query';
 }

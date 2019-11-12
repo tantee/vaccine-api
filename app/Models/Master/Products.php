@@ -2,13 +2,14 @@
 
 namespace App\Models\Master;
 
+use Watson\Rememberable\Rememberable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UserStamps;
 
 class Products extends Model
 {
-    use SoftDeletes,UserStamps;
+    use SoftDeletes,UserStamps,Rememberable;
     protected $primaryKey = 'productCode';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -32,4 +33,23 @@ class Products extends Model
     public function scopeSelectable($query) {
       return $query->where('isActive',true)->where('isHidden',false);
     }
+
+    public static function boot() {
+        static::saved(function($model) {
+            $model::flushCache();
+        });
+
+        static::deleted(function($model) {
+            $model::flushCache();
+        });
+
+        static::restored(function($model) {
+            $model::flushCache();
+        });
+
+        parent::boot();
+    }
+
+    protected $rememberFor = 60;
+    protected $rememberCacheTag = 'products_query';
 }
