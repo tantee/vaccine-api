@@ -2,7 +2,6 @@
 
 namespace App\Models\Patient;
 
-use Watson\Rememberable\Rememberable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UserStamps;
@@ -10,7 +9,7 @@ use Carbon\Carbon;
 
 class Patients extends Model
 {
-    use SoftDeletes,UserStamps,Rememberable;
+    use SoftDeletes,UserStamps;
     protected $primaryKey = 'hn';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -99,23 +98,4 @@ class Patients extends Model
     protected $appends = ['name_th','name_en','name_real_th','name_real_en','age'];
 
     protected $hidden = ['personIdDetail'];
-
-        public static function boot() {
-        static::saved(function($model) {
-            $model::flushCache();
-        });
-
-        static::deleted(function($model) {
-            $model::flushCache();
-        });
-
-        static::restored(function($model) {
-            $model::flushCache();
-        });
-
-        parent::boot();
-    }
-
-    protected $rememberFor = 60;
-    protected $rememberCacheTag = 'patients_query';
 }

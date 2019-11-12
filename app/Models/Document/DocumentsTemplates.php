@@ -2,6 +2,7 @@
 
 namespace App\Models\Document;
 
+use Watson\Rememberable\Rememberable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UserStamps;
@@ -10,7 +11,7 @@ use App\Utilities\File;
 class DocumentsTemplates extends Model
 {
     //
-    use SoftDeletes,UserStamps;
+    use SoftDeletes,UserStamps,Rememberable;
 
     protected $primaryKey = 'templateCode';
     public $incrementing = false;
@@ -48,6 +49,18 @@ class DocumentsTemplates extends Model
           }
         }
       });
+
+      static::saved(function($model) {
+          $model::flushCache();
+      });
+
+      static::deleted(function($model) {
+          $model::flushCache();
+      });
+
+      static::restored(function($model) {
+          $model::flushCache();
+      });
   
       parent::boot();
     }
@@ -55,4 +68,7 @@ class DocumentsTemplates extends Model
     protected $dates = [
         'revisionDate',
     ];
+
+    protected $rememberFor = 60;
+    protected $rememberCacheTag = 'documentstemplates_query';
 }
