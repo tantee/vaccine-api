@@ -93,7 +93,7 @@ class clsPlugin
             }
           }
 
-          $Value = implode(",",$tmpInsuranceNames);
+          $Value = implode(",",array_unique($tmpInsuranceNames));
         } else {
           $Value = "เงินสด";
         }
