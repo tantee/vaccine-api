@@ -56,4 +56,7 @@ class PatientsInsurances extends Model
     protected $with = ['payer'];
 
     protected $appends = ['amount'];
+
+    protected $rememberFor = 2;
+    protected $rememberCacheTag = 'patientsinsurances_query';
 }
