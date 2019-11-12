@@ -2,6 +2,7 @@
 
 namespace App\Models\Patient;
 
+use Watson\Rememberable\Rememberable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UserStamps;
@@ -11,7 +12,7 @@ use Carbon\Carbon;
 class PatientsInsurances extends Model
 {
     //
-    use SoftDeletes,UserStamps,StoreToAsset;
+    use SoftDeletes,UserStamps,StoreToAsset,Rememberable;
 
     protected $guarded = [];
     protected $toStores = ['documents'];
@@ -56,7 +57,4 @@ class PatientsInsurances extends Model
     protected $with = ['payer'];
 
     protected $appends = ['amount'];
-
-    protected $rememberFor = 2;
-    protected $rememberCacheTag = 'patientsinsurances_query';
 }
