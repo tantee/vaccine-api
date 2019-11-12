@@ -41,6 +41,22 @@ class PatientsInsurances extends Model
       });
     }
 
+    public static function boot() {
+        static::saved(function($model) {
+            $model::flushCache();
+        });
+
+        static::deleted(function($model) {
+            $model::flushCache();
+        });
+
+        static::restored(function($model) {
+            $model::flushCache();
+        });
+
+        parent::boot();
+    }
+
     protected $dates = [
         'beginDate',
         'endDate'

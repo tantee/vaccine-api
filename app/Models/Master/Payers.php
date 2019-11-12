@@ -18,6 +18,22 @@ class Payers extends Model
     
     protected $guarded = [];
 
+    public static function boot() {
+        static::saved(function($model) {
+            $model::flushCache();
+        });
+
+        static::deleted(function($model) {
+            $model::flushCache();
+        });
+
+        static::restored(function($model) {
+            $model::flushCache();
+        });
+
+        parent::boot();
+    }
+
     protected $rememberFor = 60;
     protected $rememberCacheTag = 'payers_query';
 }
