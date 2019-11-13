@@ -2,7 +2,6 @@
 
 namespace App\Models\Patient;
 
-use Watson\Rememberable\Rememberable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UserStamps;
@@ -12,7 +11,7 @@ use Carbon\Carbon;
 class PatientsInsurances extends Model
 {
     //
-    use SoftDeletes,UserStamps,StoreToAsset,Rememberable;
+    use SoftDeletes,UserStamps,StoreToAsset;
 
     protected $guarded = [];
     protected $toStores = ['documents'];
@@ -41,20 +40,8 @@ class PatientsInsurances extends Model
       });
     }
 
-    public static function boot() {
-        static::saved(function($model) {
-            $model::flushCache();
-        });
-
-        static::deleted(function($model) {
-            $model::flushCache();
-        });
-
-        static::restored(function($model) {
-            $model::flushCache();
-        });
-
-        parent::boot();
+    public function scopeInactive() {
+      return $query->withTrashed()->whereNotNull('endDate')->whereDate('endDate','<',Carbon::now());
     }
 
     protected $dates = [
