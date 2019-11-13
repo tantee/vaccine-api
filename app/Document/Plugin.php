@@ -76,7 +76,7 @@ class clsPlugin
       if (isset($PrmLst['full'])) $full = (boolean)$PrmLst['full'];
       else $full = false;
 
-      if (is_array($Value) && count($Value)>0) {
+      if (is_array($Value)) {
         if (count($Value)>0) {
           if (ArrayType::isAssociative($Value))$Value = [$Value];
 
