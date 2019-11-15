@@ -81,4 +81,14 @@ class CashierController extends Controller
 
         return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }
+
+    public static function getCashierPeriodSummary($id) {
+        $success = true;
+        $errorTexts = [];
+        $returnModels = [];
+
+        
+
+        return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
+    }
 }
