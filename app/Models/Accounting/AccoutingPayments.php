@@ -18,7 +18,7 @@ class AccountingPayments extends Model
     }
 
     public function CashierPeriod() {
-        return $this->belongsTo('App\Models\Accounting\CashiersPeriods','id','cashiersPeriodsId');
+        return $this->belongsTo('App\Models\Accounting\CashiersPeriods','cashiersPeriodsId','id');
     }
 
     public function Invoice() {
