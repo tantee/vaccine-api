@@ -34,7 +34,7 @@ class CashiersPeriods extends Model
     }
 
     public function getPaymentSummaryAttribute() {
-        $summary = \App\Models\Accounting\AccountingPayments::where('cashiersPeriodsId',$this->id)->where('isVoid',false)->groupBy('paymentMethod')->map(function ($row,$key){
+        $summary = \App\Models\Accounting\AccountingPayments::where('cashiersPeriodsId',$this->id)->where('isVoid',false)->get()->groupBy('paymentMethod')->map(function ($row,$key){
             return [[
                 "paymentMethod" => $key,
                 "amountPaid" => $row->sum('amountPaid'),
