@@ -18,7 +18,7 @@ class AccountingPayments extends Model
     }
 
     public function CashierPeriod() {
-        return $this->belongsTo('App\Models\Accounting\CashiersPeriods','cashiersPeriodsId','id');
+        return $this->belongsTo('App\Models\Accounting\CashiersPeriods','cashiersPeriodsId','id')->without(['Payments']);
     }
 
     public function Invoice() {
@@ -30,7 +30,8 @@ class AccountingPayments extends Model
     }
 
     public function getCashierIdAttribute() {
-        return $this->CashierPeriod->cashierId;
+        $tmpCashierPeroid = \App\Models\Accounting\CashiersPeriods::find($this->cashiersPeriodsId);
+        return ($tmpCashierPeroid!=null) ? $tmpCashierPeroid->cashierId : null;
     }
 
     public function toArray()
