@@ -70,7 +70,7 @@ class PatientsTransactions extends Model
                 "Policy" => \App\Models\Master\Insurances::find($this->soldInsuranceCode),
             ];
 
-            $Insurances = \App\Models\Patient\PatientsInsurances::remember(1)->where('hn',$this->hn)->activeAt($this->transactionDateTime)->orderBy('priority')->get();
+            $Insurances = \App\Models\Patient\PatientsInsurances::remember(1)->cacheTags('patientsinsurances_query')->where('hn',$this->hn)->activeAt($this->transactionDateTime)->orderBy('priority')->get();
 
             foreach($Insurances as $PatientInsurance) {
                 foreach (collect($PatientInsurance->policies)->sortBy('priority') as $Policy) {
