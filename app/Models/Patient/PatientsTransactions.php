@@ -22,7 +22,7 @@ class PatientsTransactions extends Model
     }
 
     public function Encounter() {
-        return $this->hasOne('App\Models\Registration\Encounters','encounterId','encounterId')->without(['patient']);
+        return $this->hasOne('App\Models\Registration\Encounters','encounterId','encounterId')->without(['patient','Location','Clinic','Doctor','fromAppointment']);
     }
 
     public function Invoice() {
