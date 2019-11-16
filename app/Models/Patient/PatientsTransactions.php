@@ -222,7 +222,7 @@ class PatientsTransactions extends Model
         "soldFinalPrice" => "float",
     ];
 
-    protected $with = ['Product'];
+    protected $with = ['Product','Encounter'];
 
     protected $appends = ['insurance','discount','price'];
 }
