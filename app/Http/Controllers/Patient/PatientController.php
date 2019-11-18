@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\Asset\AssetController;
+use App\Utilities\ArrayType;
 
 class PatientController extends Controller
 {
@@ -80,10 +81,16 @@ class PatientController extends Controller
               $returnResults['patient'] = DataController::createModel($data['patient'],\App\Models\Patient\Patients::class,$validator,[],true);
             }
             if (isset($data['name'])) {
+              foreach ($data['name'] as $key=>$name) {
+                if (ArrayType::valueEmpty($name,['firstName','middleName','lastName'])) unset($data['name'][$key]);
+              }
               $validator = [];
               $returnResults['name'] = DataController::createModel($data['name'],\App\Models\Patient\PatientsNames::class,$validator,[],true);
             }
             if (isset($data['address'])) {
+              foreach ($data['address'] as $key=>$address) {
+                if (ArrayType::valueEmpty($address,['address','country'])) unset($data['address'][$key]);
+              }
               $validator = [];
               $returnResults['address'] = DataController::createModel($data['address'],\App\Models\Patient\PatientsAddresses::class,$validator,[],true);
             }

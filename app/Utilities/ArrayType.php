@@ -27,4 +27,16 @@ class ArrayType
         }
         return $result;
     }
+
+    public static function valueEmpty($array,$includeField=[],$excludeField=[]) 
+    {
+        $isEmpty = true;
+        if (count($includeField)==0) $includeField = array_keys($array);
+        foreach($includeField as $field) {
+            if (!in_array($field,$excludeField)) {
+                $isEmpty = $isEmpty & empty($array[$field]);
+            }
+        }
+        return $isEmpty;
+    }
 }
