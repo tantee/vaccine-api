@@ -81,21 +81,32 @@ class PatientController extends Controller
               $returnResults['patient'] = DataController::createModel($data['patient'],\App\Models\Patient\Patients::class,$validator,[],true);
             }
             if (isset($data['name'])) {
+              $names = [];
               foreach ($data['name'] as $key=>$name) {
-                if (ArrayType::valueEmpty($name,['firstName','middleName','lastName'])) unset($data['name'][$key]);
+                if (!ArrayType::valueEmpty($name,['firstName','middleName','lastName'])) $names[] = $name;
               }
-              $validator = [];
-              $returnResults['name'] = DataController::createModel($data['name'],\App\Models\Patient\PatientsNames::class,$validator,[],true);
+              $validator = [
+                'hn' => 'required',
+                'nameType' => 'required',
+              ];
+              $returnResults['name'] = DataController::createModel($names,\App\Models\Patient\PatientsNames::class,$validator,[],true);
             }
             if (isset($data['address'])) {
+              $addresses = [];
               foreach ($data['address'] as $key=>$address) {
-                if (ArrayType::valueEmpty($address,['address','country'])) unset($data['address'][$key]);
+                if (!ArrayType::valueEmpty($address,['address','country'])) $addresses[] = $address;
               }
-              $validator = [];
-              $returnResults['address'] = DataController::createModel($data['address'],\App\Models\Patient\PatientsAddresses::class,$validator,[],true);
+              $validator = [
+                'hn' => 'required',
+                'address' => 'required',
+              ];
+              $returnResults['address'] = DataController::createModel($addresses,\App\Models\Patient\PatientsAddresses::class,$validator,[],true);
             }
             if (isset($data['relative'])) {
-              $validator = [];
+              $validator = [
+                'hn' => 'required',
+                'name' => 'required',
+              ];
               $returnResults['relative'] = DataController::createModel($data['relative'],\App\Models\Patient\PatientsRelatives::class,$validator,[],true);
             }
 
