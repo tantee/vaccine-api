@@ -13,11 +13,11 @@ class Patient
       if (!empty($CurrVal['nameType']) && ($CurrVal['nameType']=='EN' || $CurrVal['nameType']=='ALIAS_EN' )) $English = true;
       else $English = false;
 
-      if (!empty($CurrVal['namePrefix'])) $tmpName[] = MasterController::translateMaster('$NamePrefix',$CurrVal['namePrefix']);
+      if (!empty($CurrVal['namePrefix'])) $tmpName[] = MasterController::translateMaster('$NamePrefix',$CurrVal['namePrefix'],$English);
       if (!empty($CurrVal['firstName'])) $tmpName[] = $CurrVal['firstName'];
       if (!empty($CurrVal['middleName'])) $tmpName[] = $CurrVal['middleName'];
       if (!empty($CurrVal['lastName'])) $tmpName[] = $CurrVal['lastName'];
-      if (!empty($CurrVal['nameSuffix'])) $tmpName[] = MasterController::translateMaster('$NameSuffix',$CurrVal['nameSuffix']);
+      if (!empty($CurrVal['nameSuffix'])) $tmpName[] = MasterController::translateMaster('$NameSuffix',$CurrVal['nameSuffix'],$English);
 
       $CurrVal = implode(" ",$tmpName);
     }
