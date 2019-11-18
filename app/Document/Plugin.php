@@ -39,11 +39,11 @@ class clsPlugin
         if (!empty($Value['nameType']) && ($Value['nameType']=='EN' || $Value['nameType']=='ALIAS_EN' )) $English = true;
         else $English = false;
 
-        if (!empty($Value['namePrefix'])) $tmpName[] = MasterController::translateMaster('$NamePrefix',$Value['namePrefix']);
+        if (!empty($Value['namePrefix'])) $tmpName[] = MasterController::translateMaster('$NamePrefix',$Value['namePrefix'],$English);
         if (!empty($Value['firstName'])) $tmpName[] = $Value['firstName'];
         if (!empty($Value['middleName'])) $tmpName[] = $Value['middleName'];
         if (!empty($Value['lastName'])) $tmpName[] = $Value['lastName'];
-        if (!empty($Value['nameSuffix'])) $tmpName[] = MasterController::translateMaster('$NameSuffix',$Value['nameSuffix']);
+        if (!empty($Value['nameSuffix'])) $tmpName[] = MasterController::translateMaster('$NameSuffix',$Value['nameSuffix'],$English);
 
         $Value = implode(" ",$tmpName);
       }
