@@ -203,6 +203,16 @@ class PatientsTransactions extends Model
             }
         });
 
+        static::creating(function($model) {
+            if ($model->Product !== null && $model->Product->category=="SV04") {
+                if ($model->Encounter !== null) {
+                    if ($model->performDoctorCode == null) $model->performDoctorCode = $model->Encounter->doctorCode;
+                    if ($model->performClinicCode == null) $model->performClinicCode = $model->Encounter->clinicCode;
+                    if ($model->performLocationCode == null) $model->performLocationCode = $model->Encounter->locationCode;
+                }
+            }
+        });
+
         static::deleting(function($model) {
             $model->childTransactions()->delete();
         });
