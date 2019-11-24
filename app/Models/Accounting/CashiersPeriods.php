@@ -18,11 +18,11 @@ class CashiersPeriods extends Model
     }
 
     public function Payments() {
-        return $this->hasMany('App\Models\Accounting\AccountingPayments','cashiersPeriodsId','id');
+        return $this->hasMany('App\Models\Accounting\AccountingPayments','cashiersPeriodsId','id')->with(['Invoice']);
     }
 
     public function voidPayments() {
-        return $this->hasMany('App\Models\Accounting\AccountingPayments','isVoidCashiersPeriodsId','id');
+        return $this->hasMany('App\Models\Accounting\AccountingPayments','isVoidCashiersPeriodsId','id')->with(['Invoice']);
     }
 
     public function Invoices() {

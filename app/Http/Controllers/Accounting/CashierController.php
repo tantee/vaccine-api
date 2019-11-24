@@ -67,7 +67,7 @@ class CashierController extends Controller
             return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
         }
 
-        $period = CashiersPeriods::where('cashierId',$cashierId)->active()->first();
+        $period = CashiersPeriods::with(['Payments','Invoices','voidPayments','voidInvoices'])->where('cashierId',$cashierId)->active()->first();
         if ($period==null) {
             $success = false;
             array_push($errorTexts,["errorText" => 'No active period for this cashierId']);
@@ -76,7 +76,7 @@ class CashierController extends Controller
             $period->finalCash = $finalCash;
             $period->endDateTime = Carbon::now();
             $period->save();
-            $returnModels = $period->with(['Payments','Invoices','voidPayments','voidInvoices']);;
+            $returnModels = $period;
         }
 
         return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
@@ -87,10 +87,10 @@ class CashierController extends Controller
         $errorTexts = [];
         $returnModels = [];
 
-        $cashierPeriod = CashiersPeriods::find($id);
+        $cashierPeriod = CashiersPeriods::with(['Payments','Invoices','voidPayments','voidInvoices'])->find($id);
 
         if ($cashierPeriod !== null) {
-            $returnModels = $cashierPeriod->with(['Payments','Invoices','voidPayments','voidInvoices']);
+            $returnModels = $cashierPeriod;
         } else {
             $success = false;
             array_push($errorTexts,["errorText" => 'Cashier period not found']);
