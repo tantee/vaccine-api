@@ -22,7 +22,7 @@ class AccountingPayments extends Model
     }
 
     public function Invoice() {
-        return $this->belongsTo('App\Models\Accounting\AccountingInvoices','invoiceId','invoiceId')->without(['Payments']);
+        return $this->belongsTo('App\Models\Accounting\AccountingInvoices','invoiceId','invoiceId')->with('Patient')->without(['Payments']);
     }
 
     public function getAmountOutstandingAttribute() {
