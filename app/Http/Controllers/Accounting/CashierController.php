@@ -76,7 +76,7 @@ class CashierController extends Controller
             $period->finalCash = $finalCash;
             $period->endDateTime = Carbon::now();
             $period->save();
-            $returnModels = $period;
+            $returnModels = $period->with(['Payments','Invoices','voidPayments','voidInvoices']);;
         }
 
         return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
@@ -87,7 +87,14 @@ class CashierController extends Controller
         $errorTexts = [];
         $returnModels = [];
 
-        
+        $cashierPeriod = CashiersPeriods::find($id);
+
+        if ($cashierPeriod !== null) {
+            $returnModels = $cashierPeriod->with(['Payments','Invoices','voidPayments','voidInvoices']);
+        } else {
+            $success = false;
+            array_push($errorTexts,["errorText" => 'Cashier period not found']);
+        }
 
         return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }

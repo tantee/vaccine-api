@@ -26,11 +26,11 @@ class CashiersPeriods extends Model
     }
 
     public function Invoices() {
-        return $this->hasMany('App\Models\Accounting\AccountingInvoices','cashiersPeriodsId','id');
+        return $this->hasMany('App\Models\Accounting\AccountingInvoices','cashiersPeriodsId','id')->with(['Patient','Insurance'])->without(['Payments']);
     }
 
     public function voidInvoices() {
-        return $this->hasMany('App\Models\Accounting\AccountingInvoices','isVoidCashiersPeriodsId','id');
+        return $this->hasMany('App\Models\Accounting\AccountingInvoices','isVoidCashiersPeriodsId','id')->with(['Patient','Insurance'])->without(['Payments']);;
     }
 
     public function getPaymentSummaryAttribute() {
