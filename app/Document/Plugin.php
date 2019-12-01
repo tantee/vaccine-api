@@ -30,7 +30,7 @@ class clsPlugin
       if (isset($PrmLst['locale'])) $locale = $PrmLst['locale'];
       else $locale = 'th_TH';
 
-      $Value = Carbon::parse($Value)->locale($locale)->isoFormat($format);
+      $Value = Carbon::parse($Value)->locale($locale)->isoFormat($format).$locale;
     }
     if ($ope == 'formatname') {
       if (\is_array($Value)) {
@@ -98,7 +98,7 @@ class clsPlugin
 
           $Value = implode(",",array_unique($tmpInsuranceNames));
         } else {
-          $Value = "เงินสด";
+          $Value = ($English) ? "Cash" : "เงินสด";
         }
       }
     }
