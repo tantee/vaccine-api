@@ -287,4 +287,100 @@ class TransactionController extends Controller
         }
         return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }
+
+    public static function rebuildInvoice($invoiceId) {
+        $success = true;
+        $errorTexts = [];
+        $returnModels = [];
+
+        $transactions = \App\Models\Patient\PatientsTransactions::where('invoiceId',$invoiceId)->get();
+
+        if ($transactions != null) {
+            $transactions = $transactions->groupBy(function ($item, $key) {
+                return ($item->insurance['PatientsInsurances']==null) ? null : $item->insurance["PatientsInsurances"]->id;
+            });
+
+            $transactions->each(function($itemCollection,$key) use (&$hn,&$success,&$errorTexts,&$returnModels,$cashiersPeriodsId) {
+                $item = collect($itemCollection->toArray())->map(function($row) {
+                    return array_except($row,['insurance','encounter']);
+                })->sortBy("transactionDateTime");
+
+                $insurance =  \App\Models\Patient\PatientsInsurances::find($key);
+
+                $detailInsurance = $item->groupBy('categoryInsurance');
+                $detailCgd = $item->groupBy('categoryCgd');
+
+                $summaryInsurance = $detailInsurance->map(function ($row,$key){
+                    return [[
+                        "categoryInsurance" => $key,
+                        "totalPrice" => $row->sum('totalPrice'),
+                        "totalDiscount" => $row->sum('totalDiscount'),
+                        "finalPrice" => $row->sum('finalPrice'),
+                    ]];
+                })->flatten(1)->sortBy("categoryInsurance");
+                $summaryCgd = $detailCgd->map(function ($row,$key){
+                    return [[
+                        "categoryCgd" => $key,
+                        "totalPrice" => $row->sum('totalPrice'),
+                        "totalDiscount" => $row->sum('totalDiscount'),
+                        "finalPrice" => $row->sum('finalPrice'),
+                    ]];
+                })->flatten(1)->sortBy("categoryCgd");
+
+                $detailInsurance = $detailInsurance->map(function ($row,$key){
+                    $row = $row->map(function($row) {
+                        return array_except($row,['invoiceId','soldPatientsInsurancesId','soldPrice','soldDiscount','soldTotalPrice','soldTotalDiscount','soldFinalPrice']);
+                    });
+                    return [[
+                        "categoryInsurance" => $key,
+                        "transactions" => $row
+                    ]];
+                })->flatten(1)->sortBy("categoryInsurance");
+
+                $detailCgd = $detailCgd->map(function ($row,$key){
+                    $row = $row->map(function($row) {
+                        return array_except($row,['invoiceId','soldPatientsInsurancesId','soldPrice','soldDiscount','soldTotalPrice','soldTotalDiscount','soldFinalPrice']);
+                    });
+                    return [[
+                        "categoryCgd" => $key,
+                        "transactions" => $row
+                    ]];
+                })->flatten(1)->sortBy("categoryCgd");
+
+                $invoiceData = [
+                    "raw" => $item->toArray(),
+                    "detailInsurance" => $detailInsurance->toArray(),
+                    "detailCgd" => $detailCgd->toArray(),
+                    "summaryInsurance" => $summaryInsurance->toArray(),
+                    "summaryCgd" => $summaryCgd->toArray(),
+
+                    "grandTotalPrice" => $item->sum('totalPrice'),
+                    "grandTotalDiscount" => $item->sum('totalDiscount'),
+                    "grandFinalPrice" => $item->sum('finalPrice'),
+
+                    "insurance" => ($insurance) ? $insurance->toArray() : null,
+
+                    "invoiceDateTime" => Carbon::now(),
+                ];
+
+                $invoice = \App\Models\Accounting\AccountingInvoices::find($invoiceId);
+
+                $invoiceDocument = \App\Models\Document\Documents::find($invoice->documentId);
+                $invoiceDocument->data = $invoiceData;
+                $invoiceDocument->save();
+
+                foreach($invoice->payments() as $payment) {
+                    $payment->document->data = array_replace($payment->document->data,$invoiceData);
+                    $payment->document->save();
+                }
+
+                array_push($returnModels,$invoice);
+            });
+        } else {
+            $success = false;
+            array_push($errorTexts,["errorText" => 'Transactions not found']);
+        }
+
+        return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
+    }
 }
