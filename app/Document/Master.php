@@ -19,9 +19,9 @@ class clsMasterItem
     $ope = $PrmLst['ope'];
     if (substr($ope,0,3) == 'mst') {
       $groupKey = substr($ope,3,strlen($ope)-3);
-      if (isset($PrmLst['english'])) $english = (boolean)$PrmLst['english'];
-      else $english = false;
-      $Value = \App\Http\Controllers\Master\MasterController::translateMaster($groupKey,$Value,$english);
+      if (isset($PrmLst['lang']) && $PrmLst['lang']=="en") $English = true;
+      else $English = false;
+      $Value = \App\Http\Controllers\Master\MasterController::translateMaster($groupKey,$Value,$English);
     }
   }
 }

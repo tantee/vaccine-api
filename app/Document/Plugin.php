@@ -76,6 +76,9 @@ class clsPlugin
       if (isset($PrmLst['full'])) $full = (boolean)$PrmLst['full'];
       else $full = false;
 
+      if (isset($PrmLst['lang']) && $PrmLst['lang']=="en") $English=true;
+      else $English=false;
+
       if (is_array($Value)) {
         if (count($Value)>0) {
           if (ArrayType::isAssociative($Value))$Value = [$Value];
@@ -83,7 +86,7 @@ class clsPlugin
           $tmpInsuranceNames = [];
           foreach($Value as $insurance) {
             if (isset($insurance["payerType"])) {
-              $tmpInsuranceName = \App\Http\Controllers\Master\MasterController::translateMaster('$PayerType',$insurance["payerType"]);
+              $tmpInsuranceName = \App\Http\Controllers\Master\MasterController::translateMaster('$PayerType',$insurance["payerType"],$English);
               if ($insurance["payer"] !== null && $full) {
                 $tmpInsuranceName .= " (".$insurance["payer"]["payerName"].")";
               }
@@ -100,7 +103,7 @@ class clsPlugin
       }
     }
     if ($ope == 'currtext') {
-      if (isset($PrmLst['lang']) && ($PrmLst['lang']=="en" || $PrmLst['lang']=="en")) {
+      if (isset($PrmLst['lang']) && $PrmLst['lang']=="en") {
         $convert = new NumberEng();
         $Value = $convert->convertNumber((float)$Value);
       } else {
