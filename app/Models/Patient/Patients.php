@@ -77,9 +77,7 @@ class Patients extends Model
       if ($this->dateOfDeath!==null) $interval = $this->dateOfDeath->diffAsCarbonInterval($this->dateOfBirth);
       else $interval = Carbon::now()->diffAsCarbonInterval($this->dateOfBirth);
 
-      $interval->setLocale('th_TH');
-
-      return $interval->forHumans(['parts'=>2]);
+      return $interval->locale('th_TH')->forHumans(['parts'=>2]);
     }
 
     public function Photos() {

@@ -29,10 +29,8 @@ class Documents extends Model
     public function getPatientAgeAttribute() {
       if ($this->patient->dateOfDeath!==null && $this->created_at->greaterThan($this->patient->dateOfDeath)) $interval = $this->patient->dateOfDeath->diffAsCarbonInterval($this->patient->dateOfBirth);
       else $interval = $this->created_at->diffAsCarbonInterval($this->patient->dateOfBirth);
-      
-      $interval->setLocale('th_TH');
 
-      return $interval->forHumans(['parts'=>2]);
+      return $interval->locale('th_TH')->forHumans(['parts'=>2]);
     }
 
     public static function boot() {
