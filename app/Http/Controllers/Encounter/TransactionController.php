@@ -369,7 +369,7 @@ class TransactionController extends Controller
                 $invoiceDocument->data = $invoiceData;
                 $invoiceDocument->save();
 
-                foreach($invoice->payments() as $payment) {
+                foreach($invoice->payments as $payment) {
                     $payment->document->data = array_replace($payment->document->data,$invoiceData);
                     $payment->document->save();
                 }
