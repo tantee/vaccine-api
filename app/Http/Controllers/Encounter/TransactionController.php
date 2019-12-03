@@ -309,7 +309,7 @@ class TransactionController extends Controller
 
                 $detailInsurance = $item->groupBy('categoryInsurance');
                 $detailCgd = $item->groupBy('categoryCgd');
-,
+
                 $summaryInsurance = $detailInsurance->map(function ($row,$key){
                     return [[
                         "categoryInsurance" => $key,
