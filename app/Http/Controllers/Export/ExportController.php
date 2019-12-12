@@ -19,12 +19,14 @@ class ExportController extends Controller
             $icgood->STKCOD = $product->productCode;
             $icgood->STKTH = substr($product->productName,0,50);
             $icgood->STKEN = substr($product->productNameEN,0,50);
+            $icgood->STKGRP = $product->category;
             $icgood->QUCOD = ($product->saleUnit) ? $product->saleUnit : 'ea';
             $icgood->STKUNIT = ($product->saleUnit) ? $product->saleUnit : 'ea';
             $icgood->SELLPR1 = $product->price1;
             $icgood->SELLPR2 = $product->price2;
             $icgood->SELLPR3 = $product->price3;
             $icgood->SELLPR4 = $product->price4;
+            $icgood->STKTYP = ($product->productType == "Medicine" || $product->productType == "supply") ? "P" : "S";
             $icgood->batch = $batch;
             $icgood->save();
         }
