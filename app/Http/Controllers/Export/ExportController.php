@@ -82,7 +82,7 @@ class ExportController extends Controller
     }
     
     public static function ExportInvoice($afterDate=null) {
-        if ($afterDate == null) $afterDate = \App\Models\Export\Emcuses::max('batch');
+        if ($afterDate == null) $afterDate = \App\Models\Export\Oeinvhs::max('batch');
         if ($afterDate == null) $afterDate = 0;
         $batch = \Carbon\Carbon::now();
 
