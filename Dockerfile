@@ -1,22 +1,29 @@
-FROM richarvey/nginx-php-fpm:latest
+FROM docker.canceralliance.co.th/nginx-php-base:latest
 
 ENV APP_ENV=DEV
 ENV APP_DEBUG=true
+ENV APP_VERSION=1.0.1
 ENV DB_CONNECTION mysql
 ENV DB_HOST mysql
 ENV DB_PORT 3306
 ENV DB_DATABASE homestead
 ENV DB_USERNAME homestead
 ENV DB_PASSWORD secret
+ENV DB_EXPORT_CONNECTION mysql
+ENV DB_EXPORT_HOST mysql
+ENV DB_EXPORT_PORT 3306
+ENV DB_EXPORT_DATABASE homestead
+ENV DB_EXPORT_USERNAME homestead
+ENV DB_EXPORT_PASSWORD secret
 ENV RUN_SCRIPTS 1
 ENV SKIP_COMPOSER 1
 ENV PHP_MEM_LIMIT 256
+ENV PHP_ERRORS_STDERR 1
 
 VOLUME [ "/var/www/html/storage" ]
 
 RUN echo "Asia/Bangkok" > /etc/TZ && \
-    apk add --no-cache openldap-dev && \
-    docker-php-ext-install iconv ldap sockets && \
+    docker-php-ext-install sockets && \
     sed -i "s/;decorate_workers_output = no/decorate_workers_output = no/g" ${fpm_conf} && \
     composer global require hirak/prestissimo
 

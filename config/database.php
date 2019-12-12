@@ -55,6 +55,22 @@ return [
             'engine' => null,
         ],
 
+        'export' => [
+            'driver' => 'mysql',
+            'host' => env('DB_EXPORT_HOST', '127.0.0.1'),
+            'port' => env('DB_EXPORT_PORT', '3306'),
+            'database' => env('DB_EXPORT_DATABASE', 'forge'),
+            'username' => env('DB_EXPORT_USERNAME', 'forge'),
+            'password' => env('DB_EXPORT_PASSWORD', ''),
+            'unix_socket' => env('DB_EXPORT_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+        ],
+
         'pgsql' => [
             'driver' => 'pgsql',
             'host' => env('DB_HOST', '127.0.0.1'),
