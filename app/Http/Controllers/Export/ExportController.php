@@ -103,7 +103,7 @@ class ExportController extends Controller
         if (!empty($address->soi)) $tmpAddress[] = $address->soi;
         if (!empty($address->street)) $tmpAddress[] = $address->street;
 
-        $Value = implode(" ",$tmpAddress);
+        return implode(" ",$tmpAddress);
     }
 
     private static function address2($address) {
@@ -114,7 +114,7 @@ class ExportController extends Controller
         if (!empty($address->subdistrict)) $tmpAddress[] = ($isThai) ? MasterController::translateMaster('$Subdistrict',$address->subdistrict) : $address->subdistrict;
         if (!empty($address->district)) $tmpAddress[] = ($isThai) ? MasterController::translateMaster('$District',$address->district) : $address->district;
 
-        $Value = implode(" ",$tmpAddress);
+        return implode(" ",$tmpAddress);
     }
 
     private static function address3($address) {
@@ -125,7 +125,7 @@ class ExportController extends Controller
         if (!empty($address->province)) $tmpAddress[] = ($isThai) ? MasterController::translateMaster('$Province',$address->province) : $address->province;
         if (!empty($address->country)) $tmpAddress[] = MasterController::translateMaster('$Country',$address->country);
 
-        $Value = implode(" ",$tmpAddress);
+        return implode(" ",$tmpAddress);
     }
 
     private static function address($address) {
@@ -145,7 +145,7 @@ class ExportController extends Controller
         if (!empty($address->country)) $tmpAddress[] = MasterController::translateMaster('$Country',$address->country);
         if (!empty($address->postCode)) $tmpAddress[] = $address->postCode;
 
-        $Value = implode(" ",$tmpAddress);
+        return implode(" ",$tmpAddress);
     }
 
     private static function namePrefix($name) {
@@ -166,6 +166,6 @@ class ExportController extends Controller
         if (!empty($name->lastName)) $tmpName[] = $name->lastName;
         if (!empty($name->nameSuffix)) $tmpName[] = MasterController::translateMaster('$NameSuffix',$name->nameSuffix,$English);
 
-        $Value = implode(" ",$tmpName);
+        return implode(" ",$tmpName);
     }
 }

@@ -18,6 +18,8 @@ ENV DB_EXPORT_PASSWORD secret
 ENV RUN_SCRIPTS 1
 ENV PHP_MEM_LIMIT 256
 ENV PHP_ERRORS_STDERR 1
+ENV SKIP_CHOWN 1
+ENV SKIP_COMPOSER 1
 
 VOLUME [ "/var/www/html/storage" ]
 
@@ -30,7 +32,10 @@ WORKDIR "/var/www/html"
 
 RUN mv .env.example .env || true && \
     cp -rf storage storage.default || true && \
-    chown -R 100:101 storage.default || true
+    chown -Rf nginx.nginx /var/www/html || true && \
+    chown -R 100:101 storage.default || true && \
+    composer global require hirak/prestissimo && \
+    composer install --working-dir=/var/www/html
 
 EXPOSE 443 80
 
