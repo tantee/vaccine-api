@@ -17,8 +17,8 @@ class ExportController extends Controller
         foreach($products as $product) {
             $icgood = new \App\Models\Export\Icgoods();
             $icgood->STKCOD = $product->productCode;
-            $icgood->STKTH = substr($product->productName,0,50);
-            $icgood->STKEN = substr($product->productNameEN,0,50);
+            $icgood->STKTH = mb_substr($product->productName,0,50);
+            $icgood->STKEN = mb_substr($product->productNameEN,0,50);
             $icgood->STKGRP = $product->category;
             $icgood->QUCOD = ($product->saleUnit) ? $product->saleUnit : 'ea';
             $icgood->STKUNIT = ($product->saleUnit) ? $product->saleUnit : 'ea';
