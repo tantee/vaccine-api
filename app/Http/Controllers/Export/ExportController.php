@@ -49,7 +49,7 @@ class ExportController extends Controller
             $Emcus->ADDR03 = "";
             $address = $patient->addresses->where('addressType','contact')->first();
 
-            $Emcus->ZIPCOD = $address->;
+            $Emcus->ZIPCOD = $address->postCode;
             $Emcus->TELNUM = "";
             $Emcus->TAXID = "";
             $Emcus->CONTACT = "";
