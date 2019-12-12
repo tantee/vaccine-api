@@ -82,8 +82,11 @@ class ExportController extends Controller
     }
     
     public static function ExportInvoice($afterDate=null) {
-        if ($afterDate == null) $afterDate = \App\Models\Export\Icgoods::max('updated_at');
+        if ($afterDate == null) $afterDate = \App\Models\Export\Emcuses::max('batch');
+        if ($afterDate == null) $afterDate = 0;
         $batch = \Carbon\Carbon::now();
+
+        $invoices = \App\Models\Accounting\AccountingInvoices::whereDate('updated_at','>',\Carbon\Carbon::parse($afterDate))->get();
 
     }
 
@@ -111,8 +114,8 @@ class ExportController extends Controller
 
         $isThai = $address->country == "TH";
 
-        if (!empty($address->subdistrict)) $tmpAddress[] = ($isThai) ? MasterController::translateMaster('$Subdistrict',$address->subdistrict) : $address->subdistrict;
-        if (!empty($address->district)) $tmpAddress[] = ($isThai) ? MasterController::translateMaster('$District',$address->district) : $address->district;
+        if (!empty($address->subdistrict)) $tmpAddress[] = ($isThai) ? "ตำบล ".MasterController::translateMaster('$Subdistrict',$address->subdistrict) : $address->subdistrict;
+        if (!empty($address->district)) $tmpAddress[] = ($isThai) ? "อำเภอ ".MasterController::translateMaster('$District',$address->district) : $address->district;
 
         return implode(" ",$tmpAddress);
     }
@@ -122,8 +125,8 @@ class ExportController extends Controller
 
         $isThai = $address->country == "TH";
 
-        if (!empty($address->province)) $tmpAddress[] = ($isThai) ? MasterController::translateMaster('$Province',$address->province) : $address->province;
-        if (!empty($address->country)) $tmpAddress[] = MasterController::translateMaster('$Country',$address->country);
+        if (!empty($address->province)) $tmpAddress[] = ($isThai) ? "จังหวัด ".MasterController::translateMaster('$Province',$address->province) : $address->province;
+        if (!empty($address->country) && !$isThai) $tmpAddress[] = "ประเทศ ".MasterController::translateMaster('$Country',$address->country);
 
         return implode(" ",$tmpAddress);
     }
