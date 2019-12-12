@@ -38,7 +38,8 @@ class CreateOeinvh extends Migration
             $table->string('NOTE2',50)->nullable();  
             $table->string('NOTE3',50)->nullable();  
             $table->string('NOTE4',50)->nullable();  
-            $table->string('NOTE5',50)->nullable();            
+            $table->string('NOTE5',50)->nullable();
+            $table->datetime('batch');
             $table->timestamps();
         });
     }

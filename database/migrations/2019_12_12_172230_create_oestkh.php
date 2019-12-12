@@ -19,6 +19,7 @@ class CreateOestkh extends Migration
             $table->string('DOCDAT',8);
             $table->string('DEPCOD',4);
             $table->string('REMARK',50)->nullable();
+            $table->datetime('batch');
             $table->timestamps();
         });
     }

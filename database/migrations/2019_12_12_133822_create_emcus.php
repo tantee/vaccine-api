@@ -31,6 +31,7 @@ class CreateEmcus extends Migration
             $table->string('SLMCOD',10)->nullable();
             $table->string('AREACOD',2)->nullable();
             $table->string('REMARK',50)->nullable();
+            $table->datetime('batch');
             $table->timestamps();
         });
     }

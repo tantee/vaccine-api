@@ -26,6 +26,7 @@ class CreateOeinvl extends Migration
             $table->string('DISC',10)->default('-');
             $table->decimal('DISCAMT',10,2)->default(0);
             $table->decimal('TRNVAL',10,2);
+            $table->datetime('batch');
             $table->timestamps();
         });
     }

@@ -22,6 +22,7 @@ class CreateOestkl extends Migration
             $table->string('STKDES',50);
             $table->decimal('TRNQTY',8,4);
             $table->string('REMARK',50)->nullable();
+            $table->datetime('batch');
             $table->timestamps();
         });
     }

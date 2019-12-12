@@ -27,6 +27,7 @@ class CreateIcgood extends Migration
             $table->decimal('SELLPR4',10,2)->nullable();
             $table->string('STKTYP',1);
             $table->string('REMARK',50)->nullable();
+            $table->datetime('batch');
             $table->timestamps();
         });
     }

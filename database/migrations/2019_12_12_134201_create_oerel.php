@@ -21,6 +21,7 @@ class CreateOerel extends Migration
             $table->decimal('AMOUNT',10,2);
             $table->string('PAYTYP',10);
             $table->string('PAYNOTE',120)->nullable();
+            $table->datetime('batch');
             $table->timestamps();
         });
     }
