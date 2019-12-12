@@ -46,25 +46,39 @@ class ExportController extends Controller
             $Emcus = \App\Models\Export\Emcuses();
             $Emcus->CUSCOD = $patient->hn;
             $Emcus->CUSTYP = "01";
-            $Emcus->PRENAM = MasterController::translateMaster('$NamePrefix',$patient->name_real_th->namePrefix);
-            $Emcus->CUSNAM = "";
-            $Emcus->ADDR01 = "";
-            $Emcus->ADDR02 = "";
-            $Emcus->ADDR03 = "";
+            $Emcus->PRENAM = self::namePrefix($patient->name_real_th);
+            $Emcus->CUSNAM = self::nameNoPrefix($patient->name_real_th);
+
             $address = $patient->addresses->where('addressType','contact')->first();
+            $Emcus->ADDR01 = self::address1($address);
+            $Emcus->ADDR02 = self::address2($address);
+            $Emcus->ADDR03 = self::address3($address);
 
             $Emcus->ZIPCOD = $address->postCode;
-            $Emcus->TELNUM = "";
-            $Emcus->TAXID = "";
-            $Emcus->CONTACT = "";
-            $Emcus->SHIPTO = "";
+            $Emcus->TELNUM = $patient->primaryMobileNo;
+            $Emcus->TAXID = $patient->personId;
+            $Emcus->CONTACT = $Emcus->CUSNAM;
+            $Emcus->SHIPTO = self::address($address);
             $Emcus->batch = $batch;
             $Emcus->save();
         }
 
         foreach ($payers as $payer) {
-
+            $Emcus = \App\Models\Export\Emcuses();
+            $Emcus->CUSCOD = $payer->payerCode;
+            $Emcus->CUSTYP = "02";
+            $Emcus->PRENAM = "";
+            $Emcus->CUSNAM = $payer->payerName;
+            $Emcus->ADDR01 = $payer->payerAddress;
+            $Emcus->TELNUM = $payer->payerTelephoneNo;
+            $Emcus->TAXID = $payer->payerTaxNo;
+            $Emcus->CONTACT = $payer->payerName;
+            $Emcus->SHIPTO = $payer->payerAddress;
+            $Emcus->batch = $batch;
+            $Emcus->save();
         }
+
+        return $batch->format('Y-m-d H:i:s');
     }
 
     public static function ExportInvoice($afterDate=null) {
@@ -75,5 +89,83 @@ class ExportController extends Controller
 
     public static function ExportPayment($afterDate=null) {
 
+    }
+
+    private static function address1($address) {
+        $tmpAddress = [];
+
+        $isThai = $address->country == "TH";
+
+        if (!empty($address->address)) $tmpAddress[] = $address->address;
+        if (!empty($address->village)) $tmpAddress[] = $address->village;
+        if (!empty($address->moo)) $tmpAddress[] = $address->moo;
+        if (!empty($address->trok)) $tmpAddress[] = $address->trok;
+        if (!empty($address->soi)) $tmpAddress[] = $address->soi;
+        if (!empty($address->street)) $tmpAddress[] = $address->street;
+
+        $Value = implode(" ",$tmpAddress);
+    }
+
+    private static function address2($address) {
+        $tmpAddress = [];
+
+        $isThai = $address->country == "TH";
+
+        if (!empty($address->subdistrict)) $tmpAddress[] = ($isThai) ? MasterController::translateMaster('$Subdistrict',$address->subdistrict) : $address->subdistrict;
+        if (!empty($address->district)) $tmpAddress[] = ($isThai) ? MasterController::translateMaster('$District',$address->district) : $address->district;
+
+        $Value = implode(" ",$tmpAddress);
+    }
+
+    private static function address3($address) {
+        $tmpAddress = [];
+
+        $isThai = $address->country == "TH";
+
+        if (!empty($address->province)) $tmpAddress[] = ($isThai) ? MasterController::translateMaster('$Province',$address->province) : $address->province;
+        if (!empty($address->country)) $tmpAddress[] = MasterController::translateMaster('$Country',$address->country);
+
+        $Value = implode(" ",$tmpAddress);
+    }
+
+    private static function address($address) {
+        $tmpAddress = [];
+
+        $isThai = $address->country == "TH";
+
+        if (!empty($address->address)) $tmpAddress[] = $address->address;
+        if (!empty($address->village)) $tmpAddress[] = $address->village;
+        if (!empty($address->moo)) $tmpAddress[] = $address->moo;
+        if (!empty($address->trok)) $tmpAddress[] = $address->trok;
+        if (!empty($address->soi)) $tmpAddress[] = $address->soi;
+        if (!empty($address->street)) $tmpAddress[] = $address->street;
+        if (!empty($address->subdistrict)) $tmpAddress[] = ($isThai) ? MasterController::translateMaster('$Subdistrict',$address->subdistrict) : $address->subdistrict;
+        if (!empty($address->district)) $tmpAddress[] = ($isThai) ? MasterController::translateMaster('$District',$address->district) : $address->district;
+        if (!empty($address->province)) $tmpAddress[] = ($isThai) ? MasterController::translateMaster('$Province',$address->province) : $address->province;
+        if (!empty($address->country)) $tmpAddress[] = MasterController::translateMaster('$Country',$address->country);
+        if (!empty($address->postCode)) $tmpAddress[] = $address->postCode;
+
+        $Value = implode(" ",$tmpAddress);
+    }
+
+    private static function namePrefix($name) {
+        if (!empty($name->nameType) && ($name->nameType=='EN' || $name->nameType=='ALIAS_EN' )) $English = true;
+        else $English = false;
+
+        return MasterController::translateMaster('$NamePrefix',$name->namePrefix,$English);
+    }
+
+    private static function nameNoPrefix($name) {
+        $tmpName = [];
+
+        if (!empty($name->nameType) && ($name->nameType=='EN' || $name->nameType=='ALIAS_EN' )) $English = true;
+        else $English = false;
+
+        if (!empty($name->firstName)) $tmpName[] = $name->firstName;
+        if (!empty($name->middleName)) $tmpName[] = $name->middleName;
+        if (!empty($name->lastName)) $tmpName[] = $name->lastName;
+        if (!empty($name->nameSuffix)) $tmpName[] = MasterController::translateMaster('$NameSuffix',$name->nameSuffix,$English);
+
+        $Value = implode(" ",$tmpName);
     }
 }
