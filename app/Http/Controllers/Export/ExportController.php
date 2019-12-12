@@ -88,6 +88,48 @@ class ExportController extends Controller
 
         $invoices = \App\Models\Accounting\AccountingInvoices::whereDate('updated_at','>',\Carbon\Carbon::parse($afterDate))->get();
 
+        foreach($invoices as $invoice) {
+            $Oeinvh = new \App\Models\Export\Oeinvhs();
+            $Oeinvh->DOCNUM = $invoice->invoiceId;
+            $Oeinvh->DOCDAT = $invoice->created_at->format('dmY');
+            $Oeinvh->DEPCOD = ($invoice->insurance!=null && $invoice->insurance->payerType!=null) ? $invoice->insurance->payerType : '99';
+            //$Oeinvh->SLMCOD = $invoice->invoiceId;
+            $Oeinvh->CUSCOD = ($invoice->insurance!=null && $invoice->insurance->payerCode!=null) ? $invoice->insurance->payerCode : $invoice->hn;
+            $Oeinvh->PAYTRM = ($invoice->insurance!=null && $invoice->insurance->payer!=null) ? $invoice->insurance->payer->creditPeriod : null;
+            $Oeinvh->DUEDAT = (!empty($Oeinvh->PAYTRM)) ? $invoice->created_at->addDays($invoice->insurance->payer->creditPeriod)->format('dmY') : null;
+            $Oeinvh->NXTSEQ = $invoice->transactions->count();
+            $Oeinvh->AMOUNT = $invoice->transactions->sum('total_price');
+            $Oeinvh->DISCAMT = $invoice->transactions->sum('total_discount');
+            $Oeinvh->DISC = ($Oeinvh->DISCAMT>0) ? '' : '-';
+            $Oeinvh->TOTAL = $invoice->amount;
+            $Oeinvh->NETAMT = $invoice->amount;
+            $Oeinvh->CUSNAM =  mb_substr(($invoice->insurance!=null && $invoice->insurance->payer!=null) ? $invoice->insurance->payer->payerName : self::name($invoice->patient->name_real_th),0,60);
+            $Oeinvh->NOTE1 = mb_substr($invoice->patient->hn.' '.self::name($invoice->patient->name_real_th),0,50);
+            $Oeinvh->batch = $batch;
+            $Oeinvh->save();
+
+            $seq = 1;
+            foreach($invoice->transactions as $transaction) {
+                $Oeinvl = new \App\Models\Export\Oeinvls();
+                $Oeinvl->DOCNUM = $invoice->invoiceId;
+                $Oeinvl->SEQNUM = str_pad($seq,3,'0',STR_PAD_LEFT);
+                $Oeinvl->LOCCOD = $transaction->encounter->encounterType;
+                $Oeinvl->STKCOD = $transaction->productCode;
+                $Oeinvl->STKDES = mb_substr($transaction->product->productName,0,50);
+                $Oeinvl->TRNQTY = $transaction->quantity;
+                $Oeinvl->UNITPR = $transaction->price;
+                $Oeinvl->TQUCOD = ($transaction->product->saleUnit) ? $transaction->product->saleUnit : 'ea';;
+                $Oeinvl->DISC = ($transaction->discount==0) ? '-' : $transaction->discount.'%';
+                $Oeinvl->DISCAMT = $transaction->total_discount;
+                $Oeinvl->TRNVAL = $transaction->final_price;
+
+                $Oeinvl->batch = $batch;
+                $Oeinvl->save();
+
+                $seq++;
+            }
+        }
+        return $batch->format('Y-m-d H:i:s');
     }
 
     public static function ExportPayment($afterDate=null) {
@@ -164,6 +206,21 @@ class ExportController extends Controller
         if (!empty($name->nameType) && ($name->nameType=='EN' || $name->nameType=='ALIAS_EN' )) $English = true;
         else $English = false;
 
+        if (!empty($name->firstName)) $tmpName[] = $name->firstName;
+        if (!empty($name->middleName)) $tmpName[] = $name->middleName;
+        if (!empty($name->lastName)) $tmpName[] = $name->lastName;
+        if (!empty($name->nameSuffix)) $tmpName[] = MasterController::translateMaster('$NameSuffix',$name->nameSuffix,$English);
+
+        return implode(" ",$tmpName);
+    }
+
+    private static function name($name) {
+        $tmpName = [];
+
+        if (!empty($name->nameType) && ($name->nameType=='EN' || $name->nameType=='ALIAS_EN' )) $English = true;
+        else $English = false;
+
+        if (!empty($name->namePrefix)) $tmpName[] = MasterController::translateMaster('$NamePrefix',$name->namePrefix,$English);
         if (!empty($name->firstName)) $tmpName[] = $name->firstName;
         if (!empty($name->middleName)) $tmpName[] = $name->middleName;
         if (!empty($name->lastName)) $tmpName[] = $name->lastName;
