@@ -46,19 +46,19 @@ class ExportController extends Controller
             $Emcus = new \App\Models\Export\Emcuses();
             $Emcus->CUSCOD = $patient->hn;
             $Emcus->CUSTYP = "01";
-            $Emcus->PRENAM = self::namePrefix($patient->name_real_th);
-            $Emcus->CUSNAM = self::nameNoPrefix($patient->name_real_th);
+            $Emcus->PRENAM = mb_substr(self::namePrefix($patient->name_real_th),0,15);
+            $Emcus->CUSNAM = mb_substr(self::nameNoPrefix($patient->name_real_th),0,60);
 
             $address = $patient->addresses->where('addressType','contact')->first();
-            $Emcus->ADDR01 = self::address1($address);
-            $Emcus->ADDR02 = self::address2($address);
-            $Emcus->ADDR03 = self::address3($address);
+            $Emcus->ADDR01 = mb_substr(self::address1($address),0,50);
+            $Emcus->ADDR02 = mb_substr(self::address2($address),0,50);
+            $Emcus->ADDR03 = mb_substr(self::address3($address),0,30);
 
             $Emcus->ZIPCOD = $address->postCode;
             $Emcus->TELNUM = $patient->primaryMobileNo;
             $Emcus->TAXID = $patient->personId;
-            $Emcus->CONTACT = $Emcus->CUSNAM;
-            $Emcus->SHIPTO = self::address($address);
+            $Emcus->CONTACT = mb_substr($Emcus->CUSNAM,0,40);
+            $Emcus->SHIPTO = mb_substr(self::address($address),0,10);
             $Emcus->batch = $batch;
             $Emcus->save();
         }
@@ -68,19 +68,19 @@ class ExportController extends Controller
             $Emcus->CUSCOD = $payer->payerCode;
             $Emcus->CUSTYP = "02";
             $Emcus->PRENAM = "";
-            $Emcus->CUSNAM = $payer->payerName;
-            $Emcus->ADDR01 = $payer->payerAddress;
+            $Emcus->CUSNAM = mb_substr($payer->payerName,0,60);
+            $Emcus->ADDR01 = mb_substr($payer->payerAddress,0,50);
             $Emcus->TELNUM = $payer->payerTelephoneNo;
             $Emcus->TAXID = $payer->payerTaxNo;
-            $Emcus->CONTACT = $payer->payerName;
-            $Emcus->SHIPTO = $payer->payerAddress;
+            $Emcus->CONTACT = mb_substr($payer->payerName,0,40);
+            $Emcus->SHIPTO = mb_substr($payer->payerAddress,0,10);
             $Emcus->batch = $batch;
             $Emcus->save();
         }
 
         return $batch->format('Y-m-d H:i:s');
     }
-
+    
     public static function ExportInvoice($afterDate=null) {
         if ($afterDate == null) $afterDate = \App\Models\Export\Icgoods::max('updated_at');
         $batch = \Carbon\Carbon::now();
