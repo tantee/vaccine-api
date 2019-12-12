@@ -23,14 +23,14 @@ VOLUME [ "/var/www/html/storage" ]
 
 RUN echo "Asia/Bangkok" > /etc/TZ && \
     docker-php-ext-install sockets && \
-    sed -i "s/;decorate_workers_output = no/decorate_workers_output = no/g" ${fpm_conf} && \
+    sed -i "s/;decorate_workers_output = no/decorate_workers_output = no/g" ${fpm_conf} 
 
 ADD . /var/www/html/
 WORKDIR "/var/www/html"
 
 RUN mv .env.example .env || true && \
     cp -rf storage storage.default || true && \
-    chown -R 100:101 storage.default || true && \
+    chown -R 100:101 storage.default || true
 
 EXPOSE 443 80
 
