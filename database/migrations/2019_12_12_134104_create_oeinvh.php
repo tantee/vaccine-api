@@ -35,10 +35,10 @@ class CreateOeinvh extends Migration
             $table->string('AREACOD',4)->nullable();
             $table->string('DOCSTAT',1)->default('N');
             $table->string('NOTE1',50)->nullable();
-            $table->string('NOTE1',50)->nullable();  
-            $table->string('NOTE1',50)->nullable();  
-            $table->string('NOTE1',50)->nullable();  
-            $table->string('NOTE1',50)->nullable();            
+            $table->string('NOTE2',50)->nullable();  
+            $table->string('NOTE3',50)->nullable();  
+            $table->string('NOTE4',50)->nullable();  
+            $table->string('NOTE5',50)->nullable();            
             $table->timestamps();
         });
     }

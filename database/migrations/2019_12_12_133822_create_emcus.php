@@ -29,7 +29,6 @@ class CreateEmcus extends Migration
             $table->string('CONTACT',40)->nullable();
             $table->string('SHIPTO',10)->nullable();
             $table->string('SLMCOD',10)->nullable();
-            $table->string('SHIPTO',10)->nullable();
             $table->string('AREACOD',2)->nullable();
             $table->string('REMARK',50)->nullable();
             $table->timestamps();
