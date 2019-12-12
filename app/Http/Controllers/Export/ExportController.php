@@ -43,7 +43,7 @@ class ExportController extends Controller
         $patients = \App\Models\Patient\Patients::whereDate('updated_at','>',\Carbon\Carbon::parse($afterDate))->get();
 
         foreach ($patients as $patient) {
-            $Emcus = \App\Models\Export\Emcuses();
+            $Emcus = new \App\Models\Export\Emcuses();
             $Emcus->CUSCOD = $patient->hn;
             $Emcus->CUSTYP = "01";
             $Emcus->PRENAM = self::namePrefix($patient->name_real_th);
@@ -64,7 +64,7 @@ class ExportController extends Controller
         }
 
         foreach ($payers as $payer) {
-            $Emcus = \App\Models\Export\Emcuses();
+            $Emcus = new \App\Models\Export\Emcuses();
             $Emcus->CUSCOD = $payer->payerCode;
             $Emcus->CUSTYP = "02";
             $Emcus->PRENAM = "";
