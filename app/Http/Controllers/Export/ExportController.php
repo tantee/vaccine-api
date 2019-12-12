@@ -9,10 +9,11 @@ use App\Http\Controllers\Master\MasterController;
 class ExportController extends Controller
 {
     public static function ExportProduct($afterDate=null) {
-        if ($afterDate == null) $afterDate = \App\Models\Export\Icgoods::max('updated_at');
+        if ($afterDate == null) $afterDate = \App\Models\Export\Icgoods::max('batch');
+        if ($afterDate == null) $afterDate = 0;
         $batch = \Carbon\Carbon::now();
 
-        $products = \App\Models\Master\Products::whereDate('updated_at','>',$afterDate);
+        $products = \App\Models\Master\Products::whereDate('updated_at','>',\Carbon\Carbon::parse($afterDate))->get();
         foreach($products as $product) {
             $icgood = new \App\Models\Export\Icgoods();
             $icgood->STKCOD = $product->productCode;
@@ -32,11 +33,12 @@ class ExportController extends Controller
     }
 
     public static function ExportPayer($afterDate=null) {
-        if ($afterDate == null) $afterDate = \App\Models\Export\Icgoods::max('updated_at');
+        if ($afterDate == null) $afterDate = \App\Models\Export\Emcuses::max('batch');
+        if ($afterDate == null) $afterDate = 0;
         $batch = \Carbon\Carbon::now();
 
-        $payers = \App\Models\Master\Payers::whereDate('updated_at','>',$afterDate);
-        $patients = \App\Models\Patient\Patients::whereDate('updated_at','>',$afterDate);
+        $payers = \App\Models\Master\Payers::whereDate('updated_at','>',\Carbon\Carbon::parse($afterDate))->get();
+        $patients = \App\Models\Patient\Patients::whereDate('updated_at','>',\Carbon\Carbon::parse($afterDate))->get();
 
         foreach ($patients as $patient) {
             $Emcus = \App\Models\Export\Emcuses();
