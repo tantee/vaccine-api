@@ -17,4 +17,5 @@ class Icgoods extends Model
     ];
 
     protected $connection = 'export';
+    protected $table = 'ICGOOD';
 }

@@ -14,4 +14,5 @@ class Oestkls extends Model
     ];
 
     protected $connection = 'export';
+    protected $table = 'OESTKL';
 }

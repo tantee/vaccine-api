@@ -17,4 +17,5 @@ class Oeinvls extends Model
     ];
 
     protected $connection = 'export';
+    protected $table = 'OEINVL';
 }

@@ -10,4 +10,5 @@ class Emcuses extends Model
     protected $guarded = [];
 
     protected $connection = 'export';
+    protected $table = 'EMCUS';
 }

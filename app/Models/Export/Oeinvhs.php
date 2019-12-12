@@ -19,4 +19,5 @@ class Oeinvhs extends Model
     ];
 
     protected $connection = 'export';
+    protected $table = 'OEINVH';
 }

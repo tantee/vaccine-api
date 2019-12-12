@@ -14,4 +14,5 @@ class Oerels extends Model
     ];
 
     protected $connection = 'export';
+    protected $table = 'OEREL';
 }

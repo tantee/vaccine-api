@@ -10,4 +10,5 @@ class Oestkhs extends Model
     protected $guarded = [];
 
     protected $connection = 'export';
+    protected $table = 'OESTKH';
 }
