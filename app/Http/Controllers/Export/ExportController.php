@@ -31,7 +31,7 @@ class ExportController extends Controller
             $icgood->save();
         }
 
-        return $batch;
+        return $batch->format('Y-m-d H:i:s');
     }
 
     public static function ExportPayer($afterDate=null) {
