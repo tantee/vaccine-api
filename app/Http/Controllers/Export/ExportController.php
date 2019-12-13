@@ -104,6 +104,7 @@ class ExportController extends Controller
             $Oeinvh->TOTAL = $invoice->amount;
             $Oeinvh->NETAMT = $invoice->amount;
             $Oeinvh->CUSNAM =  mb_substr(($invoice->insurance!=null && $invoice->insurance->payer!=null) ? $invoice->insurance->payer->payerName : self::name($invoice->patient->name_real_th),0,60);
+            $Oeinvh->DOCSTAT = ($invoice->isVoid) ? 'C' : 'N';
             $Oeinvh->NOTE1 = mb_substr($invoice->patient->hn.' '.self::name($invoice->patient->name_real_th),0,50);
             $Oeinvh->batch = $batch;
             $Oeinvh->save();

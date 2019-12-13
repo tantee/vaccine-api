@@ -21,8 +21,8 @@ class CreateOeinvh extends Migration
             $table->string('SLMCOD',10)->nullable();
             $table->string('CUSCOD',10);
             $table->string('YOUREF',30)->nullable();
-            $table->integer('PAYTRM');
-            $table->string('DUEDAT',8);
+            $table->integer('PAYTRM')->nullable();
+            $table->string('DUEDAT',8)->nullable();
             $table->string('NXTSEQ',3);
             $table->decimal('AMOUNT',10,2);
             $table->string('DISC',10)->default('-');

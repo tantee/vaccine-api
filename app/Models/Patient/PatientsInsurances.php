@@ -18,7 +18,7 @@ class PatientsInsurances extends Model
     protected $toStores = ['documents'];
 
     public function Payer() {
-        return $this->hasOne('App\Models\Master\Payers','payerCode','payerCode');
+        return $this->hasOne('App\Models\Master\Payers','payerCode','payerCode')->withTrashed();
     }
 
     public function Invoices() {
