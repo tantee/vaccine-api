@@ -14,8 +14,7 @@ class CreateOerel extends Migration
     public function up()
     {
         Schema::connection('export')->create('OEREL', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('DOCNUM',12);
+            $table->string('DOCNUM',12)->primary();;
             $table->string('DOCDAT',8);
             $table->string('IVNUM',12);
             $table->decimal('AMOUNT',10,2);

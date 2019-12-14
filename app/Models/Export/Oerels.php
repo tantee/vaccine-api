@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Oerels extends Model
 {
-    //
+    protected $primaryKey = 'DOCNUM';
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $guarded = [];
 
     protected $casts = [

@@ -14,8 +14,7 @@ class CreateEmcus extends Migration
     public function up()
     {
         Schema::connection('export')->create('EMCUS', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('CUSCOD',10);
+            $table->string('CUSCOD',10)->primary();
             $table->string('CUSTYP',2);
             $table->string('PRENAM',15);
             $table->string('CUSNAM',60);

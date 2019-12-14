@@ -28,6 +28,7 @@ class CreateOeinvl extends Migration
             $table->decimal('TRNVAL',10,2);
             $table->datetime('batch');
             $table->timestamps();
+            $table->index(['DOCNUM','SEQNUM']);
         });
     }
 

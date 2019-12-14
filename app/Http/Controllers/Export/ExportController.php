@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Export;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Master\MasterController;
+use App\Http\Controllers\Master\IdController;
 
 class ExportController extends Controller
 {
@@ -15,7 +16,7 @@ class ExportController extends Controller
 
         $products = \App\Models\Master\Products::whereDate('updated_at','>',\Carbon\Carbon::parse($afterDate))->get();
         foreach($products as $product) {
-            $icgood = new \App\Models\Export\Icgoods();
+            $icgood = \App\Models\Export\Icgoods::firstOrNew(['STKCOD'=>$product->productCode]);
             $icgood->STKCOD = $product->productCode;
             $icgood->STKTH = mb_substr($product->productName,0,50);
             $icgood->STKEN = mb_substr($product->productNameEN,0,50);
@@ -43,7 +44,7 @@ class ExportController extends Controller
         $patients = \App\Models\Patient\Patients::whereDate('updated_at','>',\Carbon\Carbon::parse($afterDate))->get();
 
         foreach ($patients as $patient) {
-            $Emcus = new \App\Models\Export\Emcuses();
+            $Emcus = \App\Models\Export\Emcuses::firstOrNew(['CUSCOD'=>$patient->hn]);
             $Emcus->CUSCOD = $patient->hn;
             $Emcus->CUSTYP = "01";
             $Emcus->PRENAM = mb_substr(self::namePrefix($patient->name_real_th),0,15);
@@ -58,13 +59,12 @@ class ExportController extends Controller
             $Emcus->TELNUM = $patient->primaryMobileNo;
             $Emcus->TAXID = $patient->personId;
             $Emcus->CONTACT = mb_substr($Emcus->CUSNAM,0,40);
-            $Emcus->SHIPTO = mb_substr(self::address($address),0,10);
             $Emcus->batch = $batch;
             $Emcus->save();
         }
 
         foreach ($payers as $payer) {
-            $Emcus = new \App\Models\Export\Emcuses();
+            $Emcus = \App\Models\Export\Emcuses::firstOrNew(['CUSCOD'=>$payer->payerCode]);
             $Emcus->CUSCOD = $payer->payerCode;
             $Emcus->CUSTYP = "02";
             $Emcus->PRENAM = "";
@@ -89,27 +89,29 @@ class ExportController extends Controller
         $invoices = \App\Models\Accounting\AccountingInvoices::whereDate('updated_at','>',\Carbon\Carbon::parse($afterDate))->get();
 
         foreach($invoices as $invoice) {
-            $Oeinvh = new \App\Models\Export\Oeinvhs();
+            $Oeinvh = \App\Models\Export\Oeinvhs::firstOrNew(['DOCNUM'=>$invoice->invoiceId]);
             $Oeinvh->DOCNUM = $invoice->invoiceId;
             $Oeinvh->DOCDAT = $invoice->created_at->format('dmY');
             $Oeinvh->DEPCOD = ($invoice->insurance!=null && $invoice->insurance->payerType!=null) ? $invoice->insurance->payerType : '99';
             //$Oeinvh->SLMCOD = $invoice->invoiceId;
             $Oeinvh->CUSCOD = ($invoice->insurance!=null && $invoice->insurance->payerCode!=null) ? $invoice->insurance->payerCode : $invoice->hn;
+            $Oeinvh->YOUREF = mb_substr(self::name($invoice->patient->name_real_th)." ".$invoice->patient->hn,0,30);
             $Oeinvh->PAYTRM = ($invoice->insurance!=null && $invoice->insurance->payer!=null) ? $invoice->insurance->payer->creditPeriod : null;
             $Oeinvh->DUEDAT = (!empty($Oeinvh->PAYTRM)) ? $invoice->created_at->addDays($invoice->insurance->payer->creditPeriod)->format('dmY') : null;
             $Oeinvh->NXTSEQ = $invoice->transactions->count();
-            $Oeinvh->AMOUNT = $invoice->transactions->sum('total_price');
-            $Oeinvh->DISCAMT = $invoice->transactions->sum('total_discount');
-            $Oeinvh->DISC = ($Oeinvh->DISCAMT>0) ? '' : '-';
+            $Oeinvh->AMOUNT = $invoice->amount;
             $Oeinvh->TOTAL = $invoice->amount;
             $Oeinvh->NETAMT = $invoice->amount;
             $Oeinvh->CUSNAM =  mb_substr(($invoice->insurance!=null && $invoice->insurance->payer!=null) ? $invoice->insurance->payer->payerName : self::name($invoice->patient->name_real_th),0,60);
             $Oeinvh->DOCSTAT = ($invoice->isVoid) ? 'C' : 'N';
-            $Oeinvh->NOTE1 = mb_substr($invoice->patient->hn.' '.self::name($invoice->patient->name_real_th),0,50);
             $Oeinvh->batch = $batch;
             $Oeinvh->save();
 
             $seq = 1;
+            $dispensings = [];
+            
+            \App\Models\Export\Oeinvls::where('DOCNUM',$invoice->invoiceId)->delete();
+
             foreach($invoice->transactions as $transaction) {
                 $Oeinvl = new \App\Models\Export\Oeinvls();
                 $Oeinvl->DOCNUM = $invoice->invoiceId;
@@ -127,14 +129,73 @@ class ExportController extends Controller
                 $Oeinvl->batch = $batch;
                 $Oeinvl->save();
 
+                if ($transaction->product->productType == "Medicine" || $transaction->product->productType == "supply") {
+                    $dispensing[$transaction->encounter->encounterType][] = [
+                        "transactionDateTime" => $transaction->transactionDateTime,
+                        "encounterType" => $transaction->encounter->encounterType,
+                        "productCode" => $transaction->productCode,
+                        "productName" => mb_substr($transaction->product->productName,0,50),
+                        "quantity" => $transaction->quantity,
+                        "invoiceId" => $invoice->invoiceId,
+                    ];
+                }
+
                 $seq++;
+            }
+
+            \App\Models\Export\Oestkhs::where('REMARK',$invoice->invoiceId)->delete();
+            \App\Models\Export\Oestkls::where('REMARK',$invoice->invoiceId)->delete();
+
+            foreach($dispensings as $dispensing) {
+                $Oestkh = new \App\Models\Export\Oestkhs();
+                $Oestkh->DOCNUM = IdController::issueId('stock','y',8,'',false);
+                $Oestkh->DOCDAT = $dispensing['transactionDateTime']->format('dmY');
+                $Oestkh->DEPCOD = $dispensing['encounterType'];
+                $Oestkh->REMARK = $dispensing['invoiceId'];
+                $Oestkh->batch = $batch;
+                $Oestkh->save();
+
+                $Oestkl = new \App\Models\Export\Oestkls();
+                $Oestkl->DOCNUM = $Oestkh->DOCNUM;
+                $Oestkl->SEQNUM = '001';
+                $Oestkl->STKCOD = $dispensing['productCode'];
+                $Oestkl->STKDES = $dispensing['productName'];
+                $Oestkl->TRNQTY = $dispensing['quantity'];
+                $Oestkl->REMARK = $dispensing['invoiceId'];
+                $Oestkl->batch = $batch;
+                $Oestkl->save();
             }
         }
         return $batch->format('Y-m-d H:i:s');
     }
 
     public static function ExportPayment($afterDate=null) {
+        if ($afterDate == null) $afterDate = \App\Models\Export\Oerels::max('batch');
+        if ($afterDate == null) $afterDate = 0;
+        $batch = \Carbon\Carbon::now();
 
+        $payments = \App\Models\Accounting\AccountingPayments::whereDate('updated_at','>',\Carbon\Carbon::parse($afterDate))->get();
+
+        foreach($payments as $payment) {
+            $Oerel = \App\Models\Export\Oerels::firstOrNew(['DOCNUM'=>$payment->receiptId]);
+            $Oerel->DOCNUM = $payment->receiptId;
+            $Oerel->DOCDAT = $payment->created_at->format('dmY');;
+            $Oerel->IVNUM = $payment->invoiceId;
+            $Oerel->AMOUNT = $payment->amountPaid;
+            $Oerel->PAYTYP = $payment->paymentMethod;
+            $Oerel->PAYNOTE = $payment->paymentDetail;
+            $Oerel->batch = $batch;
+            $Oerel->save();
+        }
+
+        return $batch->format('Y-m-d H:i:s');
+    }
+
+    public static function Export($afterDate=null) {
+        self::ExportProduct($afterDate);
+        self::ExportPayer($afterDate);
+        self::ExportInvoice($afterDate);
+        self::ExportPayment($afterDate);
     }
 
     private static function address1($address) {

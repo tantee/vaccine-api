@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Icgoods extends Model
 {
-    //
+    protected $primaryKey = 'STKCOD';
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $guarded = [];
 
     protected $casts = [

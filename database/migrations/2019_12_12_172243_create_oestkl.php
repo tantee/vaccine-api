@@ -24,6 +24,7 @@ class CreateOestkl extends Migration
             $table->string('REMARK',50)->nullable();
             $table->datetime('batch');
             $table->timestamps();
+            $table->index(['DOCNUM','SEQNUM']);
         });
     }
 

@@ -14,8 +14,7 @@ class CreateIcgood extends Migration
     public function up()
     {
         Schema::connection('export')->create('ICGOOD', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('STKCOD',20);
+            $table->string('STKCOD',20)->primary();
             $table->string('STKTH',50);
             $table->string('STKEN',50);
             $table->string('STKGRP',4);
