@@ -14,7 +14,7 @@ class ExportController extends Controller
         if ($afterDate == null) $afterDate = 0;
         $batch = \Carbon\Carbon::now();
 
-        $products = \App\Models\Master\Products::whereDate('updated_at','>',\Carbon\Carbon::parse($afterDate))->get();
+        $products = \App\Models\Master\Products::where('updated_at','>',$afterDate)->get();
         foreach($products as $product) {
             $icgood = \App\Models\Export\Icgoods::firstOrNew(['STKCOD'=>$product->productCode]);
             $icgood->STKCOD = $product->productCode;
@@ -40,8 +40,8 @@ class ExportController extends Controller
         if ($afterDate == null) $afterDate = 0;
         $batch = \Carbon\Carbon::now();
 
-        $payers = \App\Models\Master\Payers::whereDate('updated_at','>',\Carbon\Carbon::parse($afterDate))->get();
-        $patients = \App\Models\Patient\Patients::whereDate('updated_at','>',\Carbon\Carbon::parse($afterDate))->get();
+        $payers = \App\Models\Master\Payers::where('updated_at','>',$afterDate)->get();
+        $patients = \App\Models\Patient\Patients::where('updated_at','>',$afterDate)->get();
 
         foreach ($patients as $patient) {
             $Emcus = \App\Models\Export\Emcuses::firstOrNew(['CUSCOD'=>$patient->hn]);
@@ -86,7 +86,7 @@ class ExportController extends Controller
         if ($afterDate == null) $afterDate = 0;
         $batch = \Carbon\Carbon::now();
 
-        $invoices = \App\Models\Accounting\AccountingInvoices::whereDate('updated_at','>',\Carbon\Carbon::parse($afterDate))->get();
+        $invoices = \App\Models\Accounting\AccountingInvoices::where('updated_at','>',$afterDate)->get();
 
         foreach($invoices as $invoice) {
             $Oeinvh = \App\Models\Export\Oeinvhs::firstOrNew(['DOCNUM'=>$invoice->invoiceId]);
@@ -175,7 +175,7 @@ class ExportController extends Controller
         if ($afterDate == null) $afterDate = 0;
         $batch = \Carbon\Carbon::now();
 
-        $payments = \App\Models\Accounting\AccountingPayments::whereDate('updated_at','>',\Carbon\Carbon::parse($afterDate))->get();
+        $payments = \App\Models\Accounting\AccountingPayments::where('updated_at','>',$afterDate)->get();
 
         foreach($payments as $payment) {
             $Oerel = \App\Models\Export\Oerels::firstOrNew(['DOCNUM'=>$payment->receiptId]);
