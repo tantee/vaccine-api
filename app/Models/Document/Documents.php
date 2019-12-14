@@ -33,6 +33,13 @@ class Documents extends Model
       return $interval->locale('th_TH')->forHumans(['parts'=>2]);
     }
 
+    public function getPatientAgeEnAttribute() {
+      if ($this->patient->dateOfDeath!==null && $this->created_at->greaterThan($this->patient->dateOfDeath)) $interval = $this->patient->dateOfDeath->diffAsCarbonInterval($this->patient->dateOfBirth);
+      else $interval = $this->created_at->diffAsCarbonInterval($this->patient->dateOfBirth);
+
+      return $interval->locale('en')->forHumans(['parts'=>2]);
+    }
+
     public static function boot() {
         static::updating(function($model) {
             $original = $model->getOriginal();

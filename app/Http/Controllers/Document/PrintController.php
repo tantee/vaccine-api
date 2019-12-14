@@ -96,6 +96,7 @@ class PrintController extends Controller
       $data['documentNote'] = $document->note;
       $data['documentStatus'] = $document->status;
       $data['documentPatientAge'] = $document->patient_age;
+      $data['documentPatientAgeEN'] = $document->patient_age_en;
 
       $data['created_at'] = $document->created_at;
       $data['created_by'] = $document->created_by;
