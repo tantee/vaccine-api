@@ -103,7 +103,7 @@ class ExportController extends Controller
             $Oeinvh->TOTAL = $invoice->amount;
             $Oeinvh->NETAMT = $invoice->amount;
             $Oeinvh->CUSNAM =  mb_substr(($invoice->insurance!=null && $invoice->insurance->payer!=null) ? $invoice->insurance->payer->payerName : self::name($invoice->patient->name_real_th),0,60);
-            $Oeinvh->DOCSTAT = ($invoice->isVoid) ? 'C' : 'N';
+            $Oeinvh->DOCSTAT = ($invoice->isVoid || $invoice->insurance->payerCode=='CAH') ? 'C' : 'N';
             $Oeinvh->batch = $batch;
             $Oeinvh->save();
 
@@ -129,8 +129,8 @@ class ExportController extends Controller
                 $Oeinvl->batch = $batch;
                 $Oeinvl->save();
 
-                if ($transaction->product->productType == "Medicine" || $transaction->product->productType == "supply") {
-                    $dispensing[$transaction->encounter->encounterType][] = [
+                if (($transaction->product->productType == "Medicine" || $transaction->product->productType == "supply") && !$invoice->isVoid) {
+                    $dispensings[] = [
                         "transactionDateTime" => $transaction->transactionDateTime,
                         "encounterType" => $transaction->encounter->encounterType,
                         "productCode" => $transaction->productCode,
@@ -158,6 +158,7 @@ class ExportController extends Controller
                 $Oestkl = new \App\Models\Export\Oestkls();
                 $Oestkl->DOCNUM = $Oestkh->DOCNUM;
                 $Oestkl->SEQNUM = '001';
+                $Oestkl->LOCCOD = '01';
                 $Oestkl->STKCOD = $dispensing['productCode'];
                 $Oestkl->STKDES = $dispensing['productName'];
                 $Oestkl->TRNQTY = $dispensing['quantity'];
