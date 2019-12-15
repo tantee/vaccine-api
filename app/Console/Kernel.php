@@ -30,6 +30,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(function() {
             return \App\Http\Controller\Export\ExportContrller::Export();
         })->everyFiveMinutes()
+            ->name('ExportToExpress')
             ->onOneServer()
             ->sendOutputTo("ExportOutput.log");
     }
