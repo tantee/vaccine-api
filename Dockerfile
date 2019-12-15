@@ -33,7 +33,7 @@ WORKDIR "/var/www/html"
 RUN mv .env.example .env || true && \
     mkdir -p /etc/supervisor/conf.d/ || true && \
     mv conf/supervisor-cron.conf /etc/supervisor/conf.d/supervisor-cron.conf || true && \
-    { crontab -l ; echo "* * * * * cd /var/www/html && php artisan schedule:run >> /dev/null 2>&1"; } | crontab - || true && \
+    { crontab -l ; echo "* * * * * cd /var/www/html && php artisan schedule:run >> /dev/null 2>&1"; } | crontab -u nginx - || true && \
     cp -rf storage storage.default || true && \
     chown -Rf nginx.nginx /var/www/html || true && \
     chown -R 100:101 storage.default || true && \
