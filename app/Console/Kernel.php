@@ -28,7 +28,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')
         //          ->hourly();
         $schedule->call(function() {
-            return \App\Http\Controller\Export\ExportController::Export();
+            return \App\Http\Controllers\Export\ExportController::Export();
         })->everyFiveMinutes()
             ->name('ExportToAccounting')
             ->onOneServer();
