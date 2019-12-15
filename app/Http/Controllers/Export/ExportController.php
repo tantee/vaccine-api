@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Export;
 
+use Log;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Master\MasterController;
@@ -193,13 +194,16 @@ class ExportController extends Controller
     }
 
     public static function Export($afterDate=null) {
+        Log::info('Export to express begin');
         $output = [];
-        
+
         $output[] = 'Exported Product '.self::ExportProduct($afterDate);
         $output[] = 'Exported Payer '.self::ExportPayer($afterDate);
         $output[] = 'Exported Invoice '.self::ExportInvoice($afterDate);
         $output[] = 'Exported Payment '.self::ExportPayment($afterDate);
 
+        Log::info('Export to express finish');
+        
         return implode("\n",$output);
     }
 
