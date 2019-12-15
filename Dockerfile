@@ -31,6 +31,8 @@ ADD . /var/www/html/
 WORKDIR "/var/www/html"
 
 RUN mv .env.example .env || true && \
+    mv conf/supervisor-cron.conf /etc/supervisor/conf.d/supervisor-cron.conf || true && \
+    { crontab -l ; echo "* * * * * cd /var/www/html && php artisan schedule:run >> /dev/null 2>&1"; } | crontab - || true && \
     cp -rf storage storage.default || true && \
     chown -Rf nginx.nginx /var/www/html || true && \
     chown -R 100:101 storage.default || true && \
