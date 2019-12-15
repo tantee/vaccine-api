@@ -27,6 +27,12 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
+        $schedule->call(function() {
+            \App\Http\Controller\Export\ExportContrller::Export();
+        })->everyFiveMinutes()
+            ->withoutOverlapping()
+            ->onOneServer()
+            ->sendOutputTo("ExportOutput.log");
     }
 
     /**

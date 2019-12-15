@@ -193,10 +193,14 @@ class ExportController extends Controller
     }
 
     public static function Export($afterDate=null) {
-        self::ExportProduct($afterDate);
-        self::ExportPayer($afterDate);
-        self::ExportInvoice($afterDate);
-        self::ExportPayment($afterDate);
+        $output = [];
+        
+        $output[] = 'Exported Product '.self::ExportProduct($afterDate);
+        $output[] = 'Exported Payer '.self::ExportPayer($afterDate);
+        $output[] = 'Exported Invoice '.self::ExportInvoice($afterDate);
+        $output[] = 'Exported Payment '.self::ExportPayment($afterDate);
+
+        return implode("\n",$output);
     }
 
     private static function address1($address) {
