@@ -22,8 +22,8 @@ class ExportController extends Controller
             $icgood->STKTH = mb_substr($product->productName,0,50);
             $icgood->STKEN = mb_substr($product->productNameEN,0,50);
             $icgood->STKGRP = $product->category;
-            $icgood->QUCOD = ($product->saleUnit) ? $product->saleUnit : 'ea';
-            $icgood->STKUNIT = ($product->saleUnit) ? $product->saleUnit : 'ea';
+            $icgood->QUCOD = ($product->saleUnit) ? mb_substr($product->saleUnit,0,2) : 'ea';
+            $icgood->STKUNIT = ($product->saleUnit) ? mb_substr($product->saleUnit,0,2) : 'ea';
             $icgood->SELLPR1 = $product->price1;
             $icgood->SELLPR2 = $product->price2;
             $icgood->SELLPR3 = $product->price3;
@@ -122,7 +122,7 @@ class ExportController extends Controller
                 $Oeinvl->STKDES = mb_substr($transaction->product->productName,0,50);
                 $Oeinvl->TRNQTY = $transaction->quantity;
                 $Oeinvl->UNITPR = $transaction->price;
-                $Oeinvl->TQUCOD = ($transaction->product->saleUnit) ? $transaction->product->saleUnit : 'ea';;
+                $Oeinvl->TQUCOD = ($transaction->product->saleUnit) ? mb_substr($transaction->product->saleUnit,0,2) : 'ea';;
                 $Oeinvl->DISC = ($transaction->discount==0) ? '-' : $transaction->discount.'%';
                 $Oeinvl->DISCAMT = $transaction->total_discount;
                 $Oeinvl->TRNVAL = $transaction->final_price;
