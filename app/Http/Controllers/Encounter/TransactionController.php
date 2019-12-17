@@ -205,7 +205,7 @@ class TransactionController extends Controller
         if ($parentTransactionId!==null) data_fill($transactions,"*.parentTransactionId",$parentTransactionId);
 
         $transactions = array_map(function ($value) {
-            return array_except($value,'id');
+            return array_except($value,['id','created_at','updated_at','deleted_at','created_by','updated_by','deleted_by']);
         }, $transactions);
 
         $validationRule = [
