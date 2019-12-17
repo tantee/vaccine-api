@@ -31,7 +31,7 @@ class clsPlugin
       if (isset($PrmLst['locale'])) $locale = $PrmLst['locale'];
       else $locale = 'th_TH';
 
-      if ($FieldName == "patientData.dateOfbirth" && substr($format, -5) == " YYYY") {
+      if ($FieldName == "patientData.dateOfBirth" && substr($format, -5) == " YYYY") {
         $byear = Carbon::parse($Value)->year + 543;
         $format = \str_replace(" YYYY"," YYYY (".$byear.")",$format);
       }
