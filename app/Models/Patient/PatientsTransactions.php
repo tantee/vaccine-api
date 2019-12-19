@@ -70,6 +70,11 @@ class PatientsTransactions extends Model
                 "Policy" => \App\Models\Master\Insurances::find($this->soldInsuranceCode),
             ];
 
+            if ($this->soldPatientsInsurancesId !== null && $this->soldInsuranceCode !== null) return [
+                "PatientsInsurances" => \App\Models\Patient\PatientsInsurances::find($this->soldPatientsInsurancesId),
+                "Policy" => \App\Models\Master\Insurances::find($this->soldInsuranceCode),
+            ];
+
             $Insurances = \App\Models\Patient\PatientsInsurances::remember(1)->cacheTags('patientsinsurances_query')->where('hn',$this->hn)->activeAt($this->transactionDateTime)->orderBy('priority')->get();
 
             foreach($Insurances as $PatientInsurance) {
@@ -115,6 +120,7 @@ class PatientsTransactions extends Model
 
     public function getPriceAttribute() {
         if ($this->invoiceId !== null) return $this->soldPrice;
+        if ($this->soldPrice !== null) return $this->soldPrice;
         $insurance = $this->Insurance;
         if ($insurance["Policy"] == null) return $this->Product->price1;
         else {
@@ -125,6 +131,7 @@ class PatientsTransactions extends Model
 
     public function getDiscountAttribute() {
         if ($this->invoiceId !== null) return $this->soldDiscount;
+        if ($this->soldDiscount !== null) return $this->soldDiscount;
         $insurance = $this->Insurance;
         if ($insurance["Policy"] == null) return 0;
         else return $insurance["Policy"]->discount;
@@ -132,16 +139,19 @@ class PatientsTransactions extends Model
 
     public function getTotalDiscountAttribute() {
         if ($this->invoiceId !== null) return $this->soldTotalDiscount;
+        if ($this->soldTotalDiscount !== null) return $this->soldTotalDiscount;
         return round(($this->price*$this->quantity*$this->discount/100),2);
     }
 
     public function getTotalPriceAttribute() {
         if ($this->invoiceId !== null) return $this->soldTotalPrice;
+        if ($this->soldTotalPrice !== null) return $this->soldTotalPrice;
         return round($this->price*$this->quantity,2);
     }
 
     public function getFinalPriceAttribute() {
         if ($this->invoiceId !== null) return $this->soldFinalPrice;
+        if ($this->soldFinalPrice !== null) return $this->soldFinalPrice;
         return round(($this->price*$this->quantity)-($this->price*$this->quantity*$this->discount/100),2);
     }
 
