@@ -15,7 +15,7 @@ class CreateOeinvh extends Migration
     {
         Schema::connection('export')->create('OEINVH', function (Blueprint $table) {
             $table->string('DOCNUM',12)->primary();;
-            $table->string('DOCDAT',8);
+            $table->datetime('DOCDAT');
             $table->string('DEPCOD',4)->nullable();
             $table->string('SLMCOD',10)->nullable();
             $table->string('CUSCOD',10);

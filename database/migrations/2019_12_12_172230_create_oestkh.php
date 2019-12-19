@@ -15,7 +15,7 @@ class CreateOestkh extends Migration
     {
         Schema::connection('export')->create('OESTKH', function (Blueprint $table) {
             $table->string('DOCNUM',12)->primary();;
-            $table->string('DOCDAT',8);
+            $table->datetime('DOCDAT',8);
             $table->string('DEPCOD',4);
             $table->string('REMARK',50)->nullable();
             $table->datetime('batch');

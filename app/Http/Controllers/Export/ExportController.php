@@ -92,7 +92,7 @@ class ExportController extends Controller
         foreach($invoices as $invoice) {
             $Oeinvh = \App\Models\Export\Oeinvhs::firstOrNew(['DOCNUM'=>$invoice->invoiceId]);
             $Oeinvh->DOCNUM = $invoice->invoiceId;
-            $Oeinvh->DOCDAT = $invoice->created_at->format('dmY');
+            $Oeinvh->DOCDAT = $invoice->created_at;
             $Oeinvh->DEPCOD = ($invoice->insurance!=null && $invoice->insurance->payerType!=null) ? $invoice->insurance->payerType : '99';
             //$Oeinvh->SLMCOD = $invoice->invoiceId;
             $Oeinvh->CUSCOD = ($invoice->insurance!=null && $invoice->insurance->payerCode!=null) ? $invoice->insurance->payerCode : $invoice->hn;
@@ -150,7 +150,7 @@ class ExportController extends Controller
             foreach($dispensings as $dispensing) {
                 $Oestkh = new \App\Models\Export\Oestkhs();
                 $Oestkh->DOCNUM = IdController::issueId('stock','y',8,'',false);
-                $Oestkh->DOCDAT = $dispensing['transactionDateTime']->format('dmY');
+                $Oestkh->DOCDAT = $dispensing['transactionDateTime'];
                 $Oestkh->DEPCOD = $dispensing['encounterType'];
                 $Oestkh->REMARK = $dispensing['invoiceId'];
                 $Oestkh->batch = $batch;
@@ -181,7 +181,7 @@ class ExportController extends Controller
         foreach($payments as $payment) {
             $Oerel = \App\Models\Export\Oerels::firstOrNew(['DOCNUM'=>$payment->receiptId]);
             $Oerel->DOCNUM = $payment->receiptId;
-            $Oerel->DOCDAT = $payment->created_at->format('dmY');;
+            $Oerel->DOCDAT = $payment->created_at;
             $Oerel->IVNUM = $payment->invoiceId;
             $Oerel->AMOUNT = $payment->amountPaid;
             $Oerel->PAYTYP = $payment->paymentMethod;

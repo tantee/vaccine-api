@@ -15,7 +15,7 @@ class CreateOerel extends Migration
     {
         Schema::connection('export')->create('OEREL', function (Blueprint $table) {
             $table->string('DOCNUM',12)->primary();;
-            $table->string('DOCDAT',8);
+            $table->datetime('DOCDAT',8);
             $table->string('IVNUM',12);
             $table->decimal('AMOUNT',10,2);
             $table->string('PAYTYP',10);
