@@ -162,8 +162,20 @@ class PatientController extends Controller
     }
 
     public static function verifyPatientId($data) {
+      $success = true;
+      $errorTexts = [];
+      $returnModels = [];
 
+      $patient = \App\Models\Patient\Patients::find($hn);
+      if ($patient != null) {
+        $patient->personIdVerified = true;
+        $patient->save();
+      } else {
+        $success = false;
+        array_push($errorTexts,["errorText" => 'No patient for HN '.$hn]);
+      }
 
+      return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }
 
     public static function isExistPatient($hn) {

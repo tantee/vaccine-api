@@ -56,6 +56,7 @@ class PatientsInsurances extends Model
       'limitPerOpd' => 'float',
       'limitPerIpd' => 'float',
       'policies' => 'array',
+      'clinics' => 'array',
     ];
 
     protected $with = ['payer'];

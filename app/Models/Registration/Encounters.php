@@ -43,6 +43,13 @@ class Encounters extends Model
         return $this->hasOne('App\Models\Appointment\Appointments','id','fromAppointmentId')->without(['fromEncounter','toEncounter']);
     }
 
+    public function Vouchers() {
+        return $this->belongsToMany('App\Models\Accounting\Vouchers', 'encounters_vouchers', 'encounterId','voucherId')
+            ->as('voucherDetail')
+            ->withPivot('voucherNumber')
+            ->withTimestamps();
+    }
+
     public static function boot() {
         static::creating(function($model) {
             if (!isset($model->encounterId) || empty($model->encounterId)) {
