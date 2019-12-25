@@ -44,7 +44,7 @@ class Encounters extends Model
     }
 
     public function Vouchers() {
-        return $this->belongsToMany('App\Models\Accounting\Vouchers', 'encounters_vouchers', 'encounterId','voucherId')
+        return $this->belongsToMany('App\Models\Master\Vouchers', 'encounters_vouchers', 'encounterId','voucherId')
             ->as('voucherDetail')
             ->withPivot('voucherNumber')
             ->withTimestamps();

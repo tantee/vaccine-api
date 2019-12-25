@@ -23,6 +23,7 @@ class CreateEncountersVouchers extends Migration
             $table->string('deleted_by')->nullable();
             $table->SoftDeletes();
             $table->timestamps();
+            $table->index(['encounterId','voucherId']);
         });
     }
 
