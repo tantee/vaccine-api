@@ -26,7 +26,7 @@ class PacsImportController extends Controller
             try {
                 $res = $client->request("GET",$qidoUri,$requestData);
                 $pacsDatas = json_decode((String)$res->getBody(),true);
-                foreach($pacsDatas as $pacsData) {
+                foreach(array_wrap($pacsDatas) as $pacsData) {
                     $studyDateTime = $pacsData['00080020']['Value'][0].' '.\substr($pacsData['00080030']['Value'][0],0,2).':'.\substr($pacsData['00080030']['Value'][0],2,2).':'.\substr($pacsData['00080030']['Value'][0],4,2);
                     $studyDateTime = \Carbon\Carbon::parse($studyDateTime);
 
