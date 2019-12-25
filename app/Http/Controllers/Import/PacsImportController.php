@@ -34,7 +34,7 @@ class PacsImportController extends Controller
                     else $radiology = \App\Models\Radiology\Radiology::firstOrNew(["hn"=>$hn,"studyDateTime"=>$studyDateTime,"modality"=>$pacsData['00080061']['Value'][0]]);
 
                     $radiology["hn"] = $hn;
-                    $radiology["accessionNumber"] = $pacsData['00800050']['Value'][0];
+                    $radiology["accessionNumber"] = $pacsData['00080050']['Value'][0];
                     $radiology["modality"] = $pacsData['00080061']['Value'][0];
                     $radiology["studyDateTime"] = $studyDateTime;
                     $radiology["uid"] = $pacsData['0020000D']['Value'][0];
