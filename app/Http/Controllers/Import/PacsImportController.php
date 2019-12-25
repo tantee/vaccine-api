@@ -15,7 +15,7 @@ class PacsImportController extends Controller
         $qidoUri = env('PACS_QIDO_URI','https://pacs.canceralliance.co.th/dcm4chee-arc/aets/CAHPACS/rs');
         $qidoUri = implode('/',[$qidoUri,'studies']);
 
-        $hns = \App\Models\Registration\Encounters::whereNull('dischargeDateTime')->select('hn')->distinct()->get();
+        $hns = \App\Models\Registration\Encounters::whereNull('dischargeDateTime')->select('hn')->distinct()->without('Patient')->get()->pluck('hn');
         foreach($hns as $hn) {
             Log::debug('importing PACS for '.$hn);
             $query['PatientID'] = $hn;
