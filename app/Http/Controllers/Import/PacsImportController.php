@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Import;
 
+use Log;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -9,11 +10,14 @@ class PacsImportController extends Controller
 {
     //
     public static function Import() {
+        Log::info('Begin importing PACS data');
+
         $qidoUri = env('PACS_QIDO_URI','https://pacs.canceralliance.co.th/dcm4chee-arc/aets/CAHPACS/rs');
         $qidoUri = implode('/',[$qidoUri,'studies']);
 
         $hns = \App\Models\Registration\Encounters::whereNull('dischargeDateTime')->select('hn')->distinct()->get();
         foreach($hns as $hn) {
+            Log::debug('importing PACS for '.$hn);
             $query['PatientID'] = $hn;
             $query['includefield'] = '00081030,00080060';
             $requestData['query'] = $query;
@@ -40,7 +44,7 @@ class PacsImportController extends Controller
                     $radiology->save();
                 }
             } catch (\Exception $e) {
-
+                Log::error($e->getMessage());
             }
         }
     }
