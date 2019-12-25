@@ -31,7 +31,7 @@ class PacsImportController extends Controller
                     $studyDateTime = \Carbon\Carbon::parse($studyDateTime);
 
                     if (!empty($pacsData['00800050']['Value'][0])) $radiology = \App\Models\Radiology\Radiology::firstOrNew(["accessionNumber"=>$pacsData['00800050']['Value'][0]]);
-                    else $radiology = \App\Models\Radiology\Radiology::firstOrNew(["hn"=>$hn,"studyDateTime"=>$studyDateTime,"modality"=>$pacsData['00800061']['Value'][0]]);
+                    else $radiology = \App\Models\Radiology\Radiology::firstOrNew(["hn"=>$hn,"studyDateTime"=>$studyDateTime,"modality"=>$pacsData['00080061']['Value'][0]]);
 
                     $radiology["hn"] = $hn;
                     $radiology["accessionNumber"] = $pacsData['00800050']['Value'][0];
