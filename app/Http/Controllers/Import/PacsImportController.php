@@ -35,7 +35,7 @@ class PacsImportController extends Controller
 
                     $radiology["hn"] = $hn;
                     $radiology["accessionNumber"] = $pacsData['00800050']['Value'][0];
-                    $radiology["modality"] = $pacsData['00800061']['Value'][0];
+                    $radiology["modality"] = $pacsData['00080061']['Value'][0];
                     $radiology["studyDateTime"] = $studyDateTime;
                     $radiology["uid"] = $pacsData['0020000D']['Value'][0];
                     $radiology["referringDoctor"] = $pacsData['00080090']['Value'][0][Alphabetic];
