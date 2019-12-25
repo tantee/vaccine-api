@@ -16,7 +16,7 @@ class CreateVouchers extends Migration
         Schema::create('vouchers', function (Blueprint $table) {
             $table->increments('id');
             $table->string('voucherName');
-            $table->string('voucherDetail')->nullable();
+            $table->text('voucherDetail')->nullable();
             $table->datetime('expiredDateTime')->nullable();
             $table->json('conditions');
             $table->string('created_by')->nullable();

@@ -145,7 +145,7 @@ class PatientsTransactions extends Model
         if ($this->Encounter->Vouchers !== null) {
             foreach ($this->Encounter->Vouchers as $voucher) {
                 $matchedCondition = collect($voucher->conditions)->firstWhere('productCode',$this->productCode);
-                if ($matchedCondition!==null && !empty($matchedCondition['discount'])) return $matchedCondition['price'];
+                if ($matchedCondition!==null && !empty($matchedCondition['discount'])) return $matchedCondition['discount'];
             }
         }
         $insurance = $this->Insurance;
