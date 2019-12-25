@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateRadiology extends Migration
+class CreateRadiologies extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateRadiology extends Migration
      */
     public function up()
     {
-        Schema::create('radiology', function (Blueprint $table) {
+        Schema::create('radiologies', function (Blueprint $table) {
             $table->increments('id');
             $table->string('hn');
             $table->string('accessionNumber')->nullable();
@@ -43,6 +43,6 @@ class CreateRadiology extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('radiology');
+        Schema::dropIfExists('radiologies');
     }
 }
