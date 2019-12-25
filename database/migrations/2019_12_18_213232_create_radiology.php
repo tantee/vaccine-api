@@ -24,7 +24,7 @@ class CreateRadiology extends Migration
             $table->string('uid');
             $table->string('referringDoctor')->nullable();
             $table->string('reportingDoctor')->nullable();
-            $table->interger('imageCount')->default(0);
+            $table->integer('imageCount')->default(0);
             $table->string('requestDocumentId')->nullable();
             $table->string('reportDocumentId')->nullable();
             $table->string('status')->default('COMPLETED');
