@@ -12,6 +12,14 @@ class Vouchers extends Model
 
     protected $guarded = [];
 
+    public function scopeActive($query) {
+      return $query->whereDate('expiredDateTime','>=',Carbon::now())->orWhereNull('expiredDateTime');
+    }
+
+    public function scopeActiveAt($query,$date) {
+      return $query->whereDate('expiredDateTime','>=',$date)->orWhereNull('expiredDateTime');
+    }
+
     protected $casts = [
       'conditions' => 'array',
     ];

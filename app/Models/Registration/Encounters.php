@@ -47,7 +47,8 @@ class Encounters extends Model
         return $this->belongsToMany('App\Models\Master\Vouchers', 'encounters_vouchers', 'encounterId','voucherId')
             ->as('voucherDetail')
             ->withPivot('voucherNumber')
-            ->withTimestamps();
+            ->withTimestamps()
+            ->activeAt($this->admitDateTime);
     }
 
     public static function boot() {
