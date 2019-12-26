@@ -79,7 +79,7 @@ class PatientsTransactions extends Model
 
             foreach($Insurances as $PatientInsurance) {
                 if ($PatientInsurance->clinics !== null && count(array_wrap($PatientInsurance->clinics)) > 0) {
-                    if (in_array($this->Encounter->clinicCode,array_wrap($PatientInsurance->clinics))) continue;
+                    if (!in_array($this->Encounter->clinicCode,array_wrap($PatientInsurance->clinics))) continue;
                 }
 
                 foreach (collect($PatientInsurance->policies)->sortBy('priority') as $Policy) {
