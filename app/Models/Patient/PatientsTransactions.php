@@ -78,8 +78,8 @@ class PatientsTransactions extends Model
             $Insurances = \App\Models\Patient\PatientsInsurances::remember(1)->cacheTags('patientsinsurances_query')->where('hn',$this->hn)->activeAt($this->transactionDateTime)->orderBy('priority')->get();
 
             foreach($Insurances as $PatientInsurance) {
-                if ($PatientInsurance->clinics !== null && count($PatientInsurance->clinics) > 0) {
-                    if (!collect($PatientInsurance->clinics)->contains('clinicCode',$this->Encounter->clinicCode)) continue;
+                if ($PatientInsurance->clinics !== null && count(array_wrap($PatientInsurance->clinics)) > 0) {
+                    if (in_array($this->Encounter->clinicCode,array_wrap($PatientInsurance->clinics))) continue;
                 }
 
                 foreach (collect($PatientInsurance->policies)->sortBy('priority') as $Policy) {
