@@ -253,6 +253,8 @@ class PatientsTransactions extends Model
         "soldTotalPrice" => "float",
         "soldTotalDiscount" => "float",
         "soldFinalPrice" => "float",
+        "overridePrice" => "float",
+        "overrideDiscount" => "float",
     ];
 
     protected $with = ['Product','Encounter'];
