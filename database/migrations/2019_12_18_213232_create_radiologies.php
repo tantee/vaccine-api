@@ -18,6 +18,7 @@ class CreateRadiologies extends Migration
             $table->string('hn');
             $table->string('accessionNumber')->nullable();
             $table->string('modality');
+            $table->string('description')->nullable();
             $table->datetime('studyDateTime');
             $table->datetime('requestDateTime')->nullable();
             $table->datetime('reportDateTime')->nullable();
