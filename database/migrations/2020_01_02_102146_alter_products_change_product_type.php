@@ -13,7 +13,7 @@ class AlterProductsChangeProductType extends Migration
      */
     public function up()
     {
-        DB::statement("ALTER TABLE products MODIFY productType values ENUM('medicine','supply','procedure','service','laboratory','radiology','package')");
+        DB::statement("ALTER TABLE products MODIFY COLUMN productType ENUM('medicine','supply','procedure','service','laboratory','radiology','package')");
     }
 
     /**
@@ -23,6 +23,6 @@ class AlterProductsChangeProductType extends Migration
      */
     public function down()
     {
-        DB::statement("ALTER TABLE products MODIFY productType values ENUM('medicine','supply','procedure','service','laboratory','radiology')");
+        DB::statement("ALTER TABLE products MODIFY COLUMN productType ENUM('medicine','supply','procedure','service','laboratory','radiology')");
     }
 }
