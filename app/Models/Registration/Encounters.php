@@ -112,6 +112,13 @@ class Encounters extends Model
             }
         });
 
+        static::updated(function($model){
+            $original = $model->getOriginal();
+            if (($original['dischargeDateTime']==null && $model->dischargeDateTime!==null) || ($original['dischargeDateTime']!=$model->dischargeDateTime)) {
+                if ($model->encounterType == 'IMP') \App\Http\Controllers\Encounter\IPDController::autoRoundDischarge($model->encounterId);
+            }
+        });
+
         parent::boot();
     }
 
