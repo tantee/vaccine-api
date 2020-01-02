@@ -17,10 +17,10 @@ class IPDController extends Controller
             $autoCharge = array_wrap($encounter->clinic->autoCharge);
             foreach($autoCharge as $charge) {
                 if (!empty($charge['repeatHour'])) {
-                    $existCharge = $encounter->transactions->where('productCode',$charge['productCode'])->where('transactionDateTime','>=',\Carbon\Carbon::now()->subHours($charge['repeatHour']))->exists();
+                    $existCharge = $encounter->transactions()->where('productCode',$charge['productCode'])->where('transactionDateTime','>=',\Carbon\Carbon::now()->subHours($charge['repeatHour']))->exists();
                     if (!$existCharge) {                        
                         if (!empty($charge['limitPerEncounter'])) {
-                            $countChargeEncounter = $encounter->transactions->where('productCode',$charge['productCode'])->count();
+                            $countChargeEncounter = $encounter->transactions()->where('productCode',$charge['productCode'])->count();
                             if ($charge['limitPerEncounter'] <= $countChargeEncounter) continue;
                         }
                         if (!empty($charge['limitPerDay'])) {
