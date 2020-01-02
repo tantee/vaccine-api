@@ -44,6 +44,12 @@ class Kernel extends ConsoleKernel
         })->everyFiveMinutes()
             ->name('AutoChargeIPD')
             ->onOneServer();
+
+        $schedule->call(function() {
+            return \App\Http\Controllers\Encounter\OPDController::autoCloseEncounter();
+        })->daily()
+            ->name('AutoCloseEncounterOPD')
+            ->onOneServer();
     }
 
     /**
