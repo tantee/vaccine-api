@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Encounter;
 
+use Log;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
