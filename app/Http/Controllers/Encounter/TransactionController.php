@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\Master\IdController;
 use App\Http\Controllers\Document\DocumentController;
+use App\Utilities\ArrayType;
 use Carbon\Carbon;
 
 class TransactionController extends Controller
@@ -199,13 +200,15 @@ class TransactionController extends Controller
     }
 
     public static function addTransactions($hn,$encounterId,$transactions,$parentTransactionId=null) {
+        if (ArrayType::isAssociative($transactions)) $transactions = [$transactions];
+
         data_fill($transactions,"*.hn",$hn);
         data_fill($transactions,"*.encounterId",$encounterId);
 
         if ($parentTransactionId!==null) data_fill($transactions,"*.parentTransactionId",$parentTransactionId);
 
         $transactions = array_map(function ($value) {
-            return array_except($value,['id','created_at','updated_at','deleted_at','created_by','updated_by','deleted_by']);
+            return array_except($value,['id','created_at','updated_at','deleted_at','created_by','updated_by','deleted_by','repeatHour','roundHour','limitPerEncounter','limitPerDay']);
         }, $transactions);
 
         $validationRule = [

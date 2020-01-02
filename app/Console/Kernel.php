@@ -38,6 +38,12 @@ class Kernel extends ConsoleKernel
         })->everyMinute()
             ->name('ImportPacsStudy')
             ->onOneServer();
+
+        $schedule->call(function() {
+            return \App\Http\Controllers\Encounter\IPDController::autoCharge();
+        })->everyFiveMinutes()
+            ->name('AutoChargeIPD')
+            ->onOneServer();
     }
 
     /**
