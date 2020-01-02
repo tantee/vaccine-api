@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Encounter;
 
+use Log;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -26,7 +27,7 @@ class IPDController extends Controller
                             $countChargeDay = \App\Models\Patient\PatientsTransactions::where('hn',$encounter->hn)->whereDate('transactionDateTime',\Carbon\Carbon::now())->count();
                             if ($charge['limitPerDay'] <= $countChargeDay) continue;
                         }
-                        Log::info('Auto charge HN '.$encounter->hn.', Encounter '.$encounter->encounterId.', ProductCode '.$charge['productCode']);
+                        Log::debug('Auto charge HN '.$encounter->hn.', Encounter '.$encounter->encounterId.', ProductCode '.$charge['productCode']);
                         \App\Http\Controllers\Encounter\TransactionController::addTransactions($encounter->hn,$encounter->encounterId,$charge);
                     }
                 }
