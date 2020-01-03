@@ -24,7 +24,7 @@ class IPDController extends Controller
                             if ($charge['limitPerEncounter'] <= $countChargeEncounter) continue;
                         }
                         if (!empty($charge['limitPerDay'])) {
-                            $countChargeDay = \App\Models\Patient\PatientsTransactions::where('hn',$encounter->hn)->whereDate('transactionDateTime',\Carbon\Carbon::now())->count();
+                            $countChargeDay = \App\Models\Patient\PatientsTransactions::where('hn',$encounter->hn)->where('productCode',$charge['productCode'])->whereDate('transactionDateTime',\Carbon\Carbon::now())->count();
                             if ($charge['limitPerDay'] <= $countChargeDay) continue;
                         }
                         Log::debug('Auto charge HN '.$encounter->hn.', Encounter '.$encounter->encounterId.', ProductCode '.$charge['productCode']);
@@ -49,7 +49,7 @@ class IPDController extends Controller
                             if ($charge['limitPerEncounter'] <= $countChargeEncounter) continue;
                         }
                         if (!empty($charge['limitPerDay'])) {
-                            $countChargeDay = \App\Models\Patient\PatientsTransactions::where('hn',$encounter->hn)->whereDate('transactionDateTime',\Carbon\Carbon::now())->count();
+                            $countChargeDay = \App\Models\Patient\PatientsTransactions::where('hn',$encounter->hn)->where('productCode',$charge['productCode'])->whereDate('transactionDateTime',\Carbon\Carbon::now())->count();
                             if ($charge['limitPerDay'] <= $countChargeDay) continue;
                         }
                         Log::debug('Auto rounding charge HN '.$encounter->hn.', Encounter '.$encounter->encounterId.', ProductCode '.$charge['productCode']);
