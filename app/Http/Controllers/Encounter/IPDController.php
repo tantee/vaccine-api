@@ -17,7 +17,7 @@ class IPDController extends Controller
             $autoCharge = array_wrap($encounter->clinic->autoCharge);
             foreach($autoCharge as $charge) {
                 if (!empty($charge['repeatHour'])) {
-                    $existCharge = $encounter->transactions()->where('productCode',$charge['productCode'])->where('transactionDateTime','>=',\Carbon\Carbon::now()->subHours($charge['repeatHour']))->exists();
+                    $existCharge = $encounter->transactions()->where('productCode',$charge['productCode'])->where('transactionDateTime','>',\Carbon\Carbon::now()->subHours($charge['repeatHour'])->roundMinute())->exists();
                     if (!$existCharge) {                        
                         if (!empty($charge['limitPerEncounter'])) {
                             $countChargeEncounter = $encounter->transactions()->where('productCode',$charge['productCode'])->count();
@@ -42,7 +42,7 @@ class IPDController extends Controller
             $autoCharge = array_wrap($encounter->clinic->autoCharge);
             foreach($autoCharge as $charge) {
                 if (!empty($charge['roundHour'])) {
-                    $existCharge = $encounter->transactions()->where('productCode',$charge['productCode'])->where('transactionDateTime','>=',\Carbon\Carbon::now()->subHours($charge['roundHour']))->exists();
+                    $existCharge = $encounter->transactions()->where('productCode',$charge['productCode'])->where('transactionDateTime','>',\Carbon\Carbon::now()->subHours($charge['roundHour'])->roundMinute())->exists();
                     if (!$existCharge) {                        
                         if (!empty($charge['limitPerEncounter'])) {
                             $countChargeEncounter = $encounter->transactions()->where('productCode',$charge['productCode'])->count();
