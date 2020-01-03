@@ -14,5 +14,8 @@ class PatientsVitalSigns extends Model
 
     protected $casts = [
         "temperature" => "float",
+        "oxygenSaturation" => "float",
+        "height" => "float",
+        "weight" => "float",
     ];
 }
