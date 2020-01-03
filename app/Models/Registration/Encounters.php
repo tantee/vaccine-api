@@ -19,6 +19,10 @@ class Encounters extends Model
     protected $keyType = 'string';
     protected $guarded = [];
 
+    public function scopeActive($query) {
+      return $query->whereNull('dischargeDateTime');
+    }
+
     public function Patient() {
         return $this->belongsTo('App\Models\Patient\Patients','hn','hn');
     }
