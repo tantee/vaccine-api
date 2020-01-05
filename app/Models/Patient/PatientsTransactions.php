@@ -258,6 +258,7 @@ class PatientsTransactions extends Model
         "soldFinalPrice" => "float",
         "overridePrice" => "float",
         "overrideDiscount" => "float",
+        "itemizedProducts" => "array",
     ];
 
     protected $with = ['Product','Encounter'];

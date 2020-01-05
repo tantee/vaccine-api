@@ -18,6 +18,7 @@ class Products extends Model
     protected $casts = [
       'specification' => 'array',
       'childProducts' => 'array',
+      'itemizedProducts' => 'array',
       'price1' => 'float',
       'price2' => 'float',
       'price3' => 'float',
