@@ -17,7 +17,7 @@ class CreatePatientsVitalsigns extends Migration
             $table->increments('id');
             $table->string('hn',20);
             $table->string('encounterId',50)->nullable();
-            $table->datetime('vitalSignDateTime');
+            $table->timestamp('vitalSignDateTime')->useCurrent();
             $table->decimal('temperature',5,2)->nullable();
             $table->integer('heartRate')->nullable();
             $table->integer('respiratoryRate')->nullable();

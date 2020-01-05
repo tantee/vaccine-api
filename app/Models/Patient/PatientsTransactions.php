@@ -234,6 +234,9 @@ class PatientsTransactions extends Model
                     if ($model->performLocationCode == null) $model->performLocationCode = $model->Encounter->locationCode;
                 }
             }
+            if ($model->Product !== null && !empty($model->Product->itemizedProducts) && $model->itemizedProducts==null) {
+                $model->itemizedProducts = $model->Product->itemizedProducts;
+            }
         });
 
         static::deleting(function($model) {
