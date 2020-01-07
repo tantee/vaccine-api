@@ -68,15 +68,22 @@ class PatientsTransactions extends Model
         if ($this->_insurance !== null) return $this->_insurance;
 
         if ($returnInsurance == null && !$this->isForceSelfPay) {
-            if ($this->invoiceId !== null) return [
-                "PatientsInsurances" => \App\Models\Patient\PatientsInsurances::find($this->soldPatientsInsurancesId),
-                "Policy" => \App\Models\Master\Insurances::find($this->soldInsuranceCode),
-            ];
+            if ($this->invoiceId !== null) {
+                $this->_insurance = [
+                    "PatientsInsurances" => \App\Models\Patient\PatientsInsurances::find($this->soldPatientsInsurancesId),
+                    "Policy" => \App\Models\Master\Insurances::find($this->soldInsuranceCode),
+                ];
+                return $this->_insurance;
+            }
+            
 
-            if ($this->soldPatientsInsurancesId !== null && $this->soldInsuranceCode !== null) return [
-                "PatientsInsurances" => \App\Models\Patient\PatientsInsurances::find($this->soldPatientsInsurancesId),
-                "Policy" => \App\Models\Master\Insurances::find($this->soldInsuranceCode),
-            ];
+            if ($this->soldPatientsInsurancesId !== null && $this->soldInsuranceCode !== null) {
+                $this->_insurance =  [
+                    "PatientsInsurances" => \App\Models\Patient\PatientsInsurances::find($this->soldPatientsInsurancesId),
+                    "Policy" => \App\Models\Master\Insurances::find($this->soldInsuranceCode),
+                ];
+                return $this->_insurance;
+            }
 
             $Insurances = \App\Models\Patient\PatientsInsurances::remember(1)->cacheTags('patientsinsurances_query')->where('hn',$this->hn)->activeAt($this->transactionDateTime)->orderBy('priority')->get();
 
