@@ -61,8 +61,11 @@ class PatientsTransactions extends Model
         return $this->hasOne('App\Models\Master\Doctors','doctorCode','performDoctorCode');
     }
 
+    private $_insurance = null;
     public function getInsuranceAttribute() {
         $returnInsurance = null;
+
+        if ($this->_insurance !== null) return $this->_insurance;
 
         if ($returnInsurance == null && !$this->isForceSelfPay) {
             if ($this->invoiceId !== null) return [
@@ -118,6 +121,8 @@ class PatientsTransactions extends Model
         }
 
         if ($returnInsurance == null) $returnInsurance = ["PatientsInsurances"=> null ,"Policy"=> null];;
+        
+        $this->_insurance = $returnInsurance;
 
         return $returnInsurance;
     }
