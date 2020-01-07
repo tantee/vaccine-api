@@ -75,7 +75,6 @@ class PatientsTransactions extends Model
                 ];
                 return $this->_insurance;
             }
-            
 
             if ($this->soldPatientsInsurancesId !== null && $this->soldInsuranceCode !== null) {
                 $this->_insurance =  [
