@@ -69,6 +69,6 @@ class DocumentsTemplates extends Model
         'revisionDate',
     ];
 
-    protected $rememberFor = 60;
+    protected $rememberFor = 5;
     protected $rememberCacheTag = 'documentstemplates_query';
 }

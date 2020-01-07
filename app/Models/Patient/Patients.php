@@ -2,6 +2,7 @@
 
 namespace App\Models\Patient;
 
+use Watson\Rememberable\Rememberable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UserStamps;
@@ -106,4 +107,6 @@ class Patients extends Model
     protected $appends = ['name_th','name_en','name_real_th','name_real_en','age'];
 
     protected $hidden = ['personIdDetail'];
+
+    protected $rememberFor = 1;
 }

@@ -51,6 +51,6 @@ class Products extends Model
         parent::boot();
     }
 
-    protected $rememberFor = 60;
+    protected $rememberFor = 5;
     protected $rememberCacheTag = 'products_query';
 }
