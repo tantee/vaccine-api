@@ -9,7 +9,7 @@ use App\Models\Traits\UserStamps;
 
 class PatientsNames extends Model
 {
-    use SoftDeletes,UserStamps;
+    use SoftDeletes,UserStamps,Rememberable;
 
     protected $guarded = [];
 

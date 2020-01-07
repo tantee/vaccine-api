@@ -10,7 +10,7 @@ use Carbon\Carbon;
 
 class Patients extends Model
 {
-    use SoftDeletes,UserStamps;
+    use SoftDeletes,UserStamps,Rememberable;
     protected $primaryKey = 'hn';
     public $incrementing = false;
     protected $keyType = 'string';
