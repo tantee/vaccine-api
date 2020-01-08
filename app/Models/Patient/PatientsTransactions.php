@@ -213,9 +213,10 @@ class PatientsTransactions extends Model
         $value = $this->itemizedProducts;
         if (is_array($value) && count($value)>0) {
             foreach($value as $key=>$item) {
-                if (!isset($item['productName'])) {
-                    $product = \App\Models\Master\Products::find($item['productCode']);
-                    if ($product !== null) $value[$key]['productName'] = $product->productName;
+                $product = \App\Models\Master\Products::find($item['productCode']);
+                if ($product !== null) {
+                    $value[$key]['productName'] = $product->productName;
+                    $value[$key]['productNameEN'] = $product->productNameEN;
                 }
             }
         }
