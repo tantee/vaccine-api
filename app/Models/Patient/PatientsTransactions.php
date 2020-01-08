@@ -209,7 +209,8 @@ class PatientsTransactions extends Model
         else return $this->Encounter->locationCode;
     }
 
-    public function getitemizedProductsAttribute($value) {
+    public function getItemizedProductsNamedAttribute() {
+        $value = $this->itemizedProducts;
         if (is_array($value) && count($value)>0) {
             foreach($value as $key=>$item) {
                 if (!isset($item['productName'])) {
@@ -237,7 +238,7 @@ class PatientsTransactions extends Model
         $toArray['totalPrice'] = $this->total_price;
         $toArray['finalPrice'] = $this->final_price;
 
-        $toArray['itemizedProducts'] = $this->itemized_products;
+        $toArray['itemizedProducts'] = $this->itemized_products_named;
         
         return $toArray;
     }
