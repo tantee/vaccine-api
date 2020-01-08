@@ -209,6 +209,18 @@ class PatientsTransactions extends Model
         else return $this->Encounter->locationCode;
     }
 
+    public function getitemizedProductsAttribute($value) {
+        if (is_array($value) && count($value)>0) {
+            foreach($value as $key=>$item) {
+                if (!isset($item['productName'])) {
+                    $product = \App\Models\Master\Products::find($item['productCode']);
+                    if ($product !== null) $value[$key]['productName'] = $product->productName;
+                }
+            }
+        }
+        return $value;
+    }
+
     public function toArray()
     {
         $toArray = parent::toArray();
@@ -224,6 +236,8 @@ class PatientsTransactions extends Model
         $toArray['totalDiscount'] = $this->total_discount;
         $toArray['totalPrice'] = $this->total_price;
         $toArray['finalPrice'] = $this->final_price;
+
+        $toArray['itemizedProducts'] = $this->itemized_products;
         
         return $toArray;
     }
