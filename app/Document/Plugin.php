@@ -40,6 +40,8 @@ class clsPlugin
     }
     if ($ope == 'formatname') {
       if (\is_array($Value)) {
+        $forcedFullname = (isset($PrmLst['full'])) ? true : false;
+
         $tmpName = [];
 
         if (!empty($Value['nameType']) && ($Value['nameType']=='EN' || $Value['nameType']=='ALIAS_EN' )) $English = true;
@@ -47,7 +49,7 @@ class clsPlugin
 
         if (!empty($Value['namePrefix'])) $tmpName[] = MasterController::translateMaster('$NamePrefix',$Value['namePrefix'],$English);
         if (!empty($Value['firstName'])) $tmpName[] = $Value['firstName'];
-        if (!empty($Value['middleName'])) $tmpName[] = $Value['middleName'];
+        if (!empty($Value['middleName'])) $tmpName[] = ($forcedFullname) ? $Value['middleName'] : $Value['middleName'][0].'.';
         if (!empty($Value['lastName'])) $tmpName[] = $Value['lastName'];
         if (!empty($Value['nameSuffix'])) $tmpName[] = MasterController::translateMaster('$NameSuffix',$Value['nameSuffix'],$English);
 
