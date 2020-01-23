@@ -141,6 +141,24 @@ class ExportController extends Controller
                     ];
                 }
 
+                if ($transaction->product->productType == "package" && !$invoice->isVoid) {
+                    if ($transaction->itemizedProducts != null && is_array($transaction->itemizedProducts)) {
+                        foreach($transaction->itemizedProducts as $itemizeProduct) {
+                            $tmpProduct = \App\Models\Master\Products::find($itemizeProduct["productCode"]);
+                            if ($tmpProduct->productType == "Medicine" || $tmpProduct->productType=="supply") {
+                                $dispensings[] = [
+                                    "transactionDateTime" => $transaction->transactionDateTime,
+                                    "encounterType" => $transaction->encounter->encounterType,
+                                    "productCode" => $tmpProduct->productCode,
+                                    "productName" => mb_substr($tmpProduct->productName,0,50),
+                                    "quantity" => $itemizeProduct["quantity"],
+                                    "invoiceId" => $invoice->invoiceId,
+                                ];
+                            }
+                        }
+                    }
+                }
+
                 $seq++;
             }
 
