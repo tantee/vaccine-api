@@ -130,7 +130,7 @@ class ExportController extends Controller
                 $Oeinvl->batch = $batch;
                 $Oeinvl->save();
 
-                if (($transaction->product->productType == "Medicine" || $transaction->product->productType == "supply") && !$invoice->isVoid) {
+                if (($transaction->product->productType == "medicine" || $transaction->product->productType == "supply") && !$invoice->isVoid) {
                     $dispensings[] = [
                         "transactionDateTime" => $transaction->transactionDateTime,
                         "encounterType" => $transaction->encounter->encounterType,
@@ -144,7 +144,7 @@ class ExportController extends Controller
                 if ($transaction->itemizedProducts != null && is_array($transaction->itemizedProducts) && !$invoice->isVoid) {
                     foreach($transaction->itemizedProducts as $itemizeProduct) {
                         $tmpProduct = \App\Models\Master\Products::find($itemizeProduct["productCode"]);
-                        if ($tmpProduct->productType == "Medicine" || $tmpProduct->productType=="supply") {
+                        if ($tmpProduct->productType == "medicine" || $tmpProduct->productType=="supply") {
                             $dispensings[] = [
                                 "transactionDateTime" => $transaction->transactionDateTime,
                                 "encounterType" => $transaction->encounter->encounterType,
