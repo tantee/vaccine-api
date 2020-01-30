@@ -354,7 +354,8 @@ class DataController extends Controller
                 $returnModels = $searchModel->where($request->data['filter']);
                 $returnModels = $returnModels->get();
               } else {
-                $returnModels = $searchModel::all();
+                if (method_exists($searchModel,'scopeActive')) $returnModels = $searchModel->get();
+                else $returnModels = $searchModel::all();
               }
             }
           }
