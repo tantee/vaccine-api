@@ -348,21 +348,13 @@ class DataController extends Controller
             }
             $returnModels = $model::hydrate($returnModels->get()->toArray())->fresh();
           } else {
-            if (method_exists($searchModel,'scopeActive')) {
-              $searchModel = $searchModel->active();
-              if (isset($request->data['filter']) && is_array($request->data['filter'])) {
+            if (method_exists($searchModel,'scopeActive')) $searchModel = $searchModel->active();
+
+            if (isset($request->data['all']) && $request->data['all']) {   
+              if(isset($request->data['filter']) && is_array($request->data['filter'])) {
                 $searchModel = $searchModel->where($request->data['filter']);
               }
               $returnModels = $searchModel->get();
-            } else {
-              if (isset($request->data['all']) && $request->data['all']) {   
-                if (isset($request->data['filter']) && is_array($request->data['filter'])) {
-                  $searchModel = $searchModel->where($request->data['filter']);
-                  $returnModels = $searchModel->get();
-                } else {
-                  $returnModels = $searchModel::all();
-                }
-              }
             }
           }
         } catch (\Exception $e) {
