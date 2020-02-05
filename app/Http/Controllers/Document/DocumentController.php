@@ -50,7 +50,7 @@ class DocumentController extends Controller
       $errorTexts = [];
       $returnModels = [];
 
-      if (array_keys($documentData) !== range(0, count($documentData) - 1)) $documentData = array(documentData);
+      if (!empty($documentData) && (array_keys($documentData) !== range(0, count($documentData) - 1))) $documentData = array($documentData);
 
       DB::beginTransaction();
 
@@ -60,9 +60,8 @@ class DocumentController extends Controller
           $tmpData = (count($tmpData)==1) ? $tmpData[0] : $tmpData[1];
 
           $tmpData = base64_decode($tmpData);
-          $tmpData = \App\Utilities\Image::scaleBlobImage($tmpData,1000,1000);
-
           try {
+            $tmpData = \App\Utilities\Image::scaleBlobImage($tmpData,1000,1000);
             $QRCodeReader = new \Zxing\QrReader($tmpData,\Zxing\QrReader::SOURCE_TYPE_BLOB);
             $QRCodeData = $QRCodeReader->text();
             $QRCodeData = \json_decode($QRCodeData,true);
