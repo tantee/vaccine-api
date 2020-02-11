@@ -40,6 +40,26 @@ class Documents extends Model
       return $interval->locale('en')->forHumans(['parts'=>2]);
     }
 
+    public function getIsPdfAttribute() {
+      if ($this->isScanned && count($this->data)>0) {
+        foreach($this->data as $row) {
+          if (isset($row['assetType']) && $row['assetType']=='application/pdf') return true;
+        }
+        return false;
+      } else {
+        return false;
+      }
+    }
+
+    public function toArray()
+    {
+        $toArray = parent::toArray();
+
+        $toArray['isPdf'] = $this->is_pdf;
+
+        return $toArray;
+    }
+
     public static function boot() {
         static::updating(function($model) {
             $original = $model->getOriginal();

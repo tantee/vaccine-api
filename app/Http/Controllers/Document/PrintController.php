@@ -82,6 +82,13 @@ class PrintController extends Controller
 
       if ($templateCode == null)  $templateCode = $document->templateCode;
       if ($document->isScanned) $templateCode = "default_scan";
+      if ($document->is_pdf) {
+        $asset = \App\Models\Asset\Assets::find($document->data[0]['id']);
+        if ($asset !== null) {
+          $content = Storage::disk($asset->storage)->get($asset->storagePath);
+          return $content;
+        }
+      }
 
       if (ArrayType::isAssociative($document->data)) $data = $document->data;
       else $data = ["data" => $document->data];
@@ -121,6 +128,7 @@ class PrintController extends Controller
       }
 
       $toPdf = (boolean)\App\Models\Document\Documents::whereIn('id',$documentIds)->where('data->isVoid',true)->count();
+      $toPdf = $toPdf || (boolean)\App\Models\Document\Documents::whereIn('id',$documentIds)->get()->where('is_pdf',true)->count();
 
       $filenames = [];
       foreach($documentIds as $key => $documentId) {
