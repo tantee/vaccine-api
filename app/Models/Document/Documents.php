@@ -43,7 +43,7 @@ class Documents extends Model
     public function getIsPdfAttribute() {
       if ($this->isScanned && count($this->data)>0) {
         foreach($this->data as $row) {
-          if (isset($row['assetType']) && $row['assetType']=='application/pdf') return true;
+          if (isset($row['mimeType']) && $row['mimeType']=='application/pdf') return true;
         }
         return false;
       } else {
