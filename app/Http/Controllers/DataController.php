@@ -114,7 +114,7 @@ class DataController extends Controller
                 $existModel->fill($newItem);
                 $existModel->save();
                 $existModel->fresh();
-                if ($returnWith!=null) $existModel->with($returnWith);
+                if ($returnWith!=null) $existModel->load($returnWith);
                 array_push($returnModels,$existModel);
               }
             } else {

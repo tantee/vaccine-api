@@ -63,8 +63,7 @@ class Documents extends Model
     public static function boot() {
         static::updating(function($model) {
             $original = $model->getOriginal();
-            $newData = $model->data;
-            if ($newData != $original['data']) {
+            if ($model->data != json_decode($original['data'],true)) {
                 $oldRevision =  array_wrap($model->revision);
                 array_push($oldRevision,[
                   "data" => $original['data'],
