@@ -113,8 +113,8 @@ class DataController extends Controller
               if ($existModel != null) {
                 $existModel->fill($newItem);
                 $existModel->save();
-                if ($returnWith!=null) $existModel->with($returnWith);
                 $existModel->fresh();
+                if ($returnWith!=null) $existModel->with($returnWith);
                 array_push($returnModels,$existModel);
               }
             } else {
@@ -543,6 +543,7 @@ class DataController extends Controller
       if ($success) {
         try {
           $tempModel = new $model;
+          if (isset($request->with)) $tempModel = $tempModel->with($request->with);
           if (\is_array($request->data['key'])) $returnModels = $tempModel->where($request->data['key'])->firstOrFail();
           else $returnModels = $tempModel->findOrFail($request->data['key']);
 

@@ -30,10 +30,6 @@ Route::middleware('auth:api')->prefix('user')->group(function() {
 
 Route::prefix('models')->group(function () {
   Route::get('{modelNamespace}/{modelName}','ModelAPIController@readRouting');
-  Route::post('{modelNamespace}/{modelName}','ModelAPIController@createRouting');
-  Route::patch('{modelNamespace}/{modelName}','ModelAPIController@updateRouting');
-  Route::delete('{modelNamespace}/{modelName}','ModelAPIController@deleteRouting');
-
   Route::post('{modelNamespace}/{modelName}/{method}','ModelAPIController@methodRouting');
 });
 

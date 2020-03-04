@@ -41,6 +41,7 @@ L06,การตรวจทางพยาธิวิทยา,Pathology,labor
 L07,การตรวจทางเซลล์วิทยา,Cytology,laboratory
 L08,การตรวจเชื่อ และเพาะเชื่อ,Microbiology,laboratory
 L09,การตรวจทางไวรัสวิทยา,Virology,laboratory
+L10,การตรวจทางธนาคารเลือด,Blood bank,laboratory
 L99,การตรวจอื่นๆ,Other laboratory testing,laboratory
 R01,การตรวจเอกซเรย์,Radiograph,radiology
 R02,การตรวจเอกซเรย์คอมพิวเตอร์,CT Scan,radiology
