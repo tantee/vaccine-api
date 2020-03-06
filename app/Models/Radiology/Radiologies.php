@@ -12,20 +12,43 @@ class Radiologies extends Model
 
     protected $guarded = [];
 
+    public function scopeUnreported($query) {
+      return $query->doesntHave('reportDocument')->orWhereHas('reportDocument',function($q) {
+        $q->where('status','<>','approved');
+      });
+    }
+
+    public function scopeReported($query) {
+      return $query->whereHas('reportDocument',function($q) {
+        $q->where('status','approved');
+      });
+    }
+
     public function Patient() {
       return $this->belongsTo('App\Models\Patient\Patients','hn','hn');
     }
 
-    public function Report() {
+    public function reportDocument() {
       return $this->hasOne('App\Models\Document\Documents','id','reportDocumentId');
     }
 
-    public function Request() {
+    public function requestDocument() {
       return $this->hasOne('App\Models\Document\Documents','id','requestDocumentId');
     }
 
-    public function Doctor() {
-        return $this->hasOne('App\Models\Master\Doctors','doctorCode','reportingDoctor');
+    public function reportDoctor() {
+        return $this->hasOne('App\Models\Master\Doctors','doctorCode','reportingDoctorCode');
+    }
+
+    public function toArray()
+    {
+        $toArray = parent::toArray();
+
+        $toArray['reportDocument'] = $this->report_document;
+        $toArray['requestDocument'] = $this->request_document;
+        $toArray['reportDoctor'] = $this->report_doctor;
+
+        return $toArray;
     }
 
     protected $with = ['Doctor'];
