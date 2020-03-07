@@ -36,7 +36,7 @@ class Radiologies extends Model
       return $this->hasOne('App\Models\Document\Documents','id','requestDocumentId');
     }
 
-    public function reportDoctor() {
+    public function reportingDoctor() {
         return $this->hasOne('App\Models\Master\Doctors','doctorCode','reportingDoctorCode');
     }
 
@@ -51,5 +51,5 @@ class Radiologies extends Model
         return $toArray;
     }
 
-    protected $with = ['reportDoctor'];
+    protected $with = ['reportingDoctor'];
 }
