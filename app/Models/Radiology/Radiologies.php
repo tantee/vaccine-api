@@ -51,5 +51,5 @@ class Radiologies extends Model
         return $toArray;
     }
 
-    protected $with = ['reportingDoctor'];
+    protected $with = ['reporting_doctor'];
 }
