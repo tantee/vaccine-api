@@ -46,7 +46,7 @@ class Radiologies extends Model
 
         $toArray['reportDocument'] = $this->report_document;
         $toArray['requestDocument'] = $this->request_document;
-        $toArray['reportDoctor'] = $this->report_doctor;
+        $toArray['reportingDoctor'] = $this->reporting_doctor;
 
         return $toArray;
     }
