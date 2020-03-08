@@ -51,10 +51,10 @@ class GenericAPIController extends Controller
           if ($result['returnModels'] instanceof \Illuminate\Database\Eloquent\Collection || $result['returnModels'] instanceof \Illuminate\Pagination\AbstractPaginator) {
             return new \App\Http\Resources\ExtendedResourceCollection($result['returnModels'],$result['success'],$result['errorTexts']);
           } else {
-            return new \App\Http\Resources\ExtendedResource($result['returnModels'],$result['success'],$result['errorTexts']);
+            return new \App\Http\Resources\ExtendedResource($result['returnModels'],$result['success'],$result['errorTexts'],true);
           }
         } else {
-          return new \App\Http\Resources\ExtendedResource($result);
+          return new \App\Http\Resources\ExtendedResource($result,true,[],true);
         }
       } else {
         if ($result instanceof \Illuminate\Database\Eloquent\Collection || $result instanceof \Illuminate\Pagination\AbstractPaginator) {
@@ -62,7 +62,7 @@ class GenericAPIController extends Controller
         } if ($result instanceof \Illuminate\Http\Resources\Json\ResourceCollection || $result instanceof \Illuminate\Http\Resources\Json\JsonResource) {
           return $result;
         } else {
-          return new \App\Http\Resources\ExtendedResource($result);
+          return new \App\Http\Resources\ExtendedResource($result,true,[],true);
         }
       }
     }
