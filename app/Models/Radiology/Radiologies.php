@@ -29,11 +29,11 @@ class Radiologies extends Model
     }
 
     public function reportDocument() {
-      return $this->hasOne('App\Models\Document\Documents','id','reportDocumentId');
+      return $this->hasOne('App\Models\Document\Documents','id','reportDocumentId')->with('template');
     }
 
     public function requestDocument() {
-      return $this->hasOne('App\Models\Document\Documents','id','requestDocumentId');
+      return $this->hasOne('App\Models\Document\Documents','id','requestDocumentId')->with('template');
     }
 
     public function reportingDoctor() {
