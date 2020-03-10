@@ -243,14 +243,14 @@ class PrintController extends Controller
 
         $TBS->LoadTemplate(storage_path('app/'.$templatePath),\OPENTBS_ALREADY_UTF8);
         self::merge($TBS,$data,$currPrm);
-        $TBS->Source = preg_replace('/\[[^\]]*ifempty=\'(.*)\'.*\]/', '$1', $TBS->Source);
+        $TBS->Source = preg_replace('/\[[^\]]*ifempty=[\']([^\']*)[\'][^\]]*\]/', '$1', $TBS->Source);
 
         $subfiles = $TBS->PlugIn(OPENTBS_GET_HEADERS_FOOTERS);
 
         foreach ($subfiles as $subfile) {
           $TBS->PlugIn(OPENTBS_SELECT_FILE, $subfile);
           self::merge($TBS,$data,$currPrm);
-          $TBS->Source = preg_replace('/\[[^\]]*ifempty=\'(.*)\'.*\]/', '$1', $TBS->Source);
+          $TBS->Source = preg_replace('/\[[^\]]*ifempty=[\']([^\']*)[\'][^\]]*\]/', '$1', $TBS->Source);
         }
 
         $TBS->Show(\OPENTBS_FILE,storage_path('app/'.$tmpFilename));
