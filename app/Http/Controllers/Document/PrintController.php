@@ -10,7 +10,6 @@ use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
-use App\Document\clsTbsCleaner;
 use App\Document\clsMasterItem;
 use App\Document\clsPlugin;
 use App\Http\Controllers\Patient\PatientController;
@@ -236,7 +235,6 @@ class PrintController extends Controller
       if ($templatePath!=null) {
         $TBS = new \clsTinyButStrong();
         $TBS->Plugin(\TBS_INSTALL, 'clsOpenTBS');
-        $TBS->Plugin(\TBS_INSTALL, clsTbsCleaner::class);
         $TBS->Plugin(clsMasterItem::class);
         $TBS->Plugin(clsPlugin::class);
         $TBS->NoErr = true;
@@ -245,12 +243,14 @@ class PrintController extends Controller
 
         $TBS->LoadTemplate(storage_path('app/'.$templatePath),\OPENTBS_ALREADY_UTF8);
         self::merge($TBS,$data,$currPrm);
+        $TBS->Source = preg_replace('/\[[^\]]*ifempty=\'(.*)\'.*\]/', '$1', $TBS->Source);
 
         $subfiles = $TBS->PlugIn(OPENTBS_GET_HEADERS_FOOTERS);
 
         foreach ($subfiles as $subfile) {
           $TBS->PlugIn(OPENTBS_SELECT_FILE, $subfile);
           self::merge($TBS,$data,$currPrm);
+          $TBS->Source = preg_replace('/\[[^\]]*ifempty=\'(.*)\'.*\]/', '$1', $TBS->Source);
         }
 
         $TBS->Show(\OPENTBS_FILE,storage_path('app/'.$tmpFilename));
