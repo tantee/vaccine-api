@@ -236,7 +236,7 @@ class PrintController extends Controller
       if ($templatePath!=null) {
         $TBS = new \clsTinyButStrong();
         $TBS->Plugin(\TBS_INSTALL, 'clsOpenTBS');
-        $TBS->Plugin(clsTbsCleaner::class);
+        $TBS->Plugin(\TBS_INSTALL, clsTbsCleaner::class);
         $TBS->Plugin(clsMasterItem::class);
         $TBS->Plugin(clsPlugin::class);
         $TBS->NoErr = true;
