@@ -110,6 +110,7 @@ class clsPlugin
         }
       }
     }
+
     if ($ope == 'currtext') {
       if (isset($PrmLst['lang']) && $PrmLst['lang']=="en") {
         $convert = new NumberEng();
@@ -117,6 +118,16 @@ class clsPlugin
       } else {
         $convert = new NumberThai();
         $Value = $convert->convertBaht((float)$Value);
+      }
+    }
+
+    if ($ope == 'formatdoctor') {
+      if (isset($PrmLst['lang']) && $PrmLst['lang']=="en") $English=true;
+      else $English=false;
+
+      $doctor = \App\Http\Models\Master\Doctors::find($Value);
+      if ($doctor !== null) {
+        $Value = ($English) ? $doctor->nameEN : $doctor->nameTH;
       }
     }
   }
