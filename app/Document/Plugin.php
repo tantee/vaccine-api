@@ -125,9 +125,13 @@ class clsPlugin
       if (isset($PrmLst['lang']) && $PrmLst['lang']=="en") $English=true;
       else $English=false;
 
+      if (isset($PrmLst['withCode'])) $withCode=true;
+      else $withCode=false;
+
       $doctor = \App\Models\Master\Doctors::find($Value);
       if ($doctor !== null) {
         $Value = ($English) ? $doctor->nameEN : $doctor->nameTH;
+        if ($withCode) $Value = $Value.' '.(($English) ? 'License No. ' : 'เลขที่ใบประกอบวิชาชีพ ').$doctor->licenseNo;
       }
     }
   }
