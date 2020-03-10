@@ -125,7 +125,7 @@ class clsPlugin
       if (isset($PrmLst['lang']) && $PrmLst['lang']=="en") $English=true;
       else $English=false;
 
-      $doctor = \App\Http\Models\Master\Doctors::find($Value);
+      $doctor = \App\Models\Master\Doctors::find($Value);
       if ($doctor !== null) {
         $Value = ($English) ? $doctor->nameEN : $doctor->nameTH;
       }
