@@ -14,7 +14,8 @@ class AlterStocksCardsAddPatient extends Migration
     public function up()
     {
         Schema::table('stocks_cards', function (Blueprint $table) {
-            $table->integer('stockFrom')->change();
+            $table->dropColumn(['stockForm']);
+            $table->integer('stockFrom')->after('productCode');
             $table->integer('stockTo')->nullable()->change();
             $table->integer('amount')->default(0)->change();
 
@@ -38,7 +39,7 @@ class AlterStocksCardsAddPatient extends Migration
     public function down()
     {
         Schema::table('stocks_cards', function (Blueprint $table) {
-            $table->string('stockFrom')->change();
+            $table->string('stockForm')->after('productCode');
             $table->string('stockTo')->change();
             $table->integer('amount')->change();
             $table->dropColumn(['hn','encounterId','prescriptionId','lotNo','description','cardType']);
