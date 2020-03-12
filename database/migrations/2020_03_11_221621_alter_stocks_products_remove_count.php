@@ -18,6 +18,7 @@ class AlterStocksProductsRemoveCount extends Migration
             $table->integer('amount')->default(0)->change();
             $table->string('lotNo')->nullable()->after('productCode');
             $table->datetime('expiryDate')->nullable()->after('lotNo');
+            $table->decimal('unitCost',10,2)->nullable()->after('expiryDate');
         });
     }
 
