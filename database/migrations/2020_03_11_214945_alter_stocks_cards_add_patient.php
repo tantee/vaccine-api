@@ -22,7 +22,7 @@ class AlterStocksCardsAddPatient extends Migration
             $table->string('description')->nullable()->after('cardType');
             $table->string('lotNo')->nullable()->after('stockTo');
             $table->datetime('expiryDate')->nullable()->after('lotNo');
-            $table->decimal('unitCost',10,2)->nullable()->after('expiryDate')->nullable();
+            $table->decimal('unitCost',10,2)->nullable()->after('expiryDate');
 
             $table->string('hn')->nullable()->after('amount');
             $table->string('encounterId')->nullable()->after('hn');
