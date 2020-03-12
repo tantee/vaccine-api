@@ -35,6 +35,10 @@ class Products extends Model
       return $query->where('isActive',true)->where('isHidden',false);
     }
 
+    public function scopeStockable($query) {
+      return $query->where('productType','medicine')->orWhere('productType','supply');
+    }
+
     public static function boot() {
         static::saved(function($model) {
             $model::flushCache();
