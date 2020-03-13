@@ -344,11 +344,14 @@ class DataController extends Controller
             }
             if (method_exists($searchModel,'scopeActive')) {
               $searchModel = $searchModel->active();
+              if (isset($request->data['scope'])) $searchModel = $searchModel->{$request->data['scope']}();
+
               $returnModels->mergeWheres($searchModel->getQuery()->wheres, $searchModel->getQuery()->bindings);
             }
             $returnModels = $model::hydrate($returnModels->get()->toArray())->fresh();
           } else {
             if (method_exists($searchModel,'scopeActive')) $searchModel = $searchModel->active();
+            if (isset($request->data['scope'])) $searchModel = $searchModel->{$request->data['scope']}();
 
             if (isset($request->data['all']) && $request->data['all']) {   
               if(isset($request->data['filter']) && is_array($request->data['filter'])) {
