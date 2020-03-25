@@ -49,6 +49,7 @@ class Encounters extends Model
 
     public function Vouchers() {
         return $this->belongsToMany('App\Models\Master\Vouchers', 'encounters_vouchers', 'encounterId','voucherId')
+            ->whereNull('encounters_vouchers.deleted_at')
             ->as('voucherDetail')
             ->withPivot('voucherNumber')
             ->withTimestamps()
