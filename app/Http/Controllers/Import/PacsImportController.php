@@ -30,11 +30,11 @@ class PacsImportController extends Controller
                     $studyDateTime = $pacsData['00080020']['Value'][0].' '.\substr($pacsData['00080030']['Value'][0],0,2).':'.\substr($pacsData['00080030']['Value'][0],2,2).':'.\substr($pacsData['00080030']['Value'][0],4,2);
                     $studyDateTime = \Carbon\Carbon::parse($studyDateTime);
 
-                    if (!empty($pacsData['00800050']['Value'][0])) $radiology = \App\Models\Radiology\Radiologies::firstOrNew(["accessionNumber"=>$pacsData['00800050']['Value'][0]]);
+                    if (isset($pacsData['00800050']) && isset($pacsData['00800050']['Value']) && isset($pacsData['00800050']['Value'][0]) && !empty($pacsData['00800050']['Value'][0])) $radiology = \App\Models\Radiology\Radiologies::firstOrNew(["accessionNumber"=>$pacsData['00800050']['Value'][0]]);
                     else $radiology = \App\Models\Radiology\Radiologies::firstOrNew(["hn"=>$hn,"studyDateTime"=>$studyDateTime,"modality"=>$pacsData['00080061']['Value'][0]]);
 
                     $radiology["hn"] = $hn;
-                    $radiology["accessionNumber"] = $pacsData['00080050']['Value'][0];
+                    $radiology["accessionNumber"] = isset($pacsData['00800050']['Value']) ? $pacsData['00080050']['Value'][0] : null;
                     $radiology["modality"] = (isset($pacsData['00080061']['Value'])) ? $pacsData['00080061']['Value'][0] : null;
                     $radiology["description"] = (isset($pacsData['00081030']['Value'])) ? $pacsData['00081030']['Value'][0] : null;
                     $radiology["studyDateTime"] = $studyDateTime;
