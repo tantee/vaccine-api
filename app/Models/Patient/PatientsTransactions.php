@@ -38,15 +38,15 @@ class PatientsTransactions extends Model
     }
 
     public function getOrderLocationAttribute() {
-        return \App\Models\Master\Locations::find($this->order_location_code);
+        return \App\Models\Master\Locations::withTrashed()->find($this->order_location_code);
     }
 
     public function getOrderClinicAttribute() {
-        return \App\Models\Master\Clinics::find($this->order_clinic_code);
+        return \App\Models\Master\Clinics::withTrashed()->find($this->order_clinic_code);
     }
 
     public function getOrderDoctorAttribute() {
-        return \App\Models\Master\Doctors::find($this->order_doctor_code);
+        return \App\Models\Master\Doctors::withTrashed()->find($this->order_doctor_code);
     }
 
     public function performLocation() {
