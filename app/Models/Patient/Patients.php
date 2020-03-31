@@ -104,6 +104,26 @@ class Patients extends Model
       'personIdDetail' => 'array',
     ];
 
+    public static function boot() {
+        static::created(function($model) {
+            if ($model->personIdType==2) {
+              $insuranceData = [
+                'hn' => $model->hn,
+                'payerType' => '99',
+                'isChargeToPatient' => true,
+                'beginDate' =>  Carbon::now(),
+                'priority' => 99,
+                'policies' => [
+                  ['priority' => '1', 'insuranceCode' => 'ALL05']
+                ],
+              ];
+              \App\Http\Controllers\DataController::createModel($insuranceData,\App\Models\Patient\PatientsInsurances::class);
+            }
+        });
+
+        parent::boot();
+    }
+
     protected $appends = ['name_th','name_en','name_real_th','name_real_en','age'];
 
     protected $hidden = ['personIdDetail'];

@@ -70,16 +70,16 @@ class PatientsTransactions extends Model
         if ($returnInsurance == null && !$this->isForceSelfPay) {
             if ($this->invoiceId !== null) {
                 $this->_insurance = [
-                    "PatientsInsurances" => \App\Models\Patient\PatientsInsurances::find($this->soldPatientsInsurancesId),
-                    "Policy" => \App\Models\Master\Insurances::find($this->soldInsuranceCode),
+                    "PatientsInsurances" => \App\Models\Patient\PatientsInsurances::withTrashed()->find($this->soldPatientsInsurancesId),
+                    "Policy" => \App\Models\Master\Insurances::withTrashed()->find($this->soldInsuranceCode),
                 ];
                 return $this->_insurance;
             }
 
             if ($this->soldPatientsInsurancesId !== null && $this->soldInsuranceCode !== null) {
                 $this->_insurance =  [
-                    "PatientsInsurances" => \App\Models\Patient\PatientsInsurances::find($this->soldPatientsInsurancesId),
-                    "Policy" => \App\Models\Master\Insurances::find($this->soldInsuranceCode),
+                    "PatientsInsurances" => \App\Models\Patient\PatientsInsurances::withTrashed()->find($this->soldPatientsInsurancesId),
+                    "Policy" => \App\Models\Master\Insurances::withTrashed()->find($this->soldInsuranceCode),
                 ];
                 return $this->_insurance;
             }
@@ -92,7 +92,7 @@ class PatientsTransactions extends Model
                 }
 
                 foreach (collect($PatientInsurance->policies)->sortBy('priority') as $Policy) {
-                    $Insurance = \App\Models\Master\Insurances::find($Policy["insuranceCode"]);
+                    $Insurance = \App\Models\Master\Insurances::withTrashed()->find($Policy["insuranceCode"]);
 
                     if ($this->Encounter->encounterType == "IMP" && !$Insurance->isApplyToIpd) break;
                     if ($this->Encounter->encounterType != "IMP" && !$Insurance->isApplyToOpd) break;

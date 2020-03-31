@@ -56,7 +56,7 @@ class ExportController extends Controller
             $Emcus->ADDR02 = mb_substr(self::address2($address),0,50);
             $Emcus->ADDR03 = mb_substr(self::address3($address),0,30);
 
-            $Emcus->ZIPCOD = $address->postCode;
+            $Emcus->ZIPCOD = mb_substr($address->postCode,0,5);
             $Emcus->TELNUM = $patient->primaryMobileNo;
             $Emcus->TAXID = $patient->personId;
             $Emcus->CONTACT = mb_substr($Emcus->CUSNAM,0,40);

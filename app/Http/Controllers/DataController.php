@@ -547,6 +547,7 @@ class DataController extends Controller
         try {
           $tempModel = new $model;
           if (isset($request->with)) $tempModel = $tempModel->with($request->with);
+          if (isset($request->data['withTrashed']) && $request->data['withTrashed']) $tempModel = $tempModel->withTrashed();
           if (\is_array($request->data['key'])) $returnModels = $tempModel->where($request->data['key'])->firstOrFail();
           else $returnModels = $tempModel->findOrFail($request->data['key']);
 
