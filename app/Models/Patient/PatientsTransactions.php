@@ -180,32 +180,32 @@ class PatientsTransactions extends Model
     }
 
     public function getCategoryInsuranceAttribute($value) {
-        if ($this->categoryInsurance !== null) return $this->categoryInsurance;
+        if ($this->attributes['categoryInsurance'] !== null) return $this->attributes['categoryInsurance'];
         else return $this->product->categoryInsurance;
     }
 
     public function getCategoryCgdAttribute($value) {
-        if ($this->categoryCgd !== null) return $this->categoryCgd;
+        if ($this->attributes['categoryCgd'] !== null) return $this->attributes['categoryCgd'];
         else return $this->Product->categoryCgd;
     }
 
     public function getCategoryAttribute($value) {
-        if ($this->category !== null) return $this->category;
+        if ($this->attributes['category'] !== null) return $this->attributes['category'];
         else return $this->Product->category;
     }
 
     public function getOrderDoctorCodeAttribute($value) {
-        if ($this->orderDoctorCode !== null) return $this->orderDoctorCode;
+        if ($this->attributes['orderDoctorCode'] !== null) return $this->attributes['orderDoctorCode'];
         else return $this->Encounter->doctorCode;
     }
 
     public function getOrderClinicCodeAttribute($value) {
-        if ($this->orderClinicCode !== null) return $this->orderClinicCode;
+        if ($this->attributes['orderClinicCode'] !== null) return $this->attributes['orderClinicCode'];
         else return $this->Encounter->clinicCode;
     }
 
     public function getOrderLocationCodeAttribute($value) {
-        if ($this->orderLocationCode !== null) return $this->orderLocationCode;
+        if ($this->attributes['orderLocationCode'] !== null) return $this->attributes['orderLocationCode'];
         else return $this->Encounter->locationCode;
     }
 
