@@ -180,32 +180,32 @@ class PatientsTransactions extends Model
     }
 
     public function getCategoryInsuranceAttribute($value) {
-        if ($value !== null) return $value;
+        if ($this->categoryInsurance !== null) return $this->categoryInsurance;
         else return $this->product->categoryInsurance;
     }
 
     public function getCategoryCgdAttribute($value) {
-        if ($value !== null) return $value;
+        if ($this->categoryCgd !== null) return $this->categoryCgd;
         else return $this->Product->categoryCgd;
     }
 
     public function getCategoryAttribute($value) {
-        if ($value !== null) return $value;
+        if ($this->category !== null) return $this->category;
         else return $this->Product->category;
     }
 
     public function getOrderDoctorCodeAttribute($value) {
-        if ($value !== null) return $value;
+        if ($this->orderDoctorCode !== null) return $this->orderDoctorCode;
         else return $this->Encounter->doctorCode;
     }
 
     public function getOrderClinicCodeAttribute($value) {
-        if ($value !== null) return $value;
+        if ($this->orderClinicCode !== null) return $this->orderClinicCode;
         else return $this->Encounter->clinicCode;
     }
 
     public function getOrderLocationCodeAttribute($value) {
-        if ($value !== null) return $value;
+        if ($this->orderLocationCode !== null) return $this->orderLocationCode;
         else return $this->Encounter->locationCode;
     }
 
