@@ -36,7 +36,7 @@ class EclaimController extends Controller
 
             $pat->CHANGWAT = $address->province;
             $pat->AMPHUR = mb_substr($address->district,2,2);
-            $pat->DOB = $invoice->patient->dateOfBirth->format('dmY');;
+            $pat->DOB = $invoice->patient->dateOfBirth->format('Ymd');;
             $pat->SEX = $invoice->patient->sex;
             $pat->MARRIAGE = ($invoice->patient->maritalStatus) ? $invoice->patient->maritalStatus : '9';
             $pat->OCCUPA = '000';
@@ -57,7 +57,7 @@ class EclaimController extends Controller
 
             $opd = new \App\Models\Eclaim\OPD();
             $opd->HN = $invoice->hn;
-            $opd->DATEOPD = $invoice->created_at->format('dmY');
+            $opd->DATEOPD = $invoice->created_at->format('Ymd');
             $opd->TIMEOPD = $invoice->created_at->format('Hi');
             $opd->SEQ = $invoice->invoiceId;
             $opd->UUC = '1';
@@ -66,7 +66,7 @@ class EclaimController extends Controller
             if ($insurance->nhsoHCode!=null) {
                 $orf = new \App\Models\Eclaim\ORF();
                 $orf->HN = $invoice->hn;
-                $orf->DATEOPD = $invoice->created_at->format('dmY');
+                $orf->DATEOPD = $invoice->created_at->format('Ymd');
                 $orf->REFER = $insurance->nhsoHCode;
                 $orf->REFERTYPE = '1';
                 $orf->SEQ = $invoice->invoiceId;
@@ -94,7 +94,7 @@ class EclaimController extends Controller
 
             $cht = new \App\Models\Eclaim\CHT();
             $cht->HN = $invoice->hn;
-            $cht->DATE = $invoice->created_at->format('dmY');
+            $cht->DATE = $invoice->created_at->format('Ymd');
             $cht->TOTAL = $invoice->amount;
             $cht->PAID = $invoice->amountPaid;
             $cht->PERSON_ID = $invoice->patient->personId;
@@ -117,7 +117,7 @@ class EclaimController extends Controller
 
                 $cha = new \App\Models\Eclaim\CHA();
                 $cha->HN = $invoice->hn;
-                $cha->DATE = $invoice->created_at->format('dmY');
+                $cha->DATE = $invoice->created_at->format('Ymd');
                 $cha->CHRGITEM = ($eclaimChrgItem) ? $eclaimChrgItem : $summaryCgd['categoryCgd'];
                 $cha->AMOUNT = $summaryCgd['finalPrice'];
                 $cha->PERSON_ID = $invoice->patient->personId;
@@ -137,7 +137,7 @@ class EclaimController extends Controller
 
                 $adp = new \App\Models\Eclaim\ADP();
                 $adp->HN = $invoice->hn;
-                $adp->DATEOPD = $adpTransaction->transactionDateTime->format('dmY');
+                $adp->DATEOPD = $adpTransaction->transactionDateTime->format('Ymd');
                 $adp->TYPE = $adpTransaction->product->eclaimAdpType;
                 $adp->CODE = $productEclaimCode;
                 $adp->QTY = $adpTransaction->quantity;
@@ -194,7 +194,6 @@ class EclaimController extends Controller
             $patData = [];
             foreach($pats as $pat) {
                 $patItem = [
-                    "id" => $pat->id,
                     "HCODE" => $pat->HCODE,
                     "HN" => $pat->HN,
                     "CHANGWAT" => $pat->CHANGWAT,
