@@ -15,7 +15,7 @@ class AlterProductsAddNhsoRelated extends Migration
     {
         Schema::table('products', function (Blueprint $table) {
             $table->string('eclaimCode')->nullable()->after('productKeyword');
-            $table->string('eclaimAdpType')->nullable()->after('nhsoCode');
+            $table->string('eclaimAdpType')->nullable()->after('eclaimCode');
         });
     }
 
@@ -27,7 +27,7 @@ class AlterProductsAddNhsoRelated extends Migration
     public function down()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->dropColumn(['nhsoCode','nhsoAdpType']);
+            $table->dropColumn(['eclaimCode','eclaimAdpType']);
         });
     }
 }
