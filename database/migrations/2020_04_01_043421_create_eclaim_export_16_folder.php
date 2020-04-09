@@ -17,8 +17,8 @@ class CreateEclaimExport16Folder extends Migration
             $table->increments('id');
             $table->string('HN',15);
             $table->string('INSCL',3)->default('UCS');
-            $table->string('SUBTYPE',2);
-            $table->string('CID',16);
+            $table->string('SUBTYPE',2)->nullable();
+            $table->string('CID',16)->nullable();
             $table->string('DATEIN',8)->nullable();
             $table->string('DATEEXP',8)->nullable();
             $table->string('HOSPMAIN',5);

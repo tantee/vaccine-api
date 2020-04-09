@@ -30,7 +30,7 @@ class EclaimController extends Controller
             $pat->HCODE =  env('ECLAIM_HCODE','41711');
             $pat->HN = $invoice->hn;
 
-            $address = $invoice->patient->address()->where('addressType','census')->orderBy('updated_at','desc')->first();
+            $address = $invoice->patient->addresses()->where('addressType','census')->orderBy('updated_at','desc')->first();
 
             $pat->CHANGWAT = $address->province;
             $pat->AMPHUR = mb_substr($address->district,2,2);
