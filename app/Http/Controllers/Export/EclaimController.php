@@ -126,11 +126,16 @@ class EclaimController extends Controller
             })->get();
 
             foreach ($adpTransactions as $adpTransaction) {
+                $productEclaimCode = $adpTransaction->product->eclaimCode;
+                if ($insurance->nhsoCAGCode=="NonPr" || $insurance->nhsoCAGCode=="Gca") {
+                    $productEclaimCode = str_replace('RTX','RTX216_',$productEclaimCode);
+                }
+
                 $adp = new \App\Models\Eclaim\ADP();
                 $adp->HN = $invoice->hn;
                 $adp->DATEOPD = $adpTransaction->transactionDateTime->format('dmY');
                 $adp->TYPE = $adpTransaction->product->eclaimAdpType;
-                $adp->CODE = $adpTransaction->product->eclaimCode;
+                $adp->CODE = $productEclaimCode;
                 $adp->QTY = $adpTransaction->quantity;
                 $adp->RATE = $adpTransaction->soldPrice;
                 $adp->SEQ = $invoice->invoiceId;

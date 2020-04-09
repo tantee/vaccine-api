@@ -84,7 +84,7 @@ class Documents extends Model
 
         static::updated(function($model) {
             $original = $model->getOriginal();
-            if ($model->templateCode!=$original['templateCode'] && $model->Template->templateCompatibility=='prescription' && $model->encounter != null) {
+            if ($model->templateCode!=$original['templateCode'] && $model->Template && $model->Template->templateCompatibility=='prescription' && $model->encounter != null) {
               $prescriptionData = [
                 'hn' => $model->hn,
                 'encounterId' => $model->encounterId,
@@ -97,7 +97,7 @@ class Documents extends Model
         });
 
         static::created(function($model) {
-            if ($model->Template->templateCompatibility=='prescription' && $model->encounter != null) {
+            if ($model->Template && $model->Template->templateCompatibility=='prescription' && $model->encounter != null) {
               $prescriptionData = [
                 'hn' => $model->hn,
                 'encounterId' => $model->encounterId,
