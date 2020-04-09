@@ -123,7 +123,7 @@ class EclaimController extends Controller
                 $cha->save();
             }
 
-            $adpTransactions = $transactions->whereHas('product',function (Builder $query) {
+            $adpTransactions = $invoice->transactions->whereHas('product',function (Builder $query) {
                 $query->whereNotNull('nhsoAdpType');
             })->get();
 
