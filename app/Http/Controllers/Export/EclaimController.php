@@ -268,7 +268,7 @@ class EclaimController extends Controller
                 $odxData[] = \implode('|',$odxItem);
             }
             $odxData = \implode(PHP_EOL,$odxData);
-            $zip->addFromString('ODX.txt', $odx);
+            $zip->addFromString('ODX.txt', $odxData);
 
             $oops = ($beginDate == null) ? \App\Models\Eclaim\OOP::all() : \App\Models\Eclaim\OOP::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
             $oopData = [];
