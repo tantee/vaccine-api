@@ -156,7 +156,7 @@ class CreateEclaimExport16Folder extends Migration
         Schema::connection('export')->create('ECLAIM_CHT', function (Blueprint $table) {
             $table->increments('id');
             $table->string('HN',15);
-            $table->string('AN',15);
+            $table->string('AN',15)->nullable();
             $table->string('DATE',8);
             $table->decimal('TOTAL',12,2);
             $table->decimal('PAID',12,2);
@@ -169,7 +169,7 @@ class CreateEclaimExport16Folder extends Migration
         Schema::connection('export')->create('ECLAIM_CHA', function (Blueprint $table) {
             $table->increments('id');
             $table->string('HN',15);
-            $table->string('AN',15);
+            $table->string('AN',15)->nullable();
             $table->string('DATE',8);
             $table->string('CHRGITEM',2);
             $table->decimal('AMOUNT',12,2);
@@ -181,7 +181,7 @@ class CreateEclaimExport16Folder extends Migration
         Schema::connection('export')->create('ECLAIM_AER', function (Blueprint $table) {
             $table->increments('id');
             $table->string('HN',15);
-            $table->string('AN',15);
+            $table->string('AN',15)->nullable();
             $table->string('DATEOPD',8);
             $table->string('AUTHAE',12)->nullable();
             $table->string('AEDATE',8);
@@ -204,7 +204,7 @@ class CreateEclaimExport16Folder extends Migration
         Schema::connection('export')->create('ECLAIM_ADP', function (Blueprint $table) {
             $table->increments('id');
             $table->string('HN',15);
-            $table->string('AN',15);
+            $table->string('AN',15)->nullable();
             $table->string('DATEOPD',8);
             $table->string('TYPE',2);
             $table->string('CODE',11);
@@ -237,7 +237,7 @@ class CreateEclaimExport16Folder extends Migration
         Schema::connection('export')->create('ECLAIM_DRU', function (Blueprint $table) {
             $table->increments('id');
             $table->string('HN',15);
-            $table->string('AN',15);
+            $table->string('AN',15)->nullable();
             $table->string('CLINIC',4)->nullable();
             $table->string('PERSON_ID',13)->nullable();
             $table->string('DATE_SERV',8);

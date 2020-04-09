@@ -61,13 +61,15 @@ class EclaimController extends Controller
             $opd->UUC = '1';
             $opd->save();
 
-            $orf = new \App\Models\Eclaim\ORF();
-            $orf->HN = $invoice->hn;
-            $orf->DATEOPD = $invoice->created_at->format('dmY');
-            $orf->REFER = $insurance->nhsoHCode;
-            $orf->REFERTYPE = '1';
-            $orf->SEQ = $invoice->invoiceId;
-            $orf->save();
+            if ($insurance->nhsoHCode!=null) {
+                $orf = new \App\Models\Eclaim\ORF();
+                $orf->HN = $invoice->hn;
+                $orf->DATEOPD = $invoice->created_at->format('dmY');
+                $orf->REFER = $insurance->nhsoHCode;
+                $orf->REFERTYPE = '1';
+                $orf->SEQ = $invoice->invoiceId;
+                $orf->save();
+            } 
 
             // $odx = new \App\Models\Eclaim\ODX();
             // $odx->HN = $invoice->hn;
@@ -108,7 +110,7 @@ class EclaimController extends Controller
             })->flatten(1)->sortBy("categoryCgd");
 
             foreach ($summaryCgds as $summaryCgd) {
-                $categoryCgd = \App\Models\Master\MasterItems::where('groupKey','$ProductCategoryCgd')->where('itemCode',$summaryCgd['categoryCgd'])->get();
+                $categoryCgd = \App\Models\Master\MasterItems::where('groupKey','$ProductCategoryCgd')->where('itemCode',$summaryCgd['categoryCgd'])->first();
                 $eclaimChrgItem = $categoryCgd->properties['eclaimChrgItem'];
 
                 $cha = new \App\Models\Eclaim\CHA();
