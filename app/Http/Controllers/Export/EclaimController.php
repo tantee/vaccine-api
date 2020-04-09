@@ -91,7 +91,7 @@ class EclaimController extends Controller
             // $oop->save();
 
             $cht = new \App\Models\Eclaim\CHT();
-            $cht->HN = $invoice->invoiceId;
+            $cht->HN = $invoice->hn;
             $cht->DATE = $invoice->created_at->format('dmY');
             $cht->TOTAL = $invoice->amount;
             $cht->PAID = $invoice->amountPaid;
@@ -116,15 +116,15 @@ class EclaimController extends Controller
                 $cha = new \App\Models\Eclaim\CHA();
                 $cha->HN = $invoice->hn;
                 $cha->DATE = $invoice->created_at->format('dmY');
-                $cha->CHRGITEM = $eclaimChrgItem;
+                $cha->CHRGITEM = ($eclaimChrgItem) ? $eclaimChrgItem : $summaryCgd['categoryCgd'];
                 $cha->AMOUNT = $summaryCgd['finalPrice'];
                 $cha->PERSON_ID = $invoice->patient->personId;
                 $cha->SEQ = $invoice->invoiceId;
                 $cha->save();
             }
 
-            $adpTransactions = $invoice->transactions->whereHas('product',function (Builder $query) {
-                $query->whereNotNull('nhsoAdpType');
+            $adpTransactions = $invoice->transactions()->whereHas('product',function ($query) {
+                $query->whereNotNull('eclaimAdpType');
             })->get();
 
             foreach ($adpTransactions as $adpTransaction) {
