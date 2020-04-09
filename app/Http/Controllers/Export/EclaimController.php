@@ -34,7 +34,7 @@ class EclaimController extends Controller
 
             $pat->CHANGWAT = $address->province;
             $pat->AMPHUR = mb_substr($address->district,2,2);
-            $pat->DOB = $invoice->patient->dateOfBirth;
+            $pat->DOB = $invoice->patient->dateOfBirth->format('dmY');;
             $pat->SEX = $invoice->patient->sex;
             $pat->MARRIAGE = $invoice->patient->maritalStatus;
             $pat->OCCUPA = '000';
