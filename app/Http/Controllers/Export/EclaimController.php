@@ -12,7 +12,7 @@ class EclaimController extends Controller
         if ($afterDate == null) $afterDate = 0;
         $batch = \Carbon\Carbon::now();
 
-        $invoices = \App\Models\AccountingInvoices::eclaimUcs()->where('created_at','>',$afterDate)->get();
+        $invoices = \App\Models\Accounting\AccountingInvoices::eclaimUcs()->where('created_at','>',$afterDate)->get();
 
         foreach($invoices as $invoice) {
             $transactions = $invoice->transactions;
