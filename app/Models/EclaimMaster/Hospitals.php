@@ -8,4 +8,8 @@ class Hospitals extends Model
 {
     protected $connection = 'eclaim';
     protected $table = 'l_hospital';
+
+    protected $primaryKey = 'HMAIN';
+    public $incrementing = false;
+    protected $keyType = 'string';
 }
