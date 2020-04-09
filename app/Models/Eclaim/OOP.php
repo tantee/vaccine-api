@@ -9,5 +9,5 @@ class OOP extends Model
     protected $guarded = [];
 
     protected $connection = 'export';
-    protected $table = 'OOP';
+    protected $table = 'ECLAIM_OOP';
 }

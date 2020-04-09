@@ -13,7 +13,7 @@ class CreateEclaimExport16Folder extends Migration
      */
     public function up()
     {
-        Schema::connection('export')->create('INS', function (Blueprint $table) {
+        Schema::connection('export')->create('ECLAIM_INS', function (Blueprint $table) {
             $table->increments('id');
             $table->string('HN',15);
             $table->string('INSCL',3)->default('UCS');
@@ -38,7 +38,7 @@ class CreateEclaimExport16Folder extends Migration
             $table->timestamps();
         });
 
-        Schema::connection('export')->create('PAT', function (Blueprint $table) {
+        Schema::connection('export')->create('ECLAIM_PAT', function (Blueprint $table) {
             $table->increments('id');
             $table->string('HCODE',5);
             $table->string('HN',15);
@@ -58,7 +58,7 @@ class CreateEclaimExport16Folder extends Migration
             $table->timestamps();
         });
 
-        Schema::connection('export')->create('OPD', function (Blueprint $table) {
+        Schema::connection('export')->create('ECLAIM_OPD', function (Blueprint $table) {
             $table->increments('id');
             $table->string('HN',15);
             $table->string('CLINIC',4)->nullable();
@@ -69,7 +69,7 @@ class CreateEclaimExport16Folder extends Migration
             $table->timestamps();
         });
 
-        Schema::connection('export')->create('ORF', function (Blueprint $table) {
+        Schema::connection('export')->create('ECLAIM_ORF', function (Blueprint $table) {
             $table->increments('id');
             $table->string('HN',15);
             $table->string('DATEOPD',8);
@@ -80,7 +80,7 @@ class CreateEclaimExport16Folder extends Migration
             $table->timestamps();
         });
 
-        Schema::connection('export')->create('ODX', function (Blueprint $table) {
+        Schema::connection('export')->create('ECLAIM_ODX', function (Blueprint $table) {
             $table->increments('id');
             $table->string('HN',15);
             $table->string('DATEDX',8);
@@ -93,7 +93,7 @@ class CreateEclaimExport16Folder extends Migration
             $table->timestamps();
         });
 
-        Schema::connection('export')->create('OOP', function (Blueprint $table) {
+        Schema::connection('export')->create('ECLAIM_OOP', function (Blueprint $table) {
             $table->increments('id');
             $table->string('HN',15);
             $table->string('DATEOPD',8);
@@ -105,7 +105,7 @@ class CreateEclaimExport16Folder extends Migration
             $table->timestamps();
         });
 
-        Schema::connection('export')->create('IPD', function (Blueprint $table) {
+        Schema::connection('export')->create('ECLAIM_IPD', function (Blueprint $table) {
             $table->increments('id');
             $table->string('HN',15);
             $table->string('AN',15);
@@ -123,7 +123,7 @@ class CreateEclaimExport16Folder extends Migration
             $table->timestamps();
         });
 
-        Schema::connection('export')->create('IRF', function (Blueprint $table) {
+        Schema::connection('export')->create('ECLAIM_IRF', function (Blueprint $table) {
             $table->increments('id');
             $table->string('AN',15);
             $table->string('REFER',5);
@@ -131,7 +131,7 @@ class CreateEclaimExport16Folder extends Migration
             $table->timestamps();
         });
 
-        Schema::connection('export')->create('IDX', function (Blueprint $table) {
+        Schema::connection('export')->create('ECLAIM_IDX', function (Blueprint $table) {
             $table->increments('id');
             $table->string('AN',15);
             $table->string('DIAG',7);
@@ -140,7 +140,7 @@ class CreateEclaimExport16Folder extends Migration
             $table->timestamps();
         });
 
-        Schema::connection('export')->create('IOP', function (Blueprint $table) {
+        Schema::connection('export')->create('ECLAIM_IOP', function (Blueprint $table) {
             $table->increments('id');
             $table->string('AN',15);
             $table->string('OPER',7);
@@ -153,7 +153,7 @@ class CreateEclaimExport16Folder extends Migration
             $table->timestamps();
         });
 
-        Schema::connection('export')->create('CHT', function (Blueprint $table) {
+        Schema::connection('export')->create('ECLAIM_CHT', function (Blueprint $table) {
             $table->increments('id');
             $table->string('HN',15);
             $table->string('AN',15);
@@ -166,7 +166,7 @@ class CreateEclaimExport16Folder extends Migration
             $table->timestamps();
         });
 
-        Schema::connection('export')->create('CHA', function (Blueprint $table) {
+        Schema::connection('export')->create('ECLAIM_CHA', function (Blueprint $table) {
             $table->increments('id');
             $table->string('HN',15);
             $table->string('AN',15);
@@ -178,7 +178,7 @@ class CreateEclaimExport16Folder extends Migration
             $table->timestamps();
         });
 
-        Schema::connection('export')->create('AER', function (Blueprint $table) {
+        Schema::connection('export')->create('ECLAIM_AER', function (Blueprint $table) {
             $table->increments('id');
             $table->string('HN',15);
             $table->string('AN',15);
@@ -201,7 +201,7 @@ class CreateEclaimExport16Folder extends Migration
             $table->timestamps();
         });
 
-        Schema::connection('export')->create('ADP', function (Blueprint $table) {
+        Schema::connection('export')->create('ECLAIM_ADP', function (Blueprint $table) {
             $table->increments('id');
             $table->string('HN',15);
             $table->string('AN',15);
@@ -222,7 +222,7 @@ class CreateEclaimExport16Folder extends Migration
             $table->timestamps();
         });
 
-        Schema::connection('export')->create('LVD', function (Blueprint $table) {
+        Schema::connection('export')->create('ECLAIM_LVD', function (Blueprint $table) {
             $table->increments('id');
             $table->string('SEQLVD',3);
             $table->string('AN',15);
@@ -234,7 +234,7 @@ class CreateEclaimExport16Folder extends Migration
             $table->timestamps();
         });
 
-        Schema::connection('export')->create('DRU', function (Blueprint $table) {
+        Schema::connection('export')->create('ECLAIM_DRU', function (Blueprint $table) {
             $table->increments('id');
             $table->string('HN',15);
             $table->string('AN',15);
@@ -268,21 +268,21 @@ class CreateEclaimExport16Folder extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('INS');
-        Schema::dropIfExists('PAT');
-        Schema::dropIfExists('OPD');
-        Schema::dropIfExists('ORF');
-        Schema::dropIfExists('ODX');
-        Schema::dropIfExists('OOP');
-        Schema::dropIfExists('IPD');
-        Schema::dropIfExists('IRF');
-        Schema::dropIfExists('IDX');
-        Schema::dropIfExists('IOP');
-        Schema::dropIfExists('CHT');
-        Schema::dropIfExists('CHA');
-        Schema::dropIfExists('AER');
-        Schema::dropIfExists('ADP');
-        Schema::dropIfExists('LVD');
-        Schema::dropIfExists('DRU');
+        Schema::dropIfExists('ECLAIM_INS');
+        Schema::dropIfExists('ECLAIM_PAT');
+        Schema::dropIfExists('ECLAIM_OPD');
+        Schema::dropIfExists('ECLAIM_ORF');
+        Schema::dropIfExists('ECLAIM_ODX');
+        Schema::dropIfExists('ECLAIM_OOP');
+        Schema::dropIfExists('ECLAIM_IPD');
+        Schema::dropIfExists('ECLAIM_IRF');
+        Schema::dropIfExists('ECLAIM_IDX');
+        Schema::dropIfExists('ECLAIM_IOP');
+        Schema::dropIfExists('ECLAIM_CHT');
+        Schema::dropIfExists('ECLAIM_CHA');
+        Schema::dropIfExists('ECLAIM_AER');
+        Schema::dropIfExists('ECLAIM_ADP');
+        Schema::dropIfExists('ECLAIM_LVD');
+        Schema::dropIfExists('ECLAIM_DRU');
     }
 }

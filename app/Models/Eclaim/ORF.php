@@ -9,5 +9,5 @@ class ORF extends Model
     protected $guarded = [];
 
     protected $connection = 'export';
-    protected $table = 'ORF';
+    protected $table = 'ECLAIM_ORF';
 }

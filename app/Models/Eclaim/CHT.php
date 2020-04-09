@@ -9,5 +9,5 @@ class CHT extends Model
     protected $guarded = [];
 
     protected $connection = 'export';
-    protected $table = 'CHT';
+    protected $table = 'ECLAIM_CHT';
 }

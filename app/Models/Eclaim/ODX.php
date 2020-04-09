@@ -9,5 +9,5 @@ class ODX extends Model
     protected $guarded = [];
 
     protected $connection = 'export';
-    protected $table = 'ODX';
+    protected $table = 'ECLAIM_ODX';
 }

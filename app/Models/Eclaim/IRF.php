@@ -9,5 +9,5 @@ class IRF extends Model
     protected $guarded = [];
 
     protected $connection = 'export';
-    protected $table = 'IRF';
+    protected $table = 'ECLAIM_IRF';
 }

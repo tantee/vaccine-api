@@ -9,5 +9,5 @@ class LVD extends Model
     protected $guarded = [];
 
     protected $connection = 'export';
-    protected $table = 'LVD';
+    protected $table = 'ECLAIM_LVD';
 }

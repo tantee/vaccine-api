@@ -9,5 +9,5 @@ class OPD extends Model
     protected $guarded = [];
 
     protected $connection = 'export';
-    protected $table = 'OPD';
+    protected $table = 'ECLAIM_OPD';
 }

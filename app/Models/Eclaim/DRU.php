@@ -9,5 +9,5 @@ class DRU extends Model
     protected $guarded = [];
 
     protected $connection = 'export';
-    protected $table = 'DRU';
+    protected $table = 'ECLAIM_DRU';
 }

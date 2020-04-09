@@ -9,5 +9,5 @@ class IDX extends Model
     protected $guarded = [];
 
     protected $connection = 'export';
-    protected $table = 'IDX';
+    protected $table = 'ECLAIM_IDX';
 }

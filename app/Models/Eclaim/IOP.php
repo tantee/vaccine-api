@@ -9,5 +9,5 @@ class IOP extends Model
     protected $guarded = [];
 
     protected $connection = 'export';
-    protected $table = 'IOP';
+    protected $table = 'ECLAIM_IOP';
 }

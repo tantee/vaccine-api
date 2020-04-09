@@ -9,5 +9,5 @@ class INS extends Model
     protected $guarded = [];
 
     protected $connection = 'export';
-    protected $table = 'INS';
+    protected $table = 'ECLAIM_INS';
 }

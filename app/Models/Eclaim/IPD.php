@@ -9,5 +9,5 @@ class IPD extends Model
     protected $guarded = [];
 
     protected $connection = 'export';
-    protected $table = 'IPD';
+    protected $table = 'ECLAIM_IPD';
 }

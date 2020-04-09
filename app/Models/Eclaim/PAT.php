@@ -9,5 +9,5 @@ class PAT extends Model
     protected $guarded = [];
 
     protected $connection = 'export';
-    protected $table = 'PAT';
+    protected $table = 'ECLAIM_PAT';
 }

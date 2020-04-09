@@ -9,5 +9,5 @@ class ADP extends Model
     protected $guarded = [];
 
     protected $connection = 'export';
-    protected $table = 'ADP';
+    protected $table = 'ECLAIM_ADP';
 }

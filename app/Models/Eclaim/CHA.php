@@ -9,5 +9,5 @@ class CHA extends Model
     protected $guarded = [];
 
     protected $connection = 'export';
-    protected $table = 'CHA';
+    protected $table = 'ECLAIM_CHA';
 }
