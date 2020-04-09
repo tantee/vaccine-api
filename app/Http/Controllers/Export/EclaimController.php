@@ -160,7 +160,7 @@ class EclaimController extends Controller
         $res = $zip->open(storage_path('app/'.$outputFile), \ZipArchive::CREATE);
 
         if ($res) {
-            $inss = ($formDate == null) ? \App\Models\Eclaim\INS::all() : \App\Models\Eclaim\INS::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
+            $inss = ($beginDate == null) ? \App\Models\Eclaim\INS::all() : \App\Models\Eclaim\INS::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
             $insData = [];
             foreach($inss as $ins) {
                 $insItem = [
@@ -190,7 +190,7 @@ class EclaimController extends Controller
             $insData = \implode(PHP_EOL,$insData);
             $zip->addFromString('INS.txt', $insData);
 
-            $pats = ($formDate == null) ? \App\Models\Eclaim\PAT::all() : \App\Models\Eclaim\PAT::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
+            $pats = ($beginDate == null) ? \App\Models\Eclaim\PAT::all() : \App\Models\Eclaim\PAT::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
             $patData = [];
             foreach($pats as $pat) {
                 $patItem = [
@@ -217,7 +217,7 @@ class EclaimController extends Controller
             $patData = \implode(PHP_EOL,$patData);
             $zip->addFromString('PAT.txt', $patData);
 
-            $opds = ($formDate == null) ? \App\Models\Eclaim\OPD::all() : \App\Models\Eclaim\OPD::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
+            $opds = ($beginDate == null) ? \App\Models\Eclaim\OPD::all() : \App\Models\Eclaim\OPD::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
             $opdData = [];
             foreach($opds as $opd) {
                 $opdItem = [
@@ -234,7 +234,7 @@ class EclaimController extends Controller
             $opdData = \implode(PHP_EOL,$opdData);
             $zip->addFromString('OPD.txt', $opdData);
 
-            $orfs = ($formDate == null) ? \App\Models\Eclaim\ORF::all() : \App\Models\Eclaim\ORF::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
+            $orfs = ($beginDate == null) ? \App\Models\Eclaim\ORF::all() : \App\Models\Eclaim\ORF::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
             $orfData = [];
             foreach($orfs as $orf) {
                 $orfItem = [
@@ -251,7 +251,7 @@ class EclaimController extends Controller
             $orfData = \implode(PHP_EOL,$orfData);
             $zip->addFromString('ORF.txt', $orfData);
 
-            $odxs = ($formDate == null) ? \App\Models\Eclaim\ODX::all() : \App\Models\Eclaim\ODX::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
+            $odxs = ($beginDate == null) ? \App\Models\Eclaim\ODX::all() : \App\Models\Eclaim\ODX::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
             $odxData = [];
             foreach($odxs as $odx) {
                 $odxItem = [
@@ -270,7 +270,7 @@ class EclaimController extends Controller
             $odxData = \implode(PHP_EOL,$odxData);
             $zip->addFromString('ODX.txt', $odx);
 
-            $oops = ($formDate == null) ? \App\Models\Eclaim\OOP::all() : \App\Models\Eclaim\OOP::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
+            $oops = ($beginDate == null) ? \App\Models\Eclaim\OOP::all() : \App\Models\Eclaim\OOP::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
             $oopData = [];
             foreach($oops as $oop) {
                 $oopItem = [
@@ -288,7 +288,7 @@ class EclaimController extends Controller
             $oopData = \implode(PHP_EOL,$oopData);
             $zip->addFromString('OOP.txt', $oopData);
 
-            $ipds = ($formDate == null) ? \App\Models\Eclaim\IPD::all() : \App\Models\Eclaim\IPD::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
+            $ipds = ($beginDate == null) ? \App\Models\Eclaim\IPD::all() : \App\Models\Eclaim\IPD::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
             $ipdData = [];
             foreach($ipds as $ipd) {
                 $ipdItem = [
@@ -313,7 +313,7 @@ class EclaimController extends Controller
             $zip->addFromString('IPD.txt', $ipdData);
 
 
-            $irfs = ($formDate == null) ? \App\Models\Eclaim\IRF::all() : \App\Models\Eclaim\IRF::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
+            $irfs = ($beginDate == null) ? \App\Models\Eclaim\IRF::all() : \App\Models\Eclaim\IRF::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
             $irfData = [];
             foreach($irfs as $irf) {
                 $irfItem = [
@@ -327,7 +327,7 @@ class EclaimController extends Controller
             $irfData = \implode(PHP_EOL,$irfData);
             $zip->addFromString('IRF.txt', $irfData);
 
-            $idxs = ($formDate == null) ? \App\Models\Eclaim\IDX::all() : \App\Models\Eclaim\IDX::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
+            $idxs = ($beginDate == null) ? \App\Models\Eclaim\IDX::all() : \App\Models\Eclaim\IDX::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
             $idxData = [];
             foreach($idxs as $idx) {
                 $idxItem = [
@@ -342,7 +342,7 @@ class EclaimController extends Controller
             $idxData = \implode(PHP_EOL,$idxData);
             $zip->addFromString('IDX.txt', $idxData);
 
-            $iops = ($formDate == null) ? \App\Models\Eclaim\IOP::all() : \App\Models\Eclaim\IOP::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
+            $iops = ($beginDate == null) ? \App\Models\Eclaim\IOP::all() : \App\Models\Eclaim\IOP::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
             $iopData = [];
             foreach($iops as $iop) {
                 $iopItem = [
@@ -361,7 +361,7 @@ class EclaimController extends Controller
             $iopData = \implode(PHP_EOL,$iopData);
             $zip->addFromString('IOP.txt', $iopData);
 
-            $chts = ($formDate == null) ? \App\Models\Eclaim\CHT::all() : \App\Models\Eclaim\CHT::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
+            $chts = ($beginDate == null) ? \App\Models\Eclaim\CHT::all() : \App\Models\Eclaim\CHT::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
             $chtData = [];
             foreach($chts as $cht) {
                 $chtItem = [
@@ -380,7 +380,7 @@ class EclaimController extends Controller
             $chtData = \implode(PHP_EOL,$chtData);
             $zip->addFromString('CHT.txt', $chtData);
 
-            $chas = ($formDate == null) ? \App\Models\Eclaim\CHA::all() : \App\Models\Eclaim\CHA::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
+            $chas = ($beginDate == null) ? \App\Models\Eclaim\CHA::all() : \App\Models\Eclaim\CHA::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
             $chaData = [];
             foreach($chas as $cha) {
                 $chaItem = [
@@ -398,7 +398,7 @@ class EclaimController extends Controller
             $chaData = \implode(PHP_EOL,$chaData);
             $zip->addFromString('CHA.txt', $chaData);
 
-            $aers = ($formDate == null) ? \App\Models\Eclaim\AER::all() : \App\Models\Eclaim\AER::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
+            $aers = ($beginDate == null) ? \App\Models\Eclaim\AER::all() : \App\Models\Eclaim\AER::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
             $aerData = [];
             foreach($aers as $aer) {
                 $aerItem = [
@@ -427,7 +427,7 @@ class EclaimController extends Controller
             $aerData = \implode(PHP_EOL,$aerData);
             $zip->addFromString('AER.txt', $aerData);
 
-            $adps = ($formDate == null) ? \App\Models\Eclaim\ADP::all() : \App\Models\Eclaim\ADP::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
+            $adps = ($beginDate == null) ? \App\Models\Eclaim\ADP::all() : \App\Models\Eclaim\ADP::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
             $adpData = [];
             foreach($adps as $adp) {
                 $adpItem = [
@@ -454,7 +454,7 @@ class EclaimController extends Controller
             $adpData = \implode(PHP_EOL,$adpData);
             $zip->addFromString('ADP.txt', $adpData);
 
-            $lvds = ($formDate == null) ? \App\Models\Eclaim\LVD::all() : \App\Models\Eclaim\LVD::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
+            $lvds = ($beginDate == null) ? \App\Models\Eclaim\LVD::all() : \App\Models\Eclaim\LVD::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
             $lvdData = [];
             foreach($lvds as $lvd) {
                 $lvdItem = [
@@ -472,7 +472,7 @@ class EclaimController extends Controller
             $lvdData = \implode(PHP_EOL,$lvdData);
             $zip->addFromString('LVD.txt', $lvdData);
 
-            $drus = ($formDate == null) ? \App\Models\Eclaim\DRU::all() : \App\Models\Eclaim\DRU::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
+            $drus = ($beginDate == null) ? \App\Models\Eclaim\DRU::all() : \App\Models\Eclaim\DRU::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
             $druData = [];
             foreach($drus as $dru) {
                 $druItem = [
