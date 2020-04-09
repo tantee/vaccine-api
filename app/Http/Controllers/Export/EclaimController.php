@@ -157,7 +157,7 @@ class EclaimController extends Controller
         Storage::makeDirectory($outputDirectory);
 
         $zip = new \ZipArchive();
-        $res = $zip->open(storage_path('app/'.$outputFile), ZipArchive::CREATE);
+        $res = $zip->open(storage_path('app/'.$outputFile), \ZipArchive::CREATE);
 
         if ($res) {
             $inss = ($formDate == null) ? \App\Models\Eclaim\INS::all() : \App\Models\Eclaim\INS::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
