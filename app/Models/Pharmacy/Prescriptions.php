@@ -13,9 +13,37 @@ class Prescriptions extends Model
 
     protected $guarded = [];
 
+    public function Patient() {
+        return $this->belongsTo('App\Models\Patient\Patients','hn','hn');
+    }
+
+    public function Encounter() {
+        return $this->belongsTo('App\Models\Registration\Encounters','encounterId','encounterId');
+    }
+
+    public function Document() {
+      return $this->hasOne('App\Models\Document\Documents','id','documentId')->with('template');
+    }
+
+    public function Labels() {
+      return $this->hasMany('App\Models\Pharmacy\PrescriptionsLabels','prescriptionId','id');
+    }
+
+    public function Dispensings() {
+      return $this->hasMany('App\Models\Pharmacy\PrescriptionsDispensings','prescriptionId','id');
+    }
+
+    public static function boot() {
+        static::creating(function($model) {
+            if ($model->doctorCode == null && $model->encounter!=null) {
+              $model->doctorCode = $model->encounter->doctorCode;
+            }
+        });
+
+        parent::boot();
+    }
+
     protected $casts = [
-      'labels' => 'array',
-      'dispensing' => 'array',
       'statusLog' => 'array',
     ];
 }

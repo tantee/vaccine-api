@@ -27,6 +27,12 @@ class AccountingInvoices extends Model
         });
     }
 
+    public function scopeEclaimUcs($query) {
+        return $query->whereHas('Insurance', function($query) {
+            $query->where('payerType','20')->where('payerCode','NHSO');
+        });
+    }
+
     public function Transactions() {
         return $this->hasMany('App\Models\Patient\PatientsTransactions','invoiceId','invoiceId');
     }

@@ -42,10 +42,7 @@ class Documents extends Model
 
     public function getIsPdfAttribute() {
       if ($this->isScanned && count($this->data)>0) {
-        foreach($this->data as $row) {
-          if (isset($row['mimeType']) && $row['mimeType']=='application/pdf') return true;
-        }
-        return false;
+        return self::checkPdf($this->data);
       } else {
         return false;
       }
@@ -60,6 +57,15 @@ class Documents extends Model
         return $toArray;
     }
 
+    private static function checkPdf($data) {
+      if (is_array($data)) {
+        foreach($data as $row) {
+          if (isset($row['mimeType']) && $row['mimeType']=='application/pdf') return true;
+        }
+      }
+      return false;
+    }
+
     public static function boot() {
         static::updating(function($model) {
             $original = $model->getOriginal();
@@ -68,10 +74,38 @@ class Documents extends Model
                 array_push($oldRevision,[
                   "data" => $original['data'],
                   "isScanned" => $original['isScanned'],
+                  "isPdf" => ($original['isScanned']) ? self::checkPdf($original['data']) : false,
                   "updated_by" => ($original['updated_by']!==null) ? $original['updated_by'] : $original['created_by'],
                   "updated_at" => $original['updated_at'],
                 ]);
                 $model->revision = $oldRevision;
+            }
+        });
+
+        static::updated(function($model) {
+            $original = $model->getOriginal();
+            if ($model->templateCode!=$original['templateCode'] && $model->Template->templateCompatibility=='prescription' && $model->encounter != null) {
+              $prescriptionData = [
+                'hn' => $model->hn,
+                'encounterId' => $model->encounterId,
+                'documentId' => $model->id,
+                'doctorCode' => $model->encounter->doctorCode,
+                'status' => 'new',
+              ];
+              \App\Http\Controllers\DataController::createModel($prescriptionData,\App\Models\Pharmacy\Prescriptions::class);
+            }
+        });
+
+        static::created(function($model) {
+            if ($model->Template->templateCompatibility=='prescription' && $model->encounter != null) {
+              $prescriptionData = [
+                'hn' => $model->hn,
+                'encounterId' => $model->encounterId,
+                'documentId' => $model->id,
+                'doctorCode' => $model->encounter->doctorCode,
+                'status' => 'new',
+              ];
+              \App\Http\Controllers\DataController::createModel($prescriptionData,\App\Models\Pharmacy\Prescriptions::class);
             }
         });
 
