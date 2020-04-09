@@ -36,7 +36,7 @@ class EclaimController extends Controller
             $pat->AMPHUR = mb_substr($address->district,2,2);
             $pat->DOB = $invoice->patient->dateOfBirth->format('dmY');;
             $pat->SEX = $invoice->patient->sex;
-            $pat->MARRIAGE = $invoice->patient->maritalStatus;
+            $pat->MARRIAGE = ($invoice->patient->maritalStatus) ? $invoice->patient->maritalStatus : '9';
             $pat->OCCUPA = '000';
             $pat->NATION = '099';
             $pat->PERSON_ID = mb_substr($invoice->patient->personId,0,13);
