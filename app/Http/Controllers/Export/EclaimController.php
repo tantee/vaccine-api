@@ -213,7 +213,6 @@ class EclaimController extends Controller
             foreach ($adpTransactions as $adpTransaction) {
                 $productEclaimCode = $adpTransaction->product->eclaimCode;
                 if ($nhsoCAGCode=="NonPr" || $nhsoCAGCode=="Gca" || $nshoCAGCode=='' || $nhsoCAGCode==null) {
-                    $nhsoCAGCode = "Gca";
                     $productEclaimCode = str_replace('RTX','RTX216_',$productEclaimCode);
                 }
 
@@ -225,7 +224,7 @@ class EclaimController extends Controller
                 $adp->QTY = $adpTransaction->quantity;
                 $adp->RATE = $adpTransaction->soldPrice;
                 $adp->SEQ = $invoice->invoiceId;
-                $adp->CAGCODE = $insurance->nhsoCAGCode;
+                $adp->CAGCODE = (($nshoCAGCode=='' || $nhsoCAGCode==null) && ($adpTransaction->product->eclaimAdpType=='6' || $adpTransaction->product->eclaimAdpType=='7')) ? "Gca" : $nhsoCAGCode;
                 $adp->TOTAL = $adpTransaction->soldFinalPrice;
                 $adp->save();
             }
