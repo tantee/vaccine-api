@@ -20,7 +20,7 @@ class Encounters extends Model
     protected $guarded = [];
 
     public function scopeActive($query) {
-      return $query->whereNull('dischargeDateTime');
+        return $query->whereNull('dischargeDateTime');
     }
 
     public function Patient() {
@@ -40,7 +40,7 @@ class Encounters extends Model
     }
 
     public function Transactions() {
-      return $this->hasMany('App\Models\Patient\PatientsTransactions',['hn','encounterId'],['hn','encounterId']);
+        return $this->hasMany('App\Models\Patient\PatientsTransactions',['hn','encounterId'],['hn','encounterId']);
     }
 
     public function fromAppointment() {
@@ -54,6 +54,10 @@ class Encounters extends Model
             ->withPivot('voucherNumber')
             ->withTimestamps()
             ->activeAt($this->admitDateTime);
+    }
+
+    public function Diagnoses() {
+        return $this->hasMany('App\Models\Registration\EncountersDiagnoses','encounterId','encounterId');
     }
 
     public static function boot() {

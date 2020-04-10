@@ -73,24 +73,81 @@ class EclaimController extends Controller
                 $orf->save();
             } 
 
-            // $odx = new \App\Models\Eclaim\ODX();
-            // $odx->HN = $invoice->hn;
-            // $odx->DATEDX = '';
-            // $odx->DIAG = '';
-            // $odx->DXTYPE = '';
-            // $odx->DRDX = '';
-            // $odx->PERSON_ID = $invoice->patient->personId;
-            // $odx->SEQ = $invoice->invoiceId;
-            // $odx->save();
+            $sumDiagnosis = [];
+            $dxTypeCode = ["primary"=>'1',"comorbid"=>'2',"complication"=>'3',"others"=>'4',"external"=>'5'];
 
-            // $oop = new \App\Models\Eclaim\OOP();
-            // $oop->HN = $invoice->hn;
-            // $oop->DATEOPD = '';
-            // $oop->OPER = '';
-            // $oop->DROPID = '';
-            // $oop->PERSON_ID = $invoice->patient->personId;
-            // $oop->SEQ = $invoice->invoiceId;
-            // $oop->save();
+            foreach($transactions as $transaction) {
+                foreach ($transaction->encounter->diagnoses as $diagnosis) {
+                    $sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10]["count"] += 1;
+                    $sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10]["doctorCode"] += ($transaction->encounter->doctor->licenseNo) ? $transaction->encounter->doctor->licenseNo : '';
+                    $sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10]["dateDx"] = $transaction->encounter->admitDateTime->format('Ymd');
+                }
+            }
+
+            $primaryDxMax = [];
+            $primaryDxIcd10 = '';
+            
+            foreach($sumDiagnosis['primary'] as $tmpPrimaryIcd10 => $tmpPrimary) {
+                if ($tmpPrimary["count"]>$primaryDxMax["count"]) {
+                    $primaryDxIcd10 = $tmpPrimaryIcd10;
+                    $primaryDxMax = $tmpPrimary;
+                }
+            }
+
+            if ($primaryDxIcd10!='') {
+                $odx = new \App\Models\Eclaim\ODX();
+                $odx->HN = $invoice->hn;
+                $odx->DATEDX = $primaryDxMax["dateDx"];
+                $odx->DIAG = $primaryDxIcd10;
+                $odx->DXTYPE = $dxTypeCode['primary'];
+                $odx->DRDX = $primaryDxMax["doctorCode"];;
+                $odx->PERSON_ID = $invoice->patient->personId;
+                $odx->SEQ = $invoice->invoiceId;
+                $odx->save();
+            }
+
+            foreach($sumDiagnosis as $dxType=>$diagnoses) {
+                foreach($diagnoses as $diagnosisIcd10=>$diagnosis) {
+                    if ($diagnosisIcd10==$primaryDxIcd10) continue;
+                    if ($dxType=='primary' && isset($sumDiagnosis['comorbid'][$diagnosisIcd10])) continue;
+
+                    $odx = new \App\Models\Eclaim\ODX();
+                    $odx->HN = $invoice->hn;
+                    $odx->DATEDX = $diagnosis["dateDx"];
+                    $odx->DIAG = $diagnosisIcd10;
+                    $odx->DXTYPE = ($dxType=='primary') ? $dxTypeCode['comorbid'] : $dxTypeCode[$dxType];
+                    $odx->DRDX = $diagnosis["doctorCode"];;
+                    $odx->PERSON_ID = $invoice->patient->personId;
+                    $odx->SEQ = $invoice->invoiceId;
+                    $odx->save();
+                }
+            }
+
+            $procedureTransactions = $invoice->transactions()->whereHas('product',function ($query) {
+                $query->where('productType','procedure');
+                $query->whereNotNull('specification->icd9cm');
+            })->get();
+
+            $icd9cmLog = [];
+            foreach ($procedureTransactions as $procedureTransaction) {
+                $doctorCode = ($procedureTransactions->perform_doctor) ? $procedureTransactions->perform_doctor->licenseNo : $procedureTransactions->order_doctor->licenseNo;
+                $icd9cms = array_wrap($procedureTransaction->product->specification['icd9cm']);
+
+                foreach($icd9cms as $icd9cm) {
+                    if (!in_array($icd9cm,$icd9cmLog)) {
+                        $oop = new \App\Models\Eclaim\OOP();
+                        $oop->HN = $invoice->hn;
+                        $oop->DATEOPD = $procedureTransactions->transactionDateTime->format('Ymd');
+                        $oop->OPER = $icd9cm;
+                        $oop->DROPID = ($doctorCode) ? $doctorCode : '';
+                        $oop->PERSON_ID = $invoice->patient->personId;
+                        $oop->SEQ = $invoice->invoiceId;
+                        $oop->save();
+
+                        $icd9cmLog[] = $icd9cm;
+                    }
+                }
+            }
 
             $cht = new \App\Models\Eclaim\CHT();
             $cht->HN = $invoice->hn;
