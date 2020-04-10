@@ -78,6 +78,9 @@ class EclaimController extends Controller
 
             foreach($transactions as $transaction) {
                 foreach ($transaction->encounter->diagnoses as $diagnosis) {
+                    if (!isset($sumDiagnosis[$diagnosis->diagnosisType])) $sumDiagnosis[$diagnosis->diagnosisType] = [];
+                    if (!isset($sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10])) $sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10] = [];
+                    
                     $sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10]["count"] += 1;
                     $sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10]["doctorCode"] += ($transaction->encounter->doctor->licenseNo) ? $transaction->encounter->doctor->licenseNo : '';
                     $sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10]["dateDx"] = $transaction->encounter->admitDateTime->format('Ymd');
