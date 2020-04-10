@@ -171,7 +171,11 @@ class EclaimController extends Controller
             $cht->SEQ = $invoice->invoiceId;
             $cht->save();
 
-            $summaryCgds = $transactions->groupBy('categoryCgd');
+            $chaTransactions = $invoice->transactions()->whereHas('product',function ($query) {
+                $query->whereNull('eclaimAdpType');
+            })->get();
+
+            $summaryCgds = $chaTransactions->groupBy('categoryCgd');
             $summaryCgds = $summaryCgds->map(function ($row,$key){
                 return [[
                     "categoryCgd" => $key,
@@ -199,9 +203,17 @@ class EclaimController extends Controller
                 $query->whereNotNull('eclaimAdpType');
             })->get();
 
+            $nshoCAGCode = '';
+            if ($primaryDxIcd10!='') {
+                $icd10data = \App\Models\Master\MasterItems::where('groupKey','$ICD10')->where('itemCode',$primaryDxIcd10)->first();
+                if (isset($icd10data->properties['nshoCAGCode'])) $nshoCAGCode = $icd10data->properties['nshoCAGCode'];
+            }
+            if ($nshoCAGCode==null || $nshoCAGCode=='') $nshoCAGCode = $insurance->nhsoCAGCode;
+
             foreach ($adpTransactions as $adpTransaction) {
                 $productEclaimCode = $adpTransaction->product->eclaimCode;
-                if ($insurance->nhsoCAGCode=="NonPr" || $insurance->nhsoCAGCode=="Gca") {
+                if ($nhsoCAGCode=="NonPr" || $nhsoCAGCode=="Gca" || $nshoCAGCode=='' || $nhsoCAGCode==null) {
+                    $nhsoCAGCode = "Gca";
                     $productEclaimCode = str_replace('RTX','RTX216_',$productEclaimCode);
                 }
 
