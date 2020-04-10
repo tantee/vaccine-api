@@ -258,7 +258,7 @@ class EclaimController extends Controller
 
                 $insData[] = \implode('|',$insItem);
             }
-            $insData = \implode(PHP_EOL,$insData);
+            $insData = iconv("UTF-8","TIS-620",\implode(PHP_EOL,$insData));
             $zip->addFromString('INS.txt', $insData);
 
             $pats = ($beginDate == null) ? \App\Models\Eclaim\PAT::all() : \App\Models\Eclaim\PAT::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
@@ -284,7 +284,7 @@ class EclaimController extends Controller
 
                 $patData[] = \implode('|',$patItem);
             }
-            $patData = \implode(PHP_EOL,$patData);
+            $patData = iconv("UTF-8","TIS-620",\implode(PHP_EOL,$patData));
             $zip->addFromString('PAT.txt', $patData);
 
             $opds = ($beginDate == null) ? \App\Models\Eclaim\OPD::all() : \App\Models\Eclaim\OPD::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
@@ -301,7 +301,7 @@ class EclaimController extends Controller
 
                 $opdData[] = \implode('|',$opdItem);
             }
-            $opdData = \implode(PHP_EOL,$opdData);
+            $opdData = iconv("UTF-8","TIS-620",\implode(PHP_EOL,$opdData));
             $zip->addFromString('OPD.txt', $opdData);
 
             $orfs = ($beginDate == null) ? \App\Models\Eclaim\ORF::all() : \App\Models\Eclaim\ORF::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
@@ -318,7 +318,7 @@ class EclaimController extends Controller
 
                 $orfData[] = \implode('|',$orfItem);
             }
-            $orfData = \implode(PHP_EOL,$orfData);
+            $orfData = iconv("UTF-8","TIS-620",\implode(PHP_EOL,$orfData));
             $zip->addFromString('ORF.txt', $orfData);
 
             $odxs = ($beginDate == null) ? \App\Models\Eclaim\ODX::all() : \App\Models\Eclaim\ODX::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
@@ -337,7 +337,7 @@ class EclaimController extends Controller
 
                 $odxData[] = \implode('|',$odxItem);
             }
-            $odxData = \implode(PHP_EOL,$odxData);
+            $odxData = iconv("UTF-8","TIS-620",\implode(PHP_EOL,$odxData));
             $zip->addFromString('ODX.txt', $odxData);
 
             $oops = ($beginDate == null) ? \App\Models\Eclaim\OOP::all() : \App\Models\Eclaim\OOP::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
@@ -355,7 +355,7 @@ class EclaimController extends Controller
 
                 $oopData[] = \implode('|',$oopItem);
             }
-            $oopData = \implode(PHP_EOL,$oopData);
+            $oopData = iconv("UTF-8","TIS-620",\implode(PHP_EOL,$oopData));
             $zip->addFromString('OOP.txt', $oopData);
 
             $ipds = ($beginDate == null) ? \App\Models\Eclaim\IPD::all() : \App\Models\Eclaim\IPD::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
@@ -379,7 +379,7 @@ class EclaimController extends Controller
 
                 $ipdData[] = \implode('|',$ipdItem);
             }
-            $ipdData = \implode(PHP_EOL,$ipdData);
+            $ipdData = iconv("UTF-8","TIS-620",\implode(PHP_EOL,$ipdData));
             $zip->addFromString('IPD.txt', $ipdData);
 
 
@@ -394,7 +394,7 @@ class EclaimController extends Controller
 
                 $irfData[] = \implode('|',$irfItem);
             }
-            $irfData = \implode(PHP_EOL,$irfData);
+            $irfData = iconv("UTF-8","TIS-620",\implode(PHP_EOL,$irfData));
             $zip->addFromString('IRF.txt', $irfData);
 
             $idxs = ($beginDate == null) ? \App\Models\Eclaim\IDX::all() : \App\Models\Eclaim\IDX::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
@@ -409,7 +409,7 @@ class EclaimController extends Controller
 
                 $idxData[] = \implode('|',$idxItem);
             }
-            $idxData = \implode(PHP_EOL,$idxData);
+            $idxData = iconv("UTF-8","TIS-620",\implode(PHP_EOL,$idxData));
             $zip->addFromString('IDX.txt', $idxData);
 
             $iops = ($beginDate == null) ? \App\Models\Eclaim\IOP::all() : \App\Models\Eclaim\IOP::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
@@ -428,7 +428,7 @@ class EclaimController extends Controller
 
                 $iopData[] = \implode('|',$iopItem);
             }
-            $iopData = \implode(PHP_EOL,$iopData);
+            $iopData = iconv("UTF-8","TIS-620",\implode(PHP_EOL,$iopData));
             $zip->addFromString('IOP.txt', $iopData);
 
             $chts = ($beginDate == null) ? \App\Models\Eclaim\CHT::all() : \App\Models\Eclaim\CHT::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
@@ -447,7 +447,7 @@ class EclaimController extends Controller
 
                 $chtData[] = \implode('|',$chtItem);
             }
-            $chtData = \implode(PHP_EOL,$chtData);
+            $chtData = iconv("UTF-8","TIS-620",\implode(PHP_EOL,$chtData));
             $zip->addFromString('CHT.txt', $chtData);
 
             $chas = ($beginDate == null) ? \App\Models\Eclaim\CHA::all() : \App\Models\Eclaim\CHA::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
@@ -465,7 +465,7 @@ class EclaimController extends Controller
 
                 $chaData[] = \implode('|',$chaItem);
             }
-            $chaData = \implode(PHP_EOL,$chaData);
+            $chaData = iconv("UTF-8","TIS-620",\implode(PHP_EOL,$chaData));
             $zip->addFromString('CHA.txt', $chaData);
 
             $aers = ($beginDate == null) ? \App\Models\Eclaim\AER::all() : \App\Models\Eclaim\AER::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
@@ -494,7 +494,7 @@ class EclaimController extends Controller
 
                 $aerData[] = \implode('|',$aerItem);
             }
-            $aerData = \implode(PHP_EOL,$aerData);
+            $aerData = iconv("UTF-8","TIS-620",\implode(PHP_EOL,$aerData));
             $zip->addFromString('AER.txt', $aerData);
 
             $adps = ($beginDate == null) ? \App\Models\Eclaim\ADP::all() : \App\Models\Eclaim\ADP::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
@@ -521,7 +521,7 @@ class EclaimController extends Controller
 
                 $adpData[] = \implode('|',$adpItem);
             }
-            $adpData = \implode(PHP_EOL,$adpData);
+            $adpData = iconv("UTF-8","TIS-620",\implode(PHP_EOL,$adpData));
             $zip->addFromString('ADP.txt', $adpData);
 
             $lvds = ($beginDate == null) ? \App\Models\Eclaim\LVD::all() : \App\Models\Eclaim\LVD::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
@@ -539,7 +539,7 @@ class EclaimController extends Controller
 
                 $lvdData[] = \implode('|',$lvdItem);
             }
-            $lvdData = \implode(PHP_EOL,$lvdData);
+            $lvdData = iconv("UTF-8","TIS-620",\implode(PHP_EOL,$lvdData));
             $zip->addFromString('LVD.txt', $lvdData);
 
             $drus = ($beginDate == null) ? \App\Models\Eclaim\DRU::all() : \App\Models\Eclaim\DRU::whereDate('created_at','>=',$beginDate)->whereDate('created_at','<=',($endDate == null) ? $beginDate : $endDate)->get();
@@ -571,7 +571,7 @@ class EclaimController extends Controller
 
                 $druData[] = \implode('|',$druItem);
             }
-            $druData = \implode(PHP_EOL,$druData);
+            $druData = iconv("UTF-8","TIS-620",\implode(PHP_EOL,$druData));
             $zip->addFromString('DRU.txt', $druData);
             $zip->close();
 
