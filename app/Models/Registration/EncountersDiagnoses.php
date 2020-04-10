@@ -17,7 +17,7 @@ class EncountersDiagnoses extends Model
         static::created(function($model) {
             $patientDx = \App\Models\Patient\PatientsDiagnoses::firstOrNew(["hn"=>$model->hn,"diagnosisType"=>$model->diagnosisType,"icd10"=>$model->diagnosisType]);
             $patientDx->diagnosisText = $model->diagnosisText;
-            $patientDx->occurence += 1;
+            $patientDx->occurrence += 1;
             $patientDx->save();
         });
 
