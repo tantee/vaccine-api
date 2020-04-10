@@ -338,17 +338,23 @@ class DataController extends Controller
           $searchField = (isset($request->data['field'])) ? $request->data['field'] : array_diff(Schema::getColumnListing($searchModel->getTable()),$excludedField);
 
           if (isset($request->data['keyword'])) {
-            $returnModels = \Searchy::search($searchModel->getTable())->fields($searchField)->query($request->data['keyword'])->getQuery();
-            if(isset($request->data['filter']) && is_array($request->data['filter'])) {
-              $returnModels = $returnModels->where($request->data['filter']);
-            }
-            if (method_exists($searchModel,'scopeActive')) {
-              $searchModel = $searchModel->active();
-              if (isset($request->data['scope'])) $searchModel = $searchModel->{$request->data['scope']}();
+            if ($searchModel->getConnectionName()==env('DB_CONNECTION', 'mysql')) {
+              $returnModels = \Searchy::search($searchModel->getTable())->fields($searchField)->query($request->data['keyword'])->getQuery();
+              if(isset($request->data['filter']) && is_array($request->data['filter'])) {
+                $returnModels = $returnModels->where($request->data['filter']);
+              }
+              if (method_exists($searchModel,'scopeActive')) {
+                $searchModel = $searchModel->active();
+                if (isset($request->data['scope'])) $searchModel = $searchModel->{$request->data['scope']}();
 
-              $returnModels->mergeWheres($searchModel->getQuery()->wheres, $searchModel->getQuery()->bindings);
+                $returnModels->mergeWheres($searchModel->getQuery()->wheres, $searchModel->getQuery()->bindings);
+              }
+              $returnModels = $model::hydrate($returnModels->get()->toArray())->fresh();
+            } else {
+              $returnModels = $searchModel->active();
+              foreach($searchField as $field) $returnModels = $returnModels->orWhere($field,'LIKE','%'.$request->data['keyword'].'%');
+              $returnModels = $returnModels->get();
             }
-            $returnModels = $model::hydrate($returnModels->get()->toArray())->fresh();
           } else {
             if (method_exists($searchModel,'scopeActive')) $searchModel = $searchModel->active();
             if (isset($request->data['scope'])) $searchModel = $searchModel->{$request->data['scope']}();
