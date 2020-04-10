@@ -27,9 +27,9 @@ class CreateApis extends Migration
             $table->text('ETLCodeError')->nullable();
             $table->boolean('isFlatten')->default(false);
             $table->boolean('isMaskError')->default(false);
-            $table->string('create_by')->nullable();
-            $table->string('update_by')->nullable();
-            $table->string('delete_by')->nullable();
+            $table->string('created_by')->nullable();
+            $table->string('updated_by')->nullable();
+            $table->string('deleted_by')->nullable();
             $table->SoftDeletes();
             $table->timestamps();
         });

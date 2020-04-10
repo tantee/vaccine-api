@@ -20,9 +20,9 @@ class CreateEncountersDiagnoses extends Migration
             $table->enum('diagnosisType',['primary','comorbid','complication','others','external']);
             $table->string('icd10');
             $table->string('diagnosisText')->nullable();
-            $table->string('create_by')->nullable();
-            $table->string('update_by')->nullable();
-            $table->string('delete_by')->nullable();
+            $table->string('created_by')->nullable();
+            $table->string('updated_by')->nullable();
+            $table->string('deleted_by')->nullable();
             $table->SoftDeletes();
             $table->timestamps();
             $table->index(['encounterId','diagnosisType']);

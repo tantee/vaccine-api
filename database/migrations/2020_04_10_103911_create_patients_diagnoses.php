@@ -20,9 +20,9 @@ class CreatePatientsDiagnoses extends Migration
             $table->string('icd10');
             $table->string('diagnosisText')->nullable();
             $table->integer('occurrence')->default(0);
-            $table->string('create_by')->nullable();
-            $table->string('update_by')->nullable();
-            $table->string('delete_by')->nullable();
+            $table->string('created_by')->nullable();
+            $table->string('updated_by')->nullable();
+            $table->string('deleted_by')->nullable();
             $table->SoftDeletes();
             $table->timestamps();
             $table->index(['hn','diagnosisType']);
