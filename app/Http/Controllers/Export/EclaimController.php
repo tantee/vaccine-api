@@ -79,8 +79,7 @@ class EclaimController extends Controller
             foreach($transactions as $transaction) {
                 foreach ($transaction->encounter->diagnoses as $diagnosis) {
                     if (!isset($sumDiagnosis[$diagnosis->diagnosisType])) $sumDiagnosis[$diagnosis->diagnosisType] = [];
-                    if (!isset($sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10])) $sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10] = [];
-                    if (!isset($sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10]["count"])) $sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10]["count"] = 0;
+                    if (!isset($sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10])) $sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10] = ["count"=>0,"dateDx"=>null,"doctorCode"=>null];
 
                     $sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10]["count"] += 1;
                     $sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10]["doctorCode"] = ($transaction->encounter->doctor->licenseNo) ? $transaction->encounter->doctor->licenseNo : '';
@@ -88,7 +87,7 @@ class EclaimController extends Controller
                 }
             }
 
-            $primaryDxMax = [];
+            $primaryDxMax = ["count"=>0,"dateDx"=>null,"doctorCode"=>null];
             $primaryDxIcd10 = '';
             
             if (isset($sumDiagnosis['primary'])) {
