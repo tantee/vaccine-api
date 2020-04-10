@@ -87,12 +87,22 @@ class EclaimController extends Controller
             $primaryDxMax = [];
             $primaryDxIcd10 = '';
             
-            foreach($sumDiagnosis['primary'] as $tmpPrimaryIcd10 => $tmpPrimary) {
-                if ($tmpPrimary["count"]>$primaryDxMax["count"]) {
-                    $primaryDxIcd10 = $tmpPrimaryIcd10;
-                    $primaryDxMax = $tmpPrimary;
+            if (isset($sumDiagnosis['primary'])) {
+                foreach($sumDiagnosis['primary'] as $tmpPrimaryIcd10 => $tmpPrimary) {
+                    if ($tmpPrimary["count"]>$primaryDxMax["count"]) {
+                        $primaryDxIcd10 = $tmpPrimaryIcd10;
+                        $primaryDxMax = $tmpPrimary;
+                    }
+                }
+            } else {
+                $patientDx = $invoice->patient->diagnoses()->where('diagnosisType','primary')->orderBy('occurrence','desc')->first();
+                if ($patientDx != null) {
+                    $primaryDxIcd10 = $patientDx->icd10;
+                    $primaryDxMax['dateDx'] = $invoice->created_at->format('Ymd');
+                    $primaryDxMax['doctorCode'] = '';
                 }
             }
+            
 
             if ($primaryDxIcd10!='') {
                 $odx = new \App\Models\Eclaim\ODX();
