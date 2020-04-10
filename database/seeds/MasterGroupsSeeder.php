@@ -183,6 +183,18 @@ class MasterGroupsSeeder extends Seeder
             'description' => 'ชนิดผู้ชำระค่าใช้จ่าย',
             'propertiesTemplate' => null,
           ],
+          [
+            'groupKey' => '$ICD10',
+            'groupName' => 'ICD-10',
+            'description' => 'ICD-10',
+            'propertiesTemplate' => null,
+          ],
+          [
+            'groupKey' => '$ICD9CM',
+            'groupName' => 'ICD-9-CM',
+            'description' => 'ICD-9-CM',
+            'propertiesTemplate' => null,
+          ],
         ];
 
         
