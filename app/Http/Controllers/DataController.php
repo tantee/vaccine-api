@@ -351,9 +351,11 @@ class DataController extends Controller
               }
               $returnModels = $model::hydrate($returnModels->get()->toArray())->fresh();
             } else {
-              $returnModels = $searchModel->active();
-              foreach($searchField as $field) $returnModels = $returnModels->orWhere($field,'LIKE','%'.$request->data['keyword'].'%');
-              $returnModels = $returnModels->get();
+              if (method_exists($searchModel,'scopeActive')) $searchModel = $searchModel->active();
+              if (isset($request->data['scope'])) $searchModel = $searchModel->{$request->data['scope']}();
+
+              foreach($searchField as $field) $searchModel = $searchModel->orWhere($field,'LIKE','%'.$request->data['keyword'].'%');
+              $returnModels = $searchModel->get();
             }
           } else {
             if (method_exists($searchModel,'scopeActive')) $searchModel = $searchModel->active();
