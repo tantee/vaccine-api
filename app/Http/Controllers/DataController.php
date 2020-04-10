@@ -335,7 +335,7 @@ class DataController extends Controller
       if ($success) {
         try {
           $searchModel = new $model;
-          $searchField = (isset($request->data['field'])) ? $request->data['field'] : array_diff(Schema::getColumnListing($searchModel->getTable()),$excludedField);
+          $searchField = (isset($request->data['field'])) ? $request->data['field'] : array_diff(Schema::connection($searchModel->getConnectionName())->getColumnListing($searchModel->getTable()),$excludedField);
 
           if (isset($request->data['keyword'])) {
             if ($searchModel->getConnectionName()==env('DB_CONNECTION', 'mysql')) {
