@@ -150,7 +150,7 @@ class EclaimController extends Controller
                     if (!in_array($icd9cm,$icd9cmLog)) {
                         $oop = new \App\Models\Eclaim\OOP();
                         $oop->HN = $invoice->hn;
-                        $oop->DATEOPD = $procedureTransactions->transactionDateTime->format('Ymd');
+                        $oop->DATEOPD = $procedureTransaction->transactionDateTime->format('Ymd');
                         $oop->OPER = $icd9cm;
                         $oop->DROPID = ($doctorCode) ? $doctorCode : '';
                         $oop->PERSON_ID = $invoice->patient->personId;
