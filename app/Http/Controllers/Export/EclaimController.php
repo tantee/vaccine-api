@@ -203,16 +203,16 @@ class EclaimController extends Controller
                 $query->whereNotNull('eclaimAdpType');
             })->get();
 
-            $nshoCAGCode = '';
+            $nhsoCAGCode = '';
             if ($primaryDxIcd10!='') {
                 $icd10data = \App\Models\Master\MasterItems::where('groupKey','$ICD10')->where('itemCode',$primaryDxIcd10)->first();
-                if (isset($icd10data->properties['nshoCAGCode'])) $nshoCAGCode = $icd10data->properties['nshoCAGCode'];
+                if (isset($icd10data->properties['nhsoCAGCode'])) $nhsoCAGCode = $icd10data->properties['nhsoCAGCode'];
             }
-            if ($nshoCAGCode==null || $nshoCAGCode=='') $nshoCAGCode = $insurance->nhsoCAGCode;
+            if ($nhsoCAGCode==null || $nhsoCAGCode=='') $nhsoCAGCode = $insurance->nhsoCAGCode;
 
             foreach ($adpTransactions as $adpTransaction) {
                 $productEclaimCode = $adpTransaction->product->eclaimCode;
-                if ($nhsoCAGCode=="NonPr" || $nhsoCAGCode=="Gca" || $nshoCAGCode=='' || $nhsoCAGCode==null) {
+                if ($nhsoCAGCode=="NonPr" || $nhsoCAGCode=="Gca" || $nhsoCAGCode=='' || $nhsoCAGCode==null) {
                     $productEclaimCode = str_replace('RTX','RTX216_',$productEclaimCode);
                 }
 
@@ -224,7 +224,7 @@ class EclaimController extends Controller
                 $adp->QTY = $adpTransaction->quantity;
                 $adp->RATE = $adpTransaction->soldPrice;
                 $adp->SEQ = $invoice->invoiceId;
-                $adp->CAGCODE = (($nshoCAGCode=='' || $nhsoCAGCode==null) && ($adpTransaction->product->eclaimAdpType=='6' || $adpTransaction->product->eclaimAdpType=='7')) ? "Gca" : $nhsoCAGCode;
+                $adp->CAGCODE = (($nhsoCAGCode=='' || $nhsoCAGCode==null) && ($adpTransaction->product->eclaimAdpType=='6' || $adpTransaction->product->eclaimAdpType=='7')) ? "Gca" : $nhsoCAGCode;
                 $adp->TOTAL = $adpTransaction->soldFinalPrice;
                 $adp->save();
             }
