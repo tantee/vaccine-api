@@ -143,7 +143,7 @@ class EclaimController extends Controller
 
             $icd9cmLog = [];
             foreach ($procedureTransactions as $procedureTransaction) {
-                $doctorCode = ($procedureTransactions->perform_doctor) ? $procedureTransactions->perform_doctor->licenseNo : $procedureTransactions->order_doctor->licenseNo;
+                $doctorCode = ($procedureTransaction->performDoctor) ? $procedureTransaction->performDoctor->licenseNo : $procedureTransaction->order_doctor->licenseNo;
                 $icd9cms = array_wrap($procedureTransaction->product->specification['icd9cm']);
 
                 foreach($icd9cms as $icd9cm) {
