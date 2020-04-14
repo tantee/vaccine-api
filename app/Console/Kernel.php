@@ -32,6 +32,12 @@ class Kernel extends ConsoleKernel
         })->everyFiveMinutes()
             ->name('ExportToAccounting')
             ->onOneServer();
+
+        $schedule->call(function() {
+            return \App\Http\Controllers\Export\EclaimController::ExportUcsOpd();
+        })->dailyAt('03:05')
+            ->name('ExportToEclaim16FolderDb')
+            ->onOneServer();
         
         $schedule->call(function() {
             return \App\Http\Controllers\Import\PacsImportController::Import();

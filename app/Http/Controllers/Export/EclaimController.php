@@ -12,9 +12,9 @@ class EclaimController extends Controller
     public static function ExportUcsOpd($afterDate=null) {
         if ($afterDate == null) $afterDate = \App\Models\Eclaim\INS::max('batch');
         if ($afterDate == null) $afterDate = 0;
-        $batch = \Carbon\Carbon::now();
+        $batch = \Carbon\Carbon::now()->subDay()->endOfDay();
 
-        $invoices = \App\Models\Accounting\AccountingInvoices::eclaimUcs()->where('created_at','>',$afterDate)->get();
+        $invoices = \App\Models\Accounting\AccountingInvoices::eclaimUcs()->where('created_at','>',$afterDate)->where('created_at','<=',$batch)->get();
 
         foreach($invoices as $invoice) {
             $transactions = $invoice->transactions;
