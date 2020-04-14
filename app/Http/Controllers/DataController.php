@@ -338,6 +338,8 @@ class DataController extends Controller
           $searchField = (isset($request->data['field'])) ? $request->data['field'] : array_diff(Schema::connection($searchModel->getConnectionName())->getColumnListing($searchModel->getTable()),$excludedField);
 
           if (isset($request->data['keyword'])) {
+            \Log::debug(env('DB_CONNECTION', 'mysql'));
+            \Log::debug($searchModel->getConnectionName());
             if ($searchModel->getConnectionName()==env('DB_CONNECTION', 'mysql')) {
               $returnModels = \Searchy::search($searchModel->getTable())->fields($searchField)->query($request->data['keyword'])->getQuery();
               if(isset($request->data['filter']) && is_array($request->data['filter'])) {
@@ -353,6 +355,9 @@ class DataController extends Controller
             } else {
               if (method_exists($searchModel,'scopeActive')) $searchModel = $searchModel->active();
               if (isset($request->data['scope'])) $searchModel = $searchModel->{$request->data['scope']}();
+              if(isset($request->data['filter']) && is_array($request->data['filter'])) {
+                $searchModel = $searchModel->where($request->data['filter']);
+              }
 
               foreach($searchField as $field) $searchModel = $searchModel->orWhere($field,'LIKE','%'.$request->data['keyword'].'%');
               $returnModels = $searchModel->get();
