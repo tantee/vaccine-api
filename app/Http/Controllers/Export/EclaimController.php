@@ -220,7 +220,7 @@ class EclaimController extends Controller
                                 $adp->HN = $invoice->hn;
                                 $adp->DATEOPD = $item->transactionDateTime->format('Ymd');
                                 $adp->TYPE = '8';
-                                $adp->CODE = $$item->product->cgdCode;
+                                $adp->CODE = $item->product->cgdCode;
                                 $adp->QTY = $item->quantity;
                                 $adp->RATE = $item->soldPrice;
                                 $adp->SEQ = $batch->format('ymd').$patient->hn;
@@ -242,7 +242,7 @@ class EclaimController extends Controller
                                 $adp->HN = $invoice->hn;
                                 $adp->DATEOPD = $item->transactionDateTime->format('Ymd');
                                 $adp->TYPE = '8';
-                                $adp->CODE = $$item->product->cgdCode;
+                                $adp->CODE = $item->product->cgdCode;
                                 $adp->QTY = $item->quantity;
                                 $adp->RATE = $item->soldPrice;
                                 $adp->SEQ = $batch->format('ymd').$patient->hn;
@@ -291,7 +291,7 @@ class EclaimController extends Controller
                     if ($patientDx != null) {
                         $primaryDxIcd10 = $patientDx->icd10;
                         $primaryDxMax['dateDx'] = $invoice->created_at->format('Ymd');
-                        $primaryDxMax['doctorCode'] = null;
+                        $primaryDxMax['doctorCode'] = $dxDoctorCode;
                     }
                 }
 
@@ -368,7 +368,7 @@ class EclaimController extends Controller
                         $sumDiagnosis['comorbid']['Z510'] = [
                             "count" => 1,
                             "dateDx" => $invoice->created_at->format('Ymd'),
-                            "doctorCode"=> null,
+                            "doctorCode"=> $dxDoctorCode,
                         ];
                     }
                 }
@@ -379,7 +379,7 @@ class EclaimController extends Controller
                         $sumDiagnosis['comorbid']['Z511'] = [
                             "count" => 1,
                             "dateDx" => $invoice->created_at->format('Ymd'),
-                            "doctorCode"=> null,
+                            "doctorCode"=> $dxDoctorCode,
                         ];
                     }
                 }
