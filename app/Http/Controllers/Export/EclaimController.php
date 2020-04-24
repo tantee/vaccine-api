@@ -352,7 +352,7 @@ class EclaimController extends Controller
                         $adp->HN = $invoice->hn;
                         $adp->DATEOPD = $adpTransaction->transactionDateTime->format('Ymd');
                         $adp->TYPE = '8';
-                        $adp->CODE = $$adpTransaction->product->cgdCode;
+                        $adp->CODE = $adpTransaction->product->cgdCode;
                         $adp->QTY = $adpTransaction->quantity;
                         $adp->RATE = $unitPrice;
                         $adp->SEQ = $batch->format('ymd').$patient->hn;
