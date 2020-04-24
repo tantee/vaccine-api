@@ -10,9 +10,6 @@ use Carbon\Carbon;
 class EclaimController extends Controller
 {
     public static function ExportUcsOpd($backDate=7) {
-        $afterDate = \Carbon\Carbon::now()->subDay($backDate)->startOfDay();
-        $batch = \Carbon\Carbon::now()->subDay()->endOfDay();
-
         $localHospital = \App\Models\EclaimMaster\Hospitals::where('HMAIN',env('ECLAIM_HCODE','41711'))->first();
         $localProvince = ($localHospital) ? $localHospital->PROVINCE_ID : '';
 
@@ -28,7 +25,7 @@ class EclaimController extends Controller
                 
                 $insurance = $invoice->insurance;
 
-                $transactionsQuery = \App\Models\Patient\PatientsTransactions::whereIn('invoiceId',$invoices->pluck('invoiceId')->get());
+                $transactionsQuery = \App\Models\Patient\PatientsTransactions::whereIn('invoiceId',$invoices->pluck('invoiceId')->all());
                 $transactions = \App\Models\Patient\PatientsTransactions::whereIn('invoiceId',$invoices->pluck('invoiceId')->all())->get();
 
                 $hmainHospital = \App\Models\EclaimMaster\Hospitals::where('HMAIN',($insurance->nhsoHCode) ? $insurance->nhsoHCode : env('ECLAIM_HCODE','41711'))->first();
@@ -433,11 +430,11 @@ class EclaimController extends Controller
         }
     }
 
-    public static function Export16Folder() {
+    public static function Export16Folder($backDate=7) {
         $outputDirectory = 'exports/eclaim';
         Storage::makeDirectory($outputDirectory);
 
-        for ($subDate=1; $subDate<=7; $subDate++) {
+        for ($subDate=1; $subDate<=$backDate; $subDate++) {
             $exportDate = \Carbon\Carbon::now()->subDay($subDate)->endOfDay();
 
             $insData = [];
@@ -769,7 +766,7 @@ class EclaimController extends Controller
             $lvdData = iconv("UTF-8","TIS-620",\implode(PHP_EOL,$lvdData));
             $druData = iconv("UTF-8","TIS-620",\implode(PHP_EOL,$druData));
 
-            $exportOutputDir = $outputDirectory.'/'.$$exportDate->format('Y-m-d');
+            $exportOutputDir = $outputDirectory.'/'.$exportDate->format('Y-m-d');
             Storage::makeDirectory($exportOutputDir);
             Storage::put($exportOutputDir.'/'.'INS.txt', $insData);
             Storage::put($exportOutputDir.'/'.'PAT.txt', $patData);
