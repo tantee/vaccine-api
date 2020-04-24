@@ -16,8 +16,6 @@ class EclaimController extends Controller
         $localHospital = \App\Models\EclaimMaster\Hospitals::where('HMAIN',env('ECLAIM_HCODE','41711'))->first();
         $localProvince = ($localHospital) ? $localHospital->PROVINCE_ID : '';
 
-        $invoices = \App\Models\Accounting\AccountingInvoices::eclaimUcsHighCost()->where('created_at','>',$afterDate)->where('created_at','<=',$batch)->get();
-
         for($subDate=1;$subDate<=$backDate;$subDate++) {
             $batch = \Carbon\Carbon::now()->subDay($subDate)->endOfDay();
             $patients = \App\Models\Accounting\AccountingInvoices::eclaimUcs()->whereDate('created_at',$batch)->select('hn')->distinct()->get();
@@ -31,14 +29,14 @@ class EclaimController extends Controller
                 $insurance = $invoice->insurance;
 
                 $transactionsQuery = \App\Models\Patient\PatientsTransactions::whereIn('invoiceId',$invoices->pluck('invoiceId')->get());
-                $transactions = \App\Models\Patient\PatientsTransactions::whereIn('invoiceId',$invoices->pluck('invoiceId')->get())->get();
+                $transactions = \App\Models\Patient\PatientsTransactions::whereIn('invoiceId',$invoices->pluck('invoiceId')->all())->get();
 
                 $hmainHospital = \App\Models\EclaimMaster\Hospitals::where('HMAIN',($insurance->nhsoHCode) ? $insurance->nhsoHCode : env('ECLAIM_HCODE','41711'))->first();
                 $hmainProvince = ($hmainHospital) ? $hmainHospital->PROVINCE_ID : '';
                 $sameProvince = ($localProvince == $hmainProvince);
 
                 //clean up table before export
-                \App\Models\Eclaim\PAT::where('SEQ',$batch->format('ymd').$patient->hn)->delete();
+                \App\Models\Eclaim\INS::where('SEQ',$batch->format('ymd').$patient->hn)->delete();
                 $ins = new \App\Models\Eclaim\INS();
                 $ins->HN = $invoice->hn;
                 $ins->INSCL = 'UCS';
@@ -101,10 +99,17 @@ class EclaimController extends Controller
                     $aer = new \App\Models\Eclaim\AER();
                     $aer->HN = $invoice->hn;
                     $aer->DATEOPD = $invoice->created_at->format('Ymd');
-                    $aer->REFER_NO = $insurance->contractNo;
+                    $aer->AUTHAE = '';
+                    $aer->AEDATE = '';
+                    $aer->AETIME = '';
+                    $aer->AETYPE = '';
+                    $aer->REFER_NO = ($insurance->contractNo) ? $insurance->contractNo : '';
                     $aer->REFMAINI = $insurance->nhsoHCode;
                     $aer->IREFTYPE = 2;
+                    $aer->REFMAINO = '';
+                    $aer->OREFTYPE = '';
                     $aer->UCAE = ($sameProvince) ? '' : 'O';
+                    $aer->EMTYPE = '';
                     $aer->SEQ = $batch->format('ymd').$patient->hn;
                     $aer->save();
                 } 
