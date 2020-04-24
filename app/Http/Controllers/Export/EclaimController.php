@@ -423,16 +423,7 @@ class EclaimController extends Controller
             }
         }
 
-        foreach($invoices as $invoice) {
-            $transactions = $invoice->transactions;
-            $insurance = $invoice->insurance;
-
-            $hmainHospital = \App\Models\EclaimMaster\Hospitals::where('HMAIN',($insurance->nhsoHCode) ? $insurance->nhsoHCode : env('ECLAIM_HCODE','41711'))->first();
-            $hmainProvince = ($hmainHospital) ? $hmainHospital->PROVINCE_ID : '';
-            $sameProvince = ($localProvince == $hmainProvince);
-
-            
-        }
+        self::Export16Folder($backDate);
     }
 
     public static function Export16Folder($backDate=7) {
