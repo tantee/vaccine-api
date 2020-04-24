@@ -276,6 +276,10 @@ class EclaimController extends Controller
                     }
                 }
 
+                if ($dxDoctorCode==null) {
+                    $dxDoctorCode = ($transactions->first()->performDoctor) ? $transactions->first()->performDoctor->licenseNo : $transactions->first()->order_doctor->licenseNo;
+                }
+
                 $primaryDxMax = ["count"=>0,"dateDx"=>null,"doctorCode"=>null];
                 $primaryDxIcd10 = '';
 
