@@ -158,6 +158,7 @@ class EclaimController extends Controller
                 if (!$sameProvince) {
                     $chaTransactions = $transactionsQuery->whereHas('product',function ($query) {
                         $query->whereNotNull('cgdCode');
+                        $query->whereNull('eclaimAdpType');
                     })->get();
 
                     $summaryCgds = $chaTransactions->groupBy('categoryCgd');
@@ -299,7 +300,7 @@ class EclaimController extends Controller
                     }
                 }
 
-                $adpTransactions = $invoice->transactions()->whereHas('product',function ($query) {
+                $adpTransactions = $transactionsQuery->whereHas('product',function ($query) {
                     $query->whereNotNull('eclaimAdpType');
                 })->get();
 
