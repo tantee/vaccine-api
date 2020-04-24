@@ -18,7 +18,7 @@ class MasterGroups extends Model
     protected $guarded = [];
 
     public function Items() {
-      return $this->hasMany('App\Models\Master\MasterItems','groupKey','groupKey')->orderBy('ordering')->orderBy('itemCode');;
+      return $this->hasMany('App\Models\Master\MasterItems','groupKey','groupKey')->orderBy('ordering')->orderBy('itemCode');
     }
 
     protected $casts = [
