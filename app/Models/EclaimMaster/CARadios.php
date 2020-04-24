@@ -14,6 +14,6 @@ class CARadios extends Model
     protected $keyType = 'string';
 
     public function scopeActive($query) {
-      return $query->where('FLAG','Y')->orderBy('CAGNAME');
+      return $query->where('FLAG','Y');
     }
 }
