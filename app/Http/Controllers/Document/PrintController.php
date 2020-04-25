@@ -215,10 +215,15 @@ class PrintController extends Controller
         $encounterData['doctorLicenseNo'] = $encounter->Doctor->licenseNo;
 
         $data['encounterData'] = $encounterData;
+
+        if ($encounter->encounterType=="AMB" && !$data['created_at']->isSameDay($encounter->admitDateTime)) {
+          $data['created_at'] = $encounter->admitDateTime;
+          $data['print_date'] = $encounter->admitDateTime;
+        }
+      } else {
+        $data['print_date'] = Carbon::now();
       }
 
-
-      $data['print_date'] = Carbon::now();
       $data['print_user'] = (Auth::guard('api')->check()) ? Auth::guard('api')->user()->username : 'Unidentified';
 
 
