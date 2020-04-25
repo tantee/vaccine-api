@@ -25,7 +25,6 @@ class EclaimController extends Controller
                 
                 $insurance = $invoice->insurance;
 
-                $transactionsQuery = \App\Models\Patient\PatientsTransactions::whereIn('invoiceId',$invoices->pluck('invoiceId')->all());
                 $transactions = \App\Models\Patient\PatientsTransactions::whereIn('invoiceId',$invoices->pluck('invoiceId')->all())->get();
 
                 $hmainHospital = \App\Models\EclaimMaster\Hospitals::where('HMAIN',($insurance->nhsoHCode) ? $insurance->nhsoHCode : env('ECLAIM_HCODE','41711'))->first();
@@ -114,7 +113,7 @@ class EclaimController extends Controller
                 //clean up table before export
                 \App\Models\Eclaim\OOP::where('SEQ',$batch->format('ymd').$patient->hn)->delete();
 
-                $procedureTransactions = $transactionsQuery->whereHas('product',function ($query) {
+                $procedureTransactions = \App\Models\Patient\PatientsTransactions::whereIn('invoiceId',$invoices->pluck('invoiceId')->all())->whereHas('product',function ($query) {
                     $query->where('productType','procedure');
                     $query->whereNotNull('specification->icd9cm');
                 })->get();
@@ -156,7 +155,7 @@ class EclaimController extends Controller
                 \App\Models\Eclaim\ADP::where('SEQ',$batch->format('ymd').$patient->hn)->delete();
                 \App\Models\Eclaim\DRU::where('SEQ',$batch->format('ymd').$patient->hn)->delete();
                 if (!$sameProvince) {
-                    $chaTransactions = $transactionsQuery->whereHas('product',function ($query) {
+                    $chaTransactions = \App\Models\Patient\PatientsTransactions::whereIn('invoiceId',$invoices->pluck('invoiceId')->all())->whereHas('product',function ($query) {
                         $query->whereNotNull('cgdCode')->whereNull('eclaimAdpType');
                     })->get();
 
@@ -299,7 +298,7 @@ class EclaimController extends Controller
                     }
                 }
 
-                $adpTransactions = $transactionsQuery->whereHas('product',function ($query) {
+                $adpTransactions = \App\Models\Patient\PatientsTransactions::whereIn('invoiceId',$invoices->pluck('invoiceId')->all())->whereHas('product',function ($query) {
                     $query->whereNotNull('eclaimAdpType');
                 })->get();
 
