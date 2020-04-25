@@ -422,11 +422,15 @@ class EclaimController extends Controller
         }
 
         self::Export16Folder($backDate);
+        self::Export16Folder($backDate,true);
     }
 
-    public static function Export16Folder($backDate=7) {
-        $outputDirectory = 'exports/eclaim';
+    public static function Export16Folder($backDate=7,$oprefer=false) {
+        $outputDirectory = ($oprefer) ? 'exports/eclaim/oprefer' : 'exports/eclaim/op';
         Storage::makeDirectory($outputDirectory);
+
+        $localHospital = \App\Models\EclaimMaster\Hospitals::where('HMAIN',env('ECLAIM_HCODE','41711'))->first();
+        $localProvince = ($localHospital) ? $localHospital->PROVINCE_ID : '';
 
         for ($subDate=1; $subDate<=$backDate; $subDate++) {
             $exportDate = \Carbon\Carbon::now()->subDay($subDate)->endOfDay();
@@ -450,6 +454,12 @@ class EclaimController extends Controller
 
             $inss =  \App\Models\Eclaim\INS::whereDate('batch',$exportDate)->get();
             foreach($inss as $ins) {
+
+                $hmainHospital = \App\Models\EclaimMaster\Hospitals::where('HMAIN',($ins->HOSPMAIN) ? $ins->HOSPMAIN : env('ECLAIM_HCODE','41711'))->first();
+                $hmainProvince = ($hmainHospital) ? $hmainHospital->PROVINCE_ID : '';
+                $sameProvince = ($localProvince == $hmainProvince);
+
+                if (($sameProvince && $oprefer) || (!$sameProvince && !$oprefer)) continue;
                 
                 $insItem = [
                     "HN" => $ins->HN,
