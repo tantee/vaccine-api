@@ -102,7 +102,7 @@ class EclaimController extends Controller
                     $aer->AETYPE = '';
                     $aer->REFER_NO = ($insurance->contractNo) ? $insurance->contractNo : '';
                     $aer->REFMAINI = $insurance->nhsoHCode;
-                    $aer->IREFTYPE = 2;
+                    $aer->IREFTYPE = '0100';
                     $aer->REFMAINO = '';
                     $aer->OREFTYPE = '';
                     $aer->UCAE = ($sameProvince) ? '' : 'O';
@@ -157,8 +157,7 @@ class EclaimController extends Controller
                 \App\Models\Eclaim\DRU::where('SEQ',$batch->format('ymd').$patient->hn)->delete();
                 if (!$sameProvince) {
                     $chaTransactions = $transactionsQuery->whereHas('product',function ($query) {
-                        $query->whereNotNull('cgdCode');
-                        $query->whereNull('eclaimAdpType');
+                        $query->whereNotNull('cgdCode')->whereNull('eclaimAdpType');
                     })->get();
 
                     $summaryCgds = $chaTransactions->groupBy('categoryCgd');
