@@ -161,6 +161,9 @@ class PrintController extends Controller
 
       $returnData = null;
 
+      $data['print_date'] = Carbon::now();
+      $data['print_user'] = (Auth::guard('api')->check()) ? Auth::guard('api')->user()->username : 'Unidentified';
+
       if (!isset($data['qrCodeData'])) $data['qrCodeData'] = \json_encode([]);
 
       $template = \App\Models\Document\DocumentsTemplates::find($templateCode);
@@ -220,13 +223,8 @@ class PrintController extends Controller
           $data['created_at'] = $encounter->admitDateTime;
           $data['print_date'] = $encounter->admitDateTime;
         }
-      } else {
-        $data['print_date'] = Carbon::now();
       }
-
-      $data['print_user'] = (Auth::guard('api')->check()) ? Auth::guard('api')->user()->username : 'Unidentified';
-
-
+    
       Storage::makeDirectory($tmpDirectory);
 
       $currPrm = [
