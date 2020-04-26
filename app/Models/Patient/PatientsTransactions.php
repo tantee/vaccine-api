@@ -29,6 +29,10 @@ class PatientsTransactions extends Model
         return $this->hasOne('App\Models\Accounting\AccountingInvoices','invoiceId','invoiceId');
     }
 
+    public function SoldPatientsInsurances() {
+        return $this->hasOne('\App\Models\Patient\PatientsInsurances','soldPatientsInsurancesId','id');
+    }
+
     public function childTransactions() {
         return $this->hasMany('App\Models\Patient\PatientsTransactions','parentTransactionId','id');
     }
