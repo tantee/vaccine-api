@@ -201,7 +201,7 @@ class EclaimController extends Controller
                                     $dru->SEQ =  $batch->format('ymd').$patient->hn;
                                     $dru->DRUGREMARK = '';
                                     $dru->PA_NO = '';
-                                    $dru->TOTCOPAY = '';
+                                    $dru->TOTCOPAY = 0;
                                     $dru->USE_STATUS = '1';
                                     $dru->TOTAL = $item->soldFinalPrice;
                                     $dru->SIGCODE = '';
