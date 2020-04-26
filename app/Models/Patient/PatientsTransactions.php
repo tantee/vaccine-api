@@ -30,7 +30,7 @@ class PatientsTransactions extends Model
     }
 
     public function SoldPatientsInsurances() {
-        return $this->hasOne('\App\Models\Patient\PatientsInsurances','id','soldPatientsInsurancesId')
+        return $this->hasOne('\App\Models\Patient\PatientsInsurances','id','soldPatientsInsurancesId');
     }
 
     public function childTransactions() {

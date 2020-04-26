@@ -203,7 +203,7 @@ class EclaimController extends Controller
                                     $dru->PA_NO = '';
                                     $dru->TOTCOPAY = '';
                                     $dru->USE_STATUS = '1';
-                                    $dru->TOTAL = $row->soldFinalPrice;
+                                    $dru->TOTAL = $item->soldFinalPrice;
                                     $dru->SIGCODE = '';
                                     $dru->SIGTEXT = '';
                                     $dru->save();
