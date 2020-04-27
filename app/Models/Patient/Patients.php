@@ -32,6 +32,10 @@ class Patients extends Model
       return $this->hasMany('App\Models\Patient\PatientsInsurances','hn','hn')->active()->orderBy('priority');
     }
 
+    public function AllInsurances() {
+      return $this->hasMany('App\Models\Patient\PatientsInsurances','hn','hn')->withTrashed()->orderBy('priority');
+    }
+
     public function Transactions() {
       return $this->hasMany('App\Models\Patient\PatientsTransactions','hn','hn');
     }
