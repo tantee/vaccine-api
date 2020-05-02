@@ -15,7 +15,7 @@ class Documents extends Model
     protected $guarded = [];
 
     public function Template() {
-      return $this->belongsTo('App\Models\Document\DocumentsTemplates','templateCode');
+      return $this->belongsTo('App\Models\Document\DocumentsTemplates','templateCode')->withTrashed();
     }
 
     public function Patient() {
@@ -69,12 +69,29 @@ class Documents extends Model
     public static function boot() {
         static::updating(function($model) {
             $original = $model->getOriginal();
-            if ($model->data != json_decode($original['data'],true)) {
+            //If exist electronic data, move scan data to log
+            if (!empty(json_decode($original['data'])) && !$original['isScanned'] && $model->isScanned) {
+              $tmpData = $model->data;
+
+              $oldRevision =  array_wrap($model->revision);
+              array_push($oldRevision,[
+                "data" => json_encode($model->data),
+                "isScanned" => $model->isScanned,
+                "isPdf" => ($model->isScanned) ? self::checkPdf($model->data) : false,
+                "updated_by" => $model->updated_by,
+                "updated_at" => $model->updated_at,
+              ]);
+              $model->revision = $oldRevision;
+
+              $model->data = json_decode($original['data'],true);
+              $model->isScanned = false;
+
+            } else if ($model->data != json_decode($original['data'],true)) {
                 $oldRevision =  array_wrap($model->revision);
                 array_push($oldRevision,[
                   "data" => $original['data'],
                   "isScanned" => $original['isScanned'],
-                  "isPdf" => ($original['isScanned']) ? self::checkPdf($original['data']) : false,
+                  "isPdf" => ($original['isScanned']) ? self::checkPdf(json_decode($original['data'],true)) : false,
                   "updated_by" => ($original['updated_by']!==null) ? $original['updated_by'] : $original['created_by'],
                   "updated_at" => $original['updated_at'],
                 ]);

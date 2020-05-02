@@ -246,14 +246,14 @@ class PrintController extends Controller
 
         $TBS->LoadTemplate(storage_path('app/'.$templatePath),\OPENTBS_ALREADY_UTF8);
         self::merge($TBS,$data,$currPrm);
-        $TBS->Source = preg_replace('/\[[^\]]*ifempty=[\']([^\']*)[\'][^\]]*\]/', '$1', $TBS->Source);
+        $TBS->Source = preg_replace_callback('/\[(?:[^\[\]]+|(?R))*+\]/', ['self','remove_tag'], $TBS->Source);
 
         $subfiles = $TBS->PlugIn(OPENTBS_GET_HEADERS_FOOTERS);
 
         foreach ($subfiles as $subfile) {
           $TBS->PlugIn(OPENTBS_SELECT_FILE, $subfile);
           self::merge($TBS,$data,$currPrm);
-          $TBS->Source = preg_replace('/\[[^\]]*ifempty=[\']([^\']*)[\'][^\]]*\]/', '$1', $TBS->Source);
+          $TBS->Source = preg_replace_callback('/\[(?:[^\[\]]+|(?R))*+\]/', ['self','remove_tag'], $TBS->Source);
         }
 
         $TBS->Show(\OPENTBS_FILE,storage_path('app/'.$tmpFilename));
@@ -300,6 +300,15 @@ class PrintController extends Controller
           }
         }
       }
+    }
+
+    private static function remove_tag($matches) {
+      $returnStr = strip_tags($matches[0]);
+      $returnStr = preg_replace('/\[[^\]]*ope=checkbox[^\]]*\]/', '☐', $returnStr);
+      $returnStr = preg_replace('/\[[^\]]*ifempty=[\p{Pi}\'\"]?([^\p{Pf}\'\"\];]*)[^\]]*\]/', '$1', $returnStr);
+      $returnStr = preg_replace('/\[[^\[\]]*?(?:\[[^\[\]]+\].*?|[^\[\]]*?)else\s?[\p{Pi}\'\"]([^\p{Pf}\'\"]*)[^\]]*?\]/', '$1', $returnStr);
+      $returnStr = preg_replace('/\[[^\]]*[;]+[^\]]*\]/', '', $returnStr);
+      return $returnStr;
     }
 
     private static function convertToPDF($filenames,$outputFilename) {

@@ -233,7 +233,7 @@ return [
         |
         */
 
-        'sync' => env('LDAP_PASSWORD_SYNC', false),
+        'sync' => env('LDAP_PASSWORD_SYNC', true),
 
         /*
         |--------------------------------------------------------------------------
