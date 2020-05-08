@@ -478,9 +478,15 @@ class DataController extends Controller
               $returnModels = self::searchQuery($returnModels,$row);
             } else {
               $row[0] = $column[count($column)-1];
-              $returnModels = $returnModels->whereHas($column[0],function($query) use ($row) {
-                DataController::searchQuery($query,$row);
-              });
+              if (count($column)==3) {
+                $returnModels = $returnModels->{$column[0]}($column[1],function($query) use ($row) {
+                  DataController::searchQuery($query,$row);
+                });
+              } else {
+                $returnModels = $returnModels->whereHas($column[0],function($query) use ($row) {
+                  DataController::searchQuery($query,$row);
+                });
+              }
             }
           }
 
@@ -505,6 +511,91 @@ class DataController extends Controller
         }
       }
       return new $resource($returnModels,$success,$errorTexts);
+    }
+
+    public static function firstModelByRequest(Request $request,$model) {
+      $success = true;
+      $errorTexts = [];
+      $returnModels = [];
+
+      $searchDataValidator = Validator::make($request->all(),[
+        'data' => 'required|array',
+      ]);
+
+      if ($searchDataValidator->fails()) {
+        foreach($searchDataValidator->errors()->all() as $value) array_push($errorTexts,["errorText"=>$value]);
+        $success = false;
+      }
+
+      if ($success) {
+        $data = [];
+
+        if (ArrayType::isAssociative($request->data)) {
+          foreach($request->data as $key=>$value) {
+            $explodedKey = explode('#',$key);
+            if (count($explodedKey)==3) {
+              $key = $explodedKey[0]."#".$explodedKey[1];
+              array_push($data,[$key,$explodedKey[2],$value]);
+            } else {
+              array_push($data,[$key,'=',$value]);
+            }
+          }
+        } else {
+          if (ArrayType::isMultiDimension($request->data)) $data = $request->data;
+          else $data = [$request->data];
+        }
+
+        $searchDataValidator = Validator::make($data,[
+          '*' => 'array|size:3',
+        ]);
+
+        if ($searchDataValidator->fails()) {
+          foreach($searchDataValidator->errors()->all() as $value) array_push($errorTexts,["errorText"=>$value]);
+          $success = false;
+        }
+      }
+
+      if ($success) {
+        try {
+          $returnModels = new $model;
+          if (isset($request->scope)) $returnModels = $returnModels->{$request->scope}();
+
+          foreach($data as $row) {
+            $column = explode('$',$row[0]);
+            if (count($column)==1) {
+              $returnModels = self::searchQuery($returnModels,$row);
+            } else {
+              $row[0] = $column[count($column)-1];
+              if (count($column)==3) {
+                $returnModels = $returnModels->{$column[0]}($column[1],function($query) use ($row) {
+                  DataController::searchQuery($query,$row);
+                });
+              } else {
+                $returnModels = $returnModels->whereHas($column[0],function($query) use ($row) {
+                  DataController::searchQuery($query,$row);
+                });
+              }
+            }
+          }
+
+          if (isset($request->with)) $returnModels = $returnModels->with($request->with);
+          if (isset($request->orderBy)) {
+            $orderBy = explode(",",$request->orderBy,2);
+            if (count($orderBy)==1) array_push($orderBy,"ASC");
+            $returnModels = $returnModels->orderBy($orderBy[0],$orderBy[1]);
+          } else {
+            $returnModels = $returnModels->orderBy("created_at","desc");
+          }
+
+          $returnModels = $returnModels->firstOrFail();
+
+        } catch (\Exception $e) {
+          $success = false;
+          $returnModels = [];
+          array_push($errorTexts,["errorText" => $e->getMessage()]);
+        }
+      }
+      return GenericApiController::resultToResource(["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels]);
     }
 
     public static function deleteModelByRequest(Request $request,$model) {

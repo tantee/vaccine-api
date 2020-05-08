@@ -23,10 +23,7 @@ Route::middleware('auth:api')->prefix('user')->group(function() {
     $request->user()->token()->revoke();
     return [];
   });
-  Route::post('/verify',function (Request $request) {
-    return (Hash::check('tantee1a08',$request->user()->password)) ? 'true' : 'password';
-    //return $request->user()->password;
-  });
+  Route::middleware('throttle:10,1')->post('/verify','Auth\UserController@verifyPassword');
 });
 
 Route::prefix('models')->group(function () {
@@ -44,7 +41,7 @@ Route::get('IDCard/read',function (Request $request) {
 try {
   $apis = \App\Models\Api\Apis::all();
   foreach($apis as $api) {
-    Route::match([$api->apiMethod],'wrapper/'.$api->apiRoute,function(Request $request) use ($api) {
+    Route::match([$api->apiMethod],'/wrapper/'.ltrim($api->apiRoute,'/'),function(Request $request) use ($api) {
       $args = func_get_args();
       array_shift($args);
       $apiMethod = (!empty($api->sourceApiMethod)) ? $api->sourceApiMethod : $api->ApiMethod;
@@ -52,7 +49,6 @@ try {
     });
   };
 } catch (\Exception $e) {
-
 }
 
 Route::get('{methodNamespace}/{methodClass}/{methodName}','GenericAPIController@route');

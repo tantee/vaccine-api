@@ -134,5 +134,9 @@ class clsPlugin
         if ($withCode) $Value = $Value.' '.(($English) ? 'License No. ' : 'เลขที่ใบประกอบวิชาชีพ ').$doctor->licenseNo;
       }
     }
+
+    if ($ope == 'checkbox') {
+      $Value = ($Value) ? '☑' : '☐';
+    }
   }
 }
