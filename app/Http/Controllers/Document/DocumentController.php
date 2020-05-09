@@ -75,7 +75,8 @@ class DocumentController extends Controller
               $document->restore();
               $document->status = "draft";
               $document->save();
-              $document->refresh();
+
+              $document = \App\Models\Document\Documents::find($QRCodeData['DocId']);
             }
           } else if ($hn!=null) {
             $document = self::addDocument($hn,'default_scan',null,$category,$encounterId,$referenceId,$folder);
