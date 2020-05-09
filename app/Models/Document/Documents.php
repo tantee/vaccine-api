@@ -71,7 +71,10 @@ class Documents extends Model
             $original = $model->getOriginal();
             //If exist electronic data, move scan data to log
             if (!empty(json_decode($original['data'])) && !$original['isScanned'] && $original['status']=='approved' && $model->isScanned) {
+              
               $tmpData = $model->data;
+              if (isset($model->hn)) \array_walk($tmpData,['self','storeToAsset'],$model->hn);
+              $model->data = $tmpData;
 
               $oldRevision =  array_wrap($model->revision);
               array_push($oldRevision,[

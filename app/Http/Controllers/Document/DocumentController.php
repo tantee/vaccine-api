@@ -70,7 +70,12 @@ class DocumentController extends Controller
           }
 
           if (isset($QRCodeData['DocId'])) {
-            $document = \App\Models\Document\Documents::find($QRCodeData['DocId']);
+            $document = \App\Models\Document\Documents::find($QRCodeData['DocId'])->withTrashed();
+            if ($document && $document->deleted_at) {
+              $document->restore();
+              $document->status = "draft";
+              $document->save();
+            }
           } else if ($hn!=null) {
             $document = self::addDocument($hn,'default_scan',null,$category,$encounterId,$referenceId,$folder);
             if ($document["success"]) {
@@ -85,7 +90,7 @@ class DocumentController extends Controller
             array_push($errorTexts,["errorText" => 'No identification provided']);
           }
 
-          if ($success) {
+          if ($success && $document) {
             if (isset($data['category']) && $data['category']!=null && $data['category']!='') $document->category = $data['category'];
             if (isset($data['referenceId']) && $data['referenceId']!=null && $data['referenceId']!='') $document->referenceId = $data['referenceId'];
             if (isset($data['folder']) && $data['folder']!=null && $data['folder']!='') $document->folder = $data['folder'];
