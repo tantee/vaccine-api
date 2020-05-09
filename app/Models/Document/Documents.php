@@ -70,7 +70,7 @@ class Documents extends Model
         static::updating(function($model) {
             $original = $model->getOriginal();
             //If exist electronic data, move scan data to log
-            if (!empty(json_decode($original['data'])) && !$original['isScanned'] && $model->isScanned) {
+            if (!empty(json_decode($original['data'])) && !$original['isScanned'] && $original['status']=='approved' && $model->isScanned) {
               $tmpData = $model->data;
 
               $oldRevision =  array_wrap($model->revision);
@@ -82,6 +82,7 @@ class Documents extends Model
                 "updated_at" => $model->updated_at,
               ]);
               $model->revision = $oldRevision;
+              $model->status = $original['status'];
 
               $model->data = json_decode($original['data'],true);
               $model->isScanned = false;
