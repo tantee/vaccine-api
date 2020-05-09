@@ -70,7 +70,7 @@ class DocumentController extends Controller
           }
 
           if (isset($QRCodeData['DocId'])) {
-            $document = \App\Models\Document\Documents::find($QRCodeData['DocId'])->withTrashed();
+            $document = \App\Models\Document\Documents::withTrashed()->find($QRCodeData['DocId']);
             if ($document && $document->deleted_at) {
               $document->restore();
               $document->status = "draft";
@@ -108,6 +108,7 @@ class DocumentController extends Controller
             $document->status = 'approved';
             try {
               $document->save();
+              $document->load(['template','encounter']);
               array_push($returnModels,$document);
             } catch (\Exception $e) {
               $returnModels = [];
