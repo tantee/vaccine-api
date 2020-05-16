@@ -154,6 +154,61 @@ class EclaimController extends Controller
                 \App\Models\Eclaim\CHA::where('SEQ',$batch->format('ymd').$patient->hn)->delete();
                 \App\Models\Eclaim\ADP::where('SEQ',$batch->format('ymd').$patient->hn)->delete();
                 \App\Models\Eclaim\DRU::where('SEQ',$batch->format('ymd').$patient->hn)->delete();
+
+                //List diagnosis first, insert later. Wait for auto add code
+                $sumDiagnosis = [];
+                $dxDoctorCode = null;
+
+                foreach($transactions as $transaction) {
+                    foreach ($transaction->encounter->diagnoses as $diagnosis) {
+                        if (!isset($sumDiagnosis[$diagnosis->diagnosisType])) $sumDiagnosis[$diagnosis->diagnosisType] = [];
+                        if (!isset($sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10])) $sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10] = ["count"=>0,"dateDx"=>null,"doctorCode"=>null];
+
+                        $sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10]["count"] += 1;
+                        $sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10]["doctorCode"] = ($transaction->encounter->doctor->licenseNo) ? $transaction->encounter->doctor->licenseNo : null;
+                        $sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10]["dateDx"] = $transaction->encounter->admitDateTime->format('Ymd');
+
+                        if ($transaction->encounter->doctor->licenseNo && ($dxDoctorCode == null)) $dxDoctorCode = $transaction->encounter->doctor->licenseNo;
+                    }
+                }
+
+                if ($dxDoctorCode==null) {
+                    $dxDoctorCode = ($transactions->first()->performDoctor) ? $transactions->first()->performDoctor->licenseNo : $transactions->first()->order_doctor->licenseNo;
+                }
+
+                $primaryDxMax = ["count"=>0,"dateDx"=>null,"doctorCode"=>null];
+                $primaryDxIcd10 = '';
+
+                if (isset($sumDiagnosis['primary'])) {
+                    foreach($sumDiagnosis['primary'] as $tmpPrimaryIcd10 => $tmpPrimary) {
+                        if ($tmpPrimary["count"]>$primaryDxMax["count"]) {
+                            $primaryDxIcd10 = $tmpPrimaryIcd10;
+                            $primaryDxMax = $tmpPrimary;
+                        }
+                    }
+                } else {
+                    $patientDx = $invoice->patient->diagnoses()->where('diagnosisType','primary')->orderBy('occurrence','desc')->first();
+                    if ($patientDx != null) {
+                        $primaryDxIcd10 = $patientDx->icd10;
+                        $primaryDxMax['dateDx'] = $invoice->created_at->format('Ymd');
+                        $primaryDxMax['doctorCode'] = $dxDoctorCode;
+                    }
+                }
+
+                $adpTransactions = \App\Models\Patient\PatientsTransactions::whereIn('invoiceId',$invoices->pluck('invoiceId')->all())->whereHas('product',function ($query) {
+                    $query->whereNotNull('eclaimAdpType');
+                })->get();
+
+                $nhsoCAGCode = '';
+                $nshoMustAddZ510 = false;
+                $nshoMustAddZ511 = false;
+
+                if ($primaryDxIcd10!='') {
+                    $icd10data = \App\Models\Master\MasterItems::where('groupKey','$ICD10')->where('itemCode',$primaryDxIcd10)->first();
+                    if (isset($icd10data->properties['nhsoCAGCode'])) $nhsoCAGCode = $icd10data->properties['nhsoCAGCode'];
+                }
+                if ($nhsoCAGCode==null || $nhsoCAGCode=='') $nhsoCAGCode = $insurance->nhsoCAGCode;
+
                 if (!$sameProvince) {
                     $chaTransactions = \App\Models\Patient\PatientsTransactions::whereIn('invoiceId',$invoices->pluck('invoiceId')->all())->whereHas('product',function ($query) {
                         $query->whereNotNull('cgdCode')->whereNull('eclaimAdpType');
@@ -257,60 +312,6 @@ class EclaimController extends Controller
                         }
                     }
                 }
-
-                //List diagnosis first, insert later. Wait for auto add code
-                $sumDiagnosis = [];
-                $dxDoctorCode = null;
-
-                foreach($transactions as $transaction) {
-                    foreach ($transaction->encounter->diagnoses as $diagnosis) {
-                        if (!isset($sumDiagnosis[$diagnosis->diagnosisType])) $sumDiagnosis[$diagnosis->diagnosisType] = [];
-                        if (!isset($sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10])) $sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10] = ["count"=>0,"dateDx"=>null,"doctorCode"=>null];
-
-                        $sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10]["count"] += 1;
-                        $sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10]["doctorCode"] = ($transaction->encounter->doctor->licenseNo) ? $transaction->encounter->doctor->licenseNo : null;
-                        $sumDiagnosis[$diagnosis->diagnosisType][$diagnosis->icd10]["dateDx"] = $transaction->encounter->admitDateTime->format('Ymd');
-
-                        if ($transaction->encounter->doctor->licenseNo && ($dxDoctorCode == null)) $dxDoctorCode = $transaction->encounter->doctor->licenseNo;
-                    }
-                }
-
-                if ($dxDoctorCode==null) {
-                    $dxDoctorCode = ($transactions->first()->performDoctor) ? $transactions->first()->performDoctor->licenseNo : $transactions->first()->order_doctor->licenseNo;
-                }
-
-                $primaryDxMax = ["count"=>0,"dateDx"=>null,"doctorCode"=>null];
-                $primaryDxIcd10 = '';
-
-                if (isset($sumDiagnosis['primary'])) {
-                    foreach($sumDiagnosis['primary'] as $tmpPrimaryIcd10 => $tmpPrimary) {
-                        if ($tmpPrimary["count"]>$primaryDxMax["count"]) {
-                            $primaryDxIcd10 = $tmpPrimaryIcd10;
-                            $primaryDxMax = $tmpPrimary;
-                        }
-                    }
-                } else {
-                    $patientDx = $invoice->patient->diagnoses()->where('diagnosisType','primary')->orderBy('occurrence','desc')->first();
-                    if ($patientDx != null) {
-                        $primaryDxIcd10 = $patientDx->icd10;
-                        $primaryDxMax['dateDx'] = $invoice->created_at->format('Ymd');
-                        $primaryDxMax['doctorCode'] = $dxDoctorCode;
-                    }
-                }
-
-                $adpTransactions = \App\Models\Patient\PatientsTransactions::whereIn('invoiceId',$invoices->pluck('invoiceId')->all())->whereHas('product',function ($query) {
-                    $query->whereNotNull('eclaimAdpType');
-                })->get();
-
-                $nhsoCAGCode = '';
-                $nshoMustAddZ510 = false;
-                $nshoMustAddZ511 = false;
-
-                if ($primaryDxIcd10!='') {
-                    $icd10data = \App\Models\Master\MasterItems::where('groupKey','$ICD10')->where('itemCode',$primaryDxIcd10)->first();
-                    if (isset($icd10data->properties['nhsoCAGCode'])) $nhsoCAGCode = $icd10data->properties['nhsoCAGCode'];
-                }
-                if ($nhsoCAGCode==null || $nhsoCAGCode=='') $nhsoCAGCode = $insurance->nhsoCAGCode;
 
                 foreach ($adpTransactions as $adpTransaction) {
                     $productEclaimCode = $adpTransaction->product->eclaimCode;
