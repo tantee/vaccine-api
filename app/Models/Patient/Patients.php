@@ -45,11 +45,11 @@ class Patients extends Model
     }
 
     public function Invoices() {
-      return $this->hasMany('App\Models\Accounting\AccountingInvoices','hn','hn');
+      return $this->hasMany('App\Models\Accounting\AccountingInvoices','hn','hn')->with('Insurance');
     }
 
     public function UnpaidInvoices() {
-      return $this->hasMany('App\Models\Accounting\AccountingInvoices','hn','hn')->unpaid();
+      return $this->hasMany('App\Models\Accounting\AccountingInvoices','hn','hn')->unpaid()->with('Insurance');
     }
 
     public function Assets() {
