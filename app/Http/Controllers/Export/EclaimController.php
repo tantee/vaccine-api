@@ -396,7 +396,7 @@ class EclaimController extends Controller
                     }
                     
                     if ($adpTransaction->product->eclaimAdpType=='7' && !empty($adpTransaction->product->cgdCode) && $sameProvince) {
-                        $drug = \App\Models\EclaimMaster\DrugCatalogs::find($item->product->cgdCode);
+                        $drug = \App\Models\EclaimMaster\DrugCatalogs::find($adpTransaction->product->cgdCode);
                         if ($drug) {
                             $dru = new \App\Models\Eclaim\DRU();
                             $dru->HN = $adpTransaction->hn;
