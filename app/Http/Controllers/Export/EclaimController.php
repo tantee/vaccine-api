@@ -291,7 +291,7 @@ class EclaimController extends Controller
                                     $dru->DRUGREMARK = '';
                                     $dru->PA_NO = '';
                                     $dru->TOTCOPAY = 0;
-                                    $dru->USE_STATUS = ($item->quantity>5) ? '1' : '2';
+                                    $dru->USE_STATUS = ($item->quantity>5) ? '2' : '1';
                                     $dru->TOTAL = $item->soldFinalPrice;
                                     $dru->SIGCODE = '';
                                     $dru->SIGTEXT = '';
@@ -420,7 +420,7 @@ class EclaimController extends Controller
                             $dru->DRUGREMARK = '';
                             $dru->PA_NO = '';
                             $dru->TOTCOPAY = 0;
-                            $dru->USE_STATUS = ($adpTransaction->quantity>5) ? '1' : '2';
+                            $dru->USE_STATUS = ($adpTransaction->quantity>5) ? '2' : '1';
                             $dru->TOTAL = $adpTransaction->soldFinalPrice;
                             $dru->SIGCODE = '';
                             $dru->SIGTEXT = '';
