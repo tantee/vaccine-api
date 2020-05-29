@@ -36,8 +36,8 @@ class EclaimController extends Controller
                         $tmpTransaction->encounterId = $packageTransaction->encounterId;
                         $tmpTransaction->productCode = $product["productCode"];
                         $tmpTransaction->quantity = $product["quantity"];
+                        $tmpTransaction->categoryCgd = null;
                         $tmpTransaction->transactionDateTime = $packageTransaction->transactionDateTime;
-                        $tmpTransaction->invoiceId = $packageTransaction->invoiceId;
                         $tmpTransaction->performDoctorCode = $packageTransaction->performDoctorCode;
                         $tmpTransaction->soldPrice = $tmpTransaction->price;
                         $tmpTransaction->soldFinalPrice = $tmpTransaction->finalPrice;
@@ -369,17 +369,19 @@ class EclaimController extends Controller
                     if ($adpTransaction->product->eclaimAdpType=='7') $nshoMustAddZ510 = true;
                     if ($adpTransaction->product->eclaimAdpType=='6') $nshoMustAddZ511 = true;
 
-                    $adp = new \App\Models\Eclaim\ADP();
-                    $adp->HN = $invoice->hn;
-                    $adp->DATEOPD = $adpTransaction->transactionDateTime->format('Ymd');
-                    $adp->TYPE = $adpTransaction->product->eclaimAdpType;
-                    $adp->CODE = $productEclaimCode;
-                    $adp->QTY = $adpTransaction->quantity;
-                    $adp->RATE = $unitPrice;
-                    $adp->SEQ = $batch->format('ymd').$patient->hn;
-                    $adp->CAGCODE = (($nhsoCAGCode=='' || $nhsoCAGCode==null) && ($adpTransaction->product->eclaimAdpType=='6' || $adpTransaction->product->eclaimAdpType=='7')) ? "Gca" : $nhsoCAGCode;
-                    $adp->TOTAL = $finalPrice;
-                    $adp->save();
+                    if (!empty($adpTransaction->product->productEclaimCode)) {
+                        $adp = new \App\Models\Eclaim\ADP();
+                        $adp->HN = $invoice->hn;
+                        $adp->DATEOPD = $adpTransaction->transactionDateTime->format('Ymd');
+                        $adp->TYPE = $adpTransaction->product->eclaimAdpType;
+                        $adp->CODE = $productEclaimCode;
+                        $adp->QTY = $adpTransaction->quantity;
+                        $adp->RATE = $unitPrice;
+                        $adp->SEQ = $batch->format('ymd').$patient->hn;
+                        $adp->CAGCODE = (($nhsoCAGCode=='' || $nhsoCAGCode==null) && ($adpTransaction->product->eclaimAdpType=='6' || $adpTransaction->product->eclaimAdpType=='7')) ? "Gca" : $nhsoCAGCode;
+                        $adp->TOTAL = $finalPrice;
+                        $adp->save();
+                    }
 
                     if ($adpTransaction->product->eclaimAdpType=='7' && !empty($adpTransaction->product->cgdCode) && !$sameProvince) {
                         $adp = new \App\Models\Eclaim\ADP();
@@ -395,7 +397,7 @@ class EclaimController extends Controller
                         $adp->save();
                     }
                     
-                    if ($adpTransaction->product->eclaimAdpType=='7' && !empty($adpTransaction->product->cgdCode) && $sameProvince) {
+                    if ($adpTransaction->product->eclaimAdpType=='6' && !empty($adpTransaction->product->cgdCode) && $sameProvince) {
                         $drug = \App\Models\EclaimMaster\DrugCatalogs::find($adpTransaction->product->cgdCode);
                         if ($drug) {
                             $dru = new \App\Models\Eclaim\DRU();
