@@ -27,6 +27,25 @@ class EclaimController extends Controller
 
                 $transactions = \App\Models\Patient\PatientsTransactions::whereIn('invoiceId',$invoices->pluck('invoiceId')->all())->get();
 
+                $packageTransactions = \App\Models\Patient\PatientsTransactions::whereIn('invoiceId',$invoices->pluck('invoiceId')->all())->whereNotNull('itemizedProducts')->get();
+                $pseudoTransactions = collect();
+                foreach($packageTransactions as $packageTransaction) {
+                    foreach(array_wrap($packageTransaction->itemizedProducts) as $product) {
+                        $tmpTransaction = new \App\Models\Patient\PatientsTransactions();
+                        $tmpTransaction->hn = $packageTransaction->hn;
+                        $tmpTransaction->encounterId = $packageTransaction->encounterId;
+                        $tmpTransaction->productCode = $product["productCode"];
+                        $tmpTransaction->quantity = $product["quantity"];
+                        $tmpTransaction->transactionDateTime = $packageTransaction->transactionDateTime;
+                        $tmpTransaction->invoiceId = $packageTransaction->invoiceId;
+                        $tmpTransaction->performDoctorCode = $packageTransaction->performDoctorCode;
+                        $tmpTransaction->soldPrice = $tmpTransaction->price;
+                        $tmpTransaction->soldFinalPrice = $tmpTransaction->finalPrice;
+
+                        $pseudoTransactions->push($tmpTransaction);
+                    }
+                }
+
                 $hmainHospital = \App\Models\EclaimMaster\Hospitals::where('HMAIN',($insurance->nhsoHCode) ? $insurance->nhsoHCode : env('ECLAIM_HCODE','41711'))->first();
                 $hmainProvince = ($hmainHospital) ? $hmainHospital->PROVINCE_ID : '';
                 $sameProvince = ($localProvince == $hmainProvince);
@@ -199,6 +218,12 @@ class EclaimController extends Controller
                     $query->whereNotNull('eclaimAdpType');
                 })->get();
 
+                foreach($pseudoTransactions as $pseudoTransaction) {
+                    if ($pseudoTransaction->product->eclaimAdpType != null) {
+                        $adpTransactions->push($pseudoTransaction);
+                    }
+                }
+
                 $nhsoCAGCode = '';
                 $nshoMustAddZ510 = false;
                 $nshoMustAddZ511 = false;
@@ -209,10 +234,18 @@ class EclaimController extends Controller
                 }
                 if ($nhsoCAGCode==null || $nhsoCAGCode=='') $nhsoCAGCode = $insurance->nhsoCAGCode;
 
+                //OP Refer low cost
                 if (!$sameProvince) {
                     $chaTransactions = \App\Models\Patient\PatientsTransactions::whereIn('invoiceId',$invoices->pluck('invoiceId')->all())->whereHas('product',function ($query) {
                         $query->whereNotNull('cgdCode')->whereNull('eclaimAdpType');
+                        $query->orWhere('eclaimAdpType',6);
                     })->get();
+
+                    foreach($pseudoTransactions as $pseudoTransaction) {
+                        if (($pseudoTransaction->product->cgdCode != null && $pseudoTransaction->product->eclaimAdpType == null) || ($pseudoTransaction->product->eclaimAdpType == "6")) {
+                            $chaTransactions->push($pseudoTransaction);
+                        }
+                    }
 
                     $summaryCgds = $chaTransactions->groupBy('categoryCgd');
 
@@ -313,6 +346,7 @@ class EclaimController extends Controller
                     }
                 }
 
+                //OP and OPR high
                 foreach ($adpTransactions as $adpTransaction) {
                     $productEclaimCode = $adpTransaction->product->eclaimCode;
                     if ($nhsoCAGCode=="NonPr" || $nhsoCAGCode=="Gca" || $nhsoCAGCode=='' || $nhsoCAGCode==null) {
@@ -360,6 +394,35 @@ class EclaimController extends Controller
                         $adp->TOTAL = $finalPrice;
                         $adp->save();
                     }
+                    
+                    if ($adpTransaction->product->eclaimAdpType=='7' && !empty($adpTransaction->product->cgdCode) && $sameProvince) {
+                        $drug = \App\Models\EclaimMaster\DrugCatalogs::find($item->product->cgdCode);
+                        if ($drug) {
+                            $dru = new \App\Models\Eclaim\DRU();
+                            $dru->HN = $adpTransaction->hn;
+                            $dru->AN = ($adpTransaction->encounter->encounterType=="IMP") ? $adpTransaction->encounterId : '';
+                            $dru->CLINIC = '10';
+                            $dru->PERSON_ID = $invoice->patient->personId;
+                            $dru->DATE_SERV = $adpTransaction->transactionDateTime->format('Ymd');
+                            $dru->DID = $drug->HOSPDRUGCODE;
+                            $dru->DIDNAME = $drug->TRADENAME;
+                            $dru->AMOUNT = $adpTransaction->quantity;
+                            $dru->DRUGPRIC = $adpTransaction->soldPrice;
+                            $dru->DRUGCOST = '';
+                            $dru->DIDSTD = '';
+                            $dru->UNIT = '';
+                            $dru->UNIT_PACK = '';
+                            $dru->SEQ =  $batch->format('ymd').$patient->hn;
+                            $dru->DRUGREMARK = '';
+                            $dru->PA_NO = '';
+                            $dru->TOTCOPAY = 0;
+                            $dru->USE_STATUS = '1';
+                            $dru->TOTAL = $adpTransaction->soldFinalPrice;
+                            $dru->SIGCODE = '';
+                            $dru->SIGTEXT = '';
+                            $dru->save();
+                        }
+                    }
                 }
 
                 //clean up table before export
@@ -385,6 +448,19 @@ class EclaimController extends Controller
                             "dateDx" => $invoice->created_at->format('Ymd'),
                             "doctorCode"=> $dxDoctorCode,
                         ];
+                    }
+
+                    if (!in_array("9925",$icd9cmLog)) {
+                        $oop = new \App\Models\Eclaim\OOP();
+                        $oop->HN = $invoice->hn;
+                        $oop->DATEOPD = $invoice->created_at->format('Ymd');
+                        $oop->OPER = "9925";
+                        $oop->DROPID = $dxDoctorCode;
+                        $oop->PERSON_ID = $invoice->patient->personId;
+                        $oop->SEQ = $batch->format('ymd').$patient->hn;
+                        $oop->save();
+
+                        $icd9cmLog[] = "9925";
                     }
                 }
                 
