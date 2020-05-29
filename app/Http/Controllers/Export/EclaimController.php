@@ -273,6 +273,7 @@ class EclaimController extends Controller
                                 $drug = \App\Models\EclaimMaster\DrugCatalogs::find($item->product->cgdCode);
                                 if ($drug) {
                                     $dru = new \App\Models\Eclaim\DRU();
+                                    $dru->HCODE = env('ECLAIM_HCODE','41711');
                                     $dru->HN = $item->hn;
                                     $dru->AN = ($item->encounter->encounterType=="IMP") ? $item->encounterId : '';
                                     $dru->CLINIC = '10';
@@ -290,7 +291,7 @@ class EclaimController extends Controller
                                     $dru->DRUGREMARK = '';
                                     $dru->PA_NO = '';
                                     $dru->TOTCOPAY = 0;
-                                    $dru->USE_STATUS = '1';
+                                    $dru->USE_STATUS = ($item->quantity>5) ? '1' : '2';
                                     $dru->TOTAL = $item->soldFinalPrice;
                                     $dru->SIGCODE = '';
                                     $dru->SIGTEXT = '';
@@ -401,6 +402,7 @@ class EclaimController extends Controller
                         $drug = \App\Models\EclaimMaster\DrugCatalogs::find($adpTransaction->product->cgdCode);
                         if ($drug) {
                             $dru = new \App\Models\Eclaim\DRU();
+                            $dru->HCODE = env('ECLAIM_HCODE','41711');
                             $dru->HN = $adpTransaction->hn;
                             $dru->AN = ($adpTransaction->encounter->encounterType=="IMP") ? $adpTransaction->encounterId : '';
                             $dru->CLINIC = '10';
@@ -418,7 +420,7 @@ class EclaimController extends Controller
                             $dru->DRUGREMARK = '';
                             $dru->PA_NO = '';
                             $dru->TOTCOPAY = 0;
-                            $dru->USE_STATUS = '1';
+                            $dru->USE_STATUS = ($adpTransaction->quantity>5) ? '1' : '2';
                             $dru->TOTAL = $adpTransaction->soldFinalPrice;
                             $dru->SIGCODE = '';
                             $dru->SIGTEXT = '';
@@ -805,6 +807,7 @@ class EclaimController extends Controller
                 $drus = \App\Models\Eclaim\DRU::where('SEQ',$ins->SEQ)->get();
                 foreach($drus as $dru) {
                     $druItem = [
+                        "HCODE" => $dru->HCODE,
                         "HN" => $dru->HN,
                         "AN" => $dru->AN,
                         "CLINIC" => $dru->CLINIC,

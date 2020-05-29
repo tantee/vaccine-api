@@ -236,6 +236,7 @@ class CreateEclaimExport16Folder extends Migration
 
         Schema::connection('export')->create('ECLAIM_DRU', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('HCODE',5)->nullable();
             $table->string('HN',15);
             $table->string('AN',15)->nullable();
             $table->string('CLINIC',4)->nullable();
