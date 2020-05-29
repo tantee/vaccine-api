@@ -369,7 +369,7 @@ class EclaimController extends Controller
                     if ($adpTransaction->product->eclaimAdpType=='7') $nshoMustAddZ510 = true;
                     if ($adpTransaction->product->eclaimAdpType=='6') $nshoMustAddZ511 = true;
 
-                    if (!empty($adpTransaction->product->productEclaimCode)) {
+                    if (!empty($productEclaimCode)) {
                         $adp = new \App\Models\Eclaim\ADP();
                         $adp->HN = $invoice->hn;
                         $adp->DATEOPD = $adpTransaction->transactionDateTime->format('Ymd');
