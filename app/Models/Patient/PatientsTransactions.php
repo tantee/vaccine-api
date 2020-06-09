@@ -194,8 +194,7 @@ class PatientsTransactions extends Model
     }
 
     public function getCategoryAttribute($value) {
-        if ($this->attributes['category'] !== null) return $this->attributes['category'];
-        else return $this->Product->category;
+        return $this->Product->category;
     }
 
     public function getOrderDoctorCodeAttribute($value) {
