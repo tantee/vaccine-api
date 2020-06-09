@@ -147,6 +147,14 @@ class PatientsTransactions extends Model
             }
         }
         $insurance = $this->Insurance;
+        if ($insurance["PatientsInsurances"] && $insurance["PatientsInsurances"]->payer && $insurance["PatientsInsurances"]->payer->overridePrices) {
+            if (!empty($insurance["PatientsInsurances"]->payer->overridePrices)) {
+                $first = array_first($insurance["PatientsInsurances"]->payer->overridePrices, function ($value, $key) {
+                    return is_array($value) && $value["productCode"] && $value["productCode"] == $this->productCode;
+                }, null);
+                if ($first) return $first["price"];
+            }
+        }
         if ($insurance["Policy"] == null) return $this->Product->price1;
         else {
             $price = 'price'.$insurance["Policy"]->priceLevel;

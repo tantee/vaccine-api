@@ -34,6 +34,10 @@ class Payers extends Model
         parent::boot();
     }
 
+    protected $casts = [
+      'overridePrices' => 'array'
+    ];
+
     protected $rememberFor = 5;
     protected $rememberCacheTag = 'payers_query';
 }
