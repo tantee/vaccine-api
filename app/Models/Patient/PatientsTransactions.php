@@ -152,7 +152,7 @@ class PatientsTransactions extends Model
                 $first = array_first($insurance["PatientsInsurances"]->payer->overridePrices, function ($value, $key) {
                     return is_array($value) && $value["productCode"] && $value["productCode"] == $this->productCode;
                 }, null);
-                if ($first) return $first["price"];
+                if ($first && isset($first["price"])) return floatval($first["price"]);
             }
         }
         if ($insurance["Policy"] == null) return $this->Product->price1;
