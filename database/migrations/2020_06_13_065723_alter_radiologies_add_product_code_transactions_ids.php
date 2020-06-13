@@ -16,7 +16,7 @@ class AlterRadiologiesAddProductCodeTransactionsIds extends Migration
         Schema::table('radiologies', function (Blueprint $table) {
             $table->string('reportingType',50)->nullable()->after('reportingDoctor');
             $table->string('productCode',50)->nullable()->after('reportDocumentId');
-            $table->integer('transactionId')->nullable()>after('productCode');
+            $table->integer('transactionId')->nullable()->after('productCode');
         });
     }
 
