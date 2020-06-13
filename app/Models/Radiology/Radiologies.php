@@ -28,6 +28,10 @@ class Radiologies extends Model
       return $this->belongsTo('App\Models\Patient\Patients','hn','hn');
     }
 
+    public function Product() {
+        return $this->hasOne('App\Models\Master\Products','productCode','productCode')->withTrashed();
+    }
+
     public function reportDocument() {
       return $this->hasOne('App\Models\Document\Documents','id','reportDocumentId')->with('template');
     }
