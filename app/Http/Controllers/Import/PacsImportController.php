@@ -42,7 +42,7 @@ class PacsImportController extends Controller
                     $radiology["referringDoctor"] = (isset($pacsData['00080090']['Value'])) ? self::parsePN($pacsData['00080090']['Value'][0]['Alphabetic']) : null;
                     $radiology["imageCount"] = $pacsData['00201208']['Value'][0];
 
-                    $radiology->save();
+                    if ($radiology->isDirty()) $radiology->save();
                 }
             } catch (\Exception $e) {
                 Log::error($e->getMessage());
