@@ -90,6 +90,9 @@ class ExportController extends Controller
         $invoices = \App\Models\Accounting\AccountingInvoices::where('updated_at','>',$afterDate)->get();
 
         foreach($invoices as $invoice) {
+            //skip if CAH invoice
+            if ($invoice->insurance!=null && $invoice->insurance->payerCode=='CAH') continue;
+
             $Oeinvh = \App\Models\Export\Oeinvhs::firstOrNew(['DOCNUM'=>$invoice->invoiceId]);
             $Oeinvh->DOCNUM = $invoice->invoiceId;
             $Oeinvh->DOCDAT = $invoice->created_at;
