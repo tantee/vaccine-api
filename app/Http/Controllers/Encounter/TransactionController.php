@@ -97,6 +97,9 @@ class TransactionController extends Controller
                 $invoice->patientsInsurancesId = is_numeric($key) ? $key : null;
                 $invoice->amount = $invoiceData["grandFinalPrice"];
                 $invoice->amountDue = ($insurance && !$insurance->isChargeToPatient) ? 0 : $invoiceData["grandFinalPrice"];
+                if ($insurance && $insurance->payerCode=="CAH") {
+                    $invoice->invoiceId = IdController::issueId('invoice-cah','\C\A\Hy',4);
+                }
                 $invoice->save();
 
                 $invoiceDocument = DocumentController::addDocument($hn,env('INVOICE_TEMPLATE', 'invoice'),$invoiceData,env('INVOICE_CATEGORY', '999'),null,$invoice->invoiceId,'accounting');
