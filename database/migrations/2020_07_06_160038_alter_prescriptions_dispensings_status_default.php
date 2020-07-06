@@ -13,7 +13,7 @@ class AlterPrescriptionsDispensingsStatusDefault extends Migration
      */
     public function up()
     {
-        Schema::table('prescriptions', function (Blueprint $table) {
+        Schema::table('prescriptions_dispensings', function (Blueprint $table) {
             $table->string('status')->default('prepared')->change();
         });
     }
@@ -25,7 +25,7 @@ class AlterPrescriptionsDispensingsStatusDefault extends Migration
      */
     public function down()
     {
-        Schema::table('prescriptions', function (Blueprint $table) {
+        Schema::table('prescriptions_dispensings', function (Blueprint $table) {
             $table->string('status')->change();
         });
     }
