@@ -43,6 +43,10 @@ class Prescriptions extends Model
         parent::boot();
     }
 
+    protected $dates = [
+        'scheduleDate',
+    ];
+
     protected $casts = [
       'statusLog' => 'array',
     ];

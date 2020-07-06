@@ -16,13 +16,13 @@ class StocksCards extends Model
         static::created(function($model) {
             if (isset($model->stockFrom) && !empty($model->stockFrom)) {
                 $stockFrom = \App\Models\Stock\StocksProducts::firstOrCreate(['productCode'=>$model->productCode,'stockId'=>$model->stockFrom,'lotNo'=>$model->lotNo],['expiryDate'=>$model->expiryDate]);
-                $stockFrom->amount = $stockFrom->amount - $model->amount;
+                $stockFrom->quantity = $stockFrom->quantity - $model->quantity;
                 $stockFrom->save();
             }
             
             if (isset($model->stockTo) && !empty($model->stockTo)) {
                 $stockTo = \App\Models\Stock\StocksProducts::firstOrCreate(['productCode'=>$model->productCode,'stockId'=>$model->stockTo,'lotNo'=>$model->lotNo],['expiryDate'=>$model->expiryDate]);
-                $stockTo->amount = $stockTo->amount + $model->amount;
+                $stockTo->quantity = $stockTo->quantity + $model->quantity;
                 $stockTo->save();
             }
         });
@@ -33,26 +33,26 @@ class StocksCards extends Model
             //rollback original
             if (isset($original['stockFrom']) && !empty($original['stockFrom'])) {
                 $stockFrom = \App\Models\Stock\StocksProducts::firstOrCreate(['productCode'=>$original['productCode'],'stockId'=>$original['stockFrom'],'lotNo'=>$original['lotNo']],['expiryDate'=>$original['expiryDate']]);
-                $stockFrom->amount = $stockFrom->amount + $original['amount'];
+                $stockFrom->quantity = $stockFrom->quantity + $original['quantity'];
                 $stockFrom->save();
             }
 
             if (isset($original['stockTo']) && !empty($original['stockTo'])) {
                 $stockTo = \App\Models\Stock\StocksProducts::firstOrCreate(['productCode'=>$original['productCode'],'stockId'=>$original['stockTo'],'lotNo'=>$original['lotNo']],['expiryDate'=>$original['expiryDate']]);
-                $stockTo->amount = $stockTo->amount - $original['amount'];
+                $stockTo->quantity = $stockTo->quantity - $original['quantity'];
                 $stockTo->save();
             }
 
             //update new movement
             if (isset($model->stockFrom) && !empty($model->stockFrom)) {
                 $stockFrom = \App\Models\Stock\StocksProducts::firstOrCreate(['productCode'=>$model->productCode,'stockId'=>$model->stockFrom,'lotNo'=>$model->lotNo],['expiryDate'=>$model->expiryDate]);
-                $stockFrom->amount = $stockFrom->amount - $model->amount;
+                $stockFrom->quantity = $stockFrom->quantity - $model->quantity;
                 $stockFrom->save();
             }
 
             if (isset($model->stockTo) && !empty($model->stockTo)) {
                 $stockTo = \App\Models\Stock\StocksProducts::firstOrCreate(['productCode'=>$model->productCode,'stockId'=>$model->stockTo,'lotNo'=>$model->lotNo],['expiryDate'=>$model->expiryDate]);
-                $stockTo->amount = $stockTo->amount + $model->amount;
+                $stockTo->quantity = $stockTo->quantity + $model->quantity;
                 $stockTo->save();
             }
         });
@@ -60,13 +60,13 @@ class StocksCards extends Model
         static::deleted(function($model){
             if (isset($model->stockFrom) && !empty($model->stockFrom)) {
                 $stockFrom = \App\Models\Stock\StocksProducts::firstOrCreate(['productCode'=>$model->productCode,'stockId'=>$model->stockFrom,'lotNo'=>$model->lotNo],['expiryDate'=>$model->expiryDate]);
-                $stockFrom->amount = $stockFrom->amount + $model->amount;
+                $stockFrom->quantity = $stockFrom->quantity + $model->quantity;
                 $stockFrom->save();
             }
 
             if (isset($model->stockTo) && !empty($model->stockTo)) {
                 $stockTo = \App\Models\Stock\StocksProducts::firstOrCreate(['productCode'=>$model->productCode,'stockId'=>$model->stockTo,'lotNo'=>$model->lotNo],['expiryDate'=>$model->expiryDate]);
-                $stockTo->amount = $stockTo->amount - $model->amount;
+                $stockTo->quantity = $stockTo->quantity - $model->quantity;
                 $stockTo->save();
             }
         });
@@ -74,17 +74,22 @@ class StocksCards extends Model
         static::restored(function($model){
             if (isset($model->stockFrom) && !empty($model->stockFrom)) {
                 $stockFrom = \App\Models\Stock\StocksProducts::firstOrCreate(['productCode'=>$model->productCode,'stockId'=>$model->stockFrom,'lotNo'=>$model->lotNo],['expiryDate'=>$model->expiryDate]);
-                $stockFrom->amount = $stockFrom->amount - $model->amount;
+                $stockFrom->quantity = $stockFrom->quantity - $model->quantity;
                 $stockFrom->save();
             }
 
             if (isset($model->stockTo) && !empty($model->stockTo)) {
                 $stockTo = \App\Models\Stock\StocksProducts::firstOrCreate(['productCode'=>$model->productCode,'stockId'=>$model->stockTo,'lotNo'=>$model->lotNo],['expiryDate'=>$model->expiryDate]);
-                $stockTo->amount = $stockTo->amount + $model->amount;
+                $stockTo->quantity = $stockTo->quantity + $model->quantity;
                 $stockTo->save();
             }
         });
 
         parent::boot();
     }
+
+    protected $dates = [
+        'expiryDate',
+    ];
+
 }

@@ -16,5 +16,9 @@ class StocksProducts extends Model
         return $this->hasOne('App\Models\Master\Products','productCode','productCode')->withTrashed();
     }
 
+    protected $dates = [
+        'expiryDate',
+    ];
+
     protected $with = ['Product'];
 }
