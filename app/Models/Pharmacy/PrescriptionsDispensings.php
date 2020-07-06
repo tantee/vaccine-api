@@ -91,8 +91,8 @@ class PrescriptionsDispensings extends Model
             $stockCard->lotNo = ($lotNo) ? $lotNo : $this->lotNo;
             $stockCard->expiryDate = $expiryDate;
             $stockCard->quantity = ($quantity) ? $quantity : $this->quantity;
-            $stockCard->hn = $this->prescription->hn;
-            $stockCard->encounterId = $this->prescription->encounterId;
+            $stockCard->hn = ($this->prescription) ? $this->prescription->hn : null;
+            $stockCard->encounterId = ($this->prescription) ? $this->prescription->encounterId : null;
             $stockCard->prescriptionsDispensingId = $this->id;
             $stockCard->save();
             return true;
