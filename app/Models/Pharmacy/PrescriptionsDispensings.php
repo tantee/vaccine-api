@@ -12,7 +12,7 @@ class PrescriptionsDispensings extends Model
     use SoftDeletes,UserStamps;
 
     public function Prescription() {
-        return $this->belongsTo('App\Models\Pharmacy\Prescriptions','id','prescriptionId');
+        return $this->belongsTo('App\Models\Pharmacy\Prescriptions','prescriptionId','id');
     }
 
     public function StocksCards() {
@@ -31,7 +31,7 @@ class PrescriptionsDispensings extends Model
         });
 
         static::deleted(function($model) {
-            $model->StocksCards()->delete();
+            $model->StocksCards->each->delete();
         });
 
         parent::boot();
@@ -87,7 +87,7 @@ class PrescriptionsDispensings extends Model
             $stockCard = new \App\Models\Stock\StocksCards();
             $stockCard->cardType = "dispensing";
             $stockCard->productCode = $this->productCode;
-            $stockCard->stockForm = ($stockId) ? $stockId : $this->stockId;
+            $stockCard->stockFrom = ($stockId) ? $stockId : $this->stockId;
             $stockCard->lotNo = ($lotNo) ? $lotNo : $this->lotNo;
             $stockCard->expiryDate = $expiryDate;
             $stockCard->quantity = ($quantity) ? $quantity : $this->quantity;
