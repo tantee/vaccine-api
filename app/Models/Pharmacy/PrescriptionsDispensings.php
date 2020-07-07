@@ -16,7 +16,11 @@ class PrescriptionsDispensings extends Model
     }
 
     public function StocksCards() {
-      return $this->hasMany('App\Models\Stock\StocksCards','prescriptionsDispensingId','id');
+        return $this->hasMany('App\Models\Stock\StocksCards','prescriptionsDispensingId','id');
+    }
+
+    public function transaction() {
+        return $this->hasOne('App\Models\Patient\PatientsTransactions','id','transactionId')
     }
 
     public static function boot() {
