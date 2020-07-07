@@ -18,11 +18,15 @@ class Prescriptions extends Model
     }
 
     public function Encounter() {
-        return $this->belongsTo('App\Models\Registration\Encounters','encounterId','encounterId');
+        return $this->belongsTo('App\Models\Registration\Encounters','encounterId','encounterId')->without(['Patient','Doctor']);;
     }
 
     public function Document() {
       return $this->hasOne('App\Models\Document\Documents','id','documentId')->with('template');
+    }
+
+    public function Doctor() {
+        return $this->hasOne('App\Models\Master\Doctors','doctorCode','doctorCode');
     }
 
     public function Labels() {
@@ -50,4 +54,6 @@ class Prescriptions extends Model
     protected $casts = [
       'statusLog' => 'array',
     ];
+
+    protected $with = ['Patient','Encounter','Doctor'];
 }
