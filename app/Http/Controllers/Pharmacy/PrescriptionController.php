@@ -4,9 +4,51 @@ namespace App\Http\Controllers\Pharmacy;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\DataController;
 
 class PrescriptionController extends Controller
 {
+    public static function labelsFromPrescription($prescriptionId) {
+        $labels = [];
+
+        $prescription = \App\Models\Pharmacy\Prescriptions::find($prescriptionId);
+        if ($prescription) {
+            $prescriptionData = $prescription->document->data;
+            if (is_array($prescriptionData) && $prescriptionData["prescriptionList"]) {
+                foreach($prescriptionData["prescriptionList"] as $prescriptionItem) {
+                    if ($prescriptionItem["item"]) $prescriptionItem = $prescriptionItem["item"];
+                    $labels[] = [
+                        "productCode" => $prescriptionItem["productCode"],
+                        "quantity" => $prescriptionItem["quantity"],
+                        "directions" => $prescriptionItem["directions"],
+                        "cautions" => $prescriptionItem["cautions"],
+                        "prescriptionId" => $prescription->id,
+                    ];
+                }
+            }
+        }
+
+        return DataController::createModel($labels,\App\Models\Pharmacy\PrescriptionsLabels::class);
+    }
+
+    public static function dispensingFromLabels($prescriptionId,$stockId) {
+        $dispensings = [];
+
+        $prescription = \App\Models\Pharmacy\Prescriptions::find($prescriptionId);
+        if ($prescription && $stockId) {
+            foreach($prescription->labels as $label) {
+                $dispensings[] = [
+                    "productCode" => $label->productCode,
+                    "quantity" => $label->quantity,
+                    "prescriptionId" => $label->prescriptionId,
+                    "stockId" => $stockId,
+                ];
+            }
+        }
+
+        return DataController::createModel($dispensings,\App\Models\Pharmacy\PrescriptionsDispensings::class);
+    }
+
     public static function chargeDispensing($data) {
         $returnModels = [];
 
