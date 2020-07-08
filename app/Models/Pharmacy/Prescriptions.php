@@ -22,7 +22,7 @@ class Prescriptions extends Model
     }
 
     public function Document() {
-      return $this->hasOne('App\Models\Document\Documents','id','documentId')->with('template');
+        return $this->hasOne('App\Models\Document\Documents','id','documentId')->with('template');
     }
 
     public function Doctor() {
@@ -30,11 +30,11 @@ class Prescriptions extends Model
     }
 
     public function Labels() {
-      return $this->hasMany('App\Models\Pharmacy\PrescriptionsLabels','prescriptionId','id');
+        return $this->hasMany('App\Models\Pharmacy\PrescriptionsLabels','prescriptionId','id');
     }
 
     public function Dispensings() {
-      return $this->hasMany('App\Models\Pharmacy\PrescriptionsDispensings','prescriptionId','id');
+        return $this->hasMany('App\Models\Pharmacy\PrescriptionsDispensings','prescriptionId','id');
     }
 
     public static function boot() {

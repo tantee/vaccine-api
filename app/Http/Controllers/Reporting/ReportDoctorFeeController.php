@@ -20,12 +20,12 @@ class ReportDoctorFeeController extends Controller
 
         $transactions = $transactions->with(['invoice'])->get();
 
-        $transactions = $transactions->groupBy('orderDoctorCode');
+        $transactions = $transactions->groupBy('doctor_fee_doctor_code');
 
         $transactions = $transactions->map(function ($row,$key){
             return [[
                 "orderDoctor" => $key,
-                "orderDoctorNameTH" => $row[0]->orderDoctor->nameTH,
+                "orderDoctorNameTH" => $row[0]->doctor_fee_doctor->nameTH,
                 "transactions" => $row,
                 "grandFinalPrice" => $row->sum('finalPrice'),
             ]];

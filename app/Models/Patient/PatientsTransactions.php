@@ -53,6 +53,10 @@ class PatientsTransactions extends Model
         return \App\Models\Master\Doctors::withTrashed()->find($this->order_doctor_code);
     }
 
+    public function getDoctorFeeDoctorAttribute() {
+        return \App\Models\Master\Doctors::withTrashed()->find($this->doctor_fee_doctor_code);
+    }
+
     public function performLocation() {
         return $this->hasOne('App\Models\Master\Locations','locationCode','performLocationCode');
     }
@@ -220,6 +224,11 @@ class PatientsTransactions extends Model
         else return $this->Encounter->locationCode;
     }
 
+    public function getDoctorFeeDoctorCodeAttribute($value) {
+        if ($this->attributes['performDoctorCode'] !== null) return $this->attributes['performDoctorCode'];
+        else return $this->order_doctor_code;
+    }
+
     public function getItemizedProductsNamedAttribute() {
         $value = $this->itemizedProducts;
         if (is_array($value) && count($value)>0) {
@@ -237,6 +246,7 @@ class PatientsTransactions extends Model
     public function toArray()
     {
         $toArray = parent::toArray();
+        $toArray['category'] = $this->category;
         $toArray['categoryInsurance'] = $this->category_insurance;
         $toArray['categoryCgd'] = $this->category_cgd;
         $toArray['orderDoctor'] = $this->order_doctor;
