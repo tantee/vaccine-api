@@ -20,7 +20,7 @@ class PrescriptionsDispensings extends Model
     }
 
     public function transaction() {
-        return $this->hasOne('App\Models\Patient\PatientsTransactions','id','transactionId')
+        return $this->hasOne('App\Models\Patient\PatientsTransactions','id','transactionId');
     }
 
     public static function boot() {
