@@ -10,6 +10,8 @@ class PrescriptionsLabels extends Model
 {
     use SoftDeletes,UserStamps;
 
+    protected $guarded = [];
+
     public function Prescription() {
         return $this->belongsTo('App\Models\Pharmacy\Prescriptions','prescriptionId','id');
     }
