@@ -17,6 +17,10 @@ class PrescriptionsDispensings extends Model
         return $this->belongsTo('App\Models\Pharmacy\Prescriptions','prescriptionId','id');
     }
 
+    public function Product() {
+        return $this->hasOne('App\Models\Master\Products','productCode','productCode')->withTrashed();
+    }
+
     public function StocksCards() {
         return $this->hasMany('App\Models\Stock\StocksCards','prescriptionsDispensingId','id');
     }

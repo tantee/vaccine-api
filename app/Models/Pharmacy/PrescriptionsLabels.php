@@ -16,6 +16,10 @@ class PrescriptionsLabels extends Model
         return $this->belongsTo('App\Models\Pharmacy\Prescriptions','prescriptionId','id');
     }
 
+    public function Product() {
+        return $this->hasOne('App\Models\Master\Products','productCode','productCode')->withTrashed();
+    }
+
     protected $casts = [
       'directions' => 'array',
       'cautions' => 'array',
