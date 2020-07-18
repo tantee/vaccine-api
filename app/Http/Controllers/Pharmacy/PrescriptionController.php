@@ -84,6 +84,25 @@ class PrescriptionController extends Controller
         return $returnModels;
     }
 
+    public static function chargeDispensingAll($prescriptionId) {
+        $returnModels = [];
+
+        $dispensings = \App\Models\Pharmacy\PrescriptionsDispensings::where('prescriptionId',$prescriptionId)->get();
+        foreach($dispensings as $dispensing) {
+            if (!$dispensing->transactionId) {
+                $dispensing->isNotCharge = false;
+                $transactions = App\Http\Controllers\Encounter\TransactionController::addTransactions($dispensing->prescription->hn,$dispensing->prescription->encounterId,$dispensing);
+                if ($transactions["success"]) {
+                    $dispensing->transactionId = $dispensing["returnModels"][0]->id;
+                    $dispensing->save();
+                }
+            }
+            array_push($returnModels,$dispensing);
+        }
+
+        return $returnModels;
+    }
+
     public static function unchargeDispensing($data) {
         $returnModels = [];
 
@@ -98,6 +117,22 @@ class PrescriptionController extends Controller
             array_push($returnModels,$tmpDispensing);
         }
 
+        return $returnModels;
+    }
+
+    public static function unchargeDispensingAll($prescriptionId) {
+        $returnModels = [];
+
+        $dispensings = \App\Models\Pharmacy\PrescriptionsDispensings::where('prescriptionId',$prescriptionId)->get();
+        foreach($dispensings as $dispensing) {
+            if ($dispensing->transaction && !$dispensing->transaction->invoiceId) {
+                $dispensing->transaction->delete();
+                $dispensing->transactionId = null;
+                $dispensing->save();
+            }
+            array_push($returnModels,$dispensing);
+        }
+        
         return $returnModels;
     }
 }
