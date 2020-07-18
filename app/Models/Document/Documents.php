@@ -103,30 +103,18 @@ class Documents extends Model
             }
         });
 
-        static::updated(function($model) {
+        static::saved(function($model) {
             $original = $model->getOriginal();
-            if ($model->templateCode!=$original['templateCode'] && $model->Template && $model->Template->templateCompatibility=='prescription' && $model->encounter != null) {
-              $prescriptionData = [
-                'hn' => $model->hn,
-                'encounterId' => $model->encounterId,
-                'documentId' => $model->id,
-                'doctorCode' => $model->encounter->doctorCode,
-                'status' => 'new',
-              ];
-              \App\Http\Controllers\DataController::createModel($prescriptionData,\App\Models\Pharmacy\Prescriptions::class);
-            }
-        });
-
-        static::created(function($model) {
-            if ($model->Template && $model->Template->templateCompatibility=='prescription' && $model->encounter != null) {
-              $prescriptionData = [
-                'hn' => $model->hn,
-                'encounterId' => $model->encounterId,
-                'documentId' => $model->id,
-                'doctorCode' => $model->encounter->doctorCode,
-                'status' => 'new',
-              ];
-              \App\Http\Controllers\DataController::createModel($prescriptionData,\App\Models\Pharmacy\Prescriptions::class);
+            if ($model->status=="approved" && (!array_key_exists('status',$original) || $original["status"] != 'approved')) {
+                if ($model->Template && $model->Template->templateCompatibility=='prescription' && $model->encounterId != null) {
+                    $prescriptionData = [
+                      'hn' => $model->hn,
+                      'encounterId' => $model->encounterId,
+                      'documentId' => $model->id,
+                      'status' => 'new',
+                    ];
+                    \App\Http\Controllers\DataController::createModel($prescriptionData,\App\Models\Pharmacy\Prescriptions::class);
+                }
             }
         });
 
