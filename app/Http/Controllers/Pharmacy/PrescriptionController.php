@@ -26,9 +26,11 @@ class PrescriptionController extends Controller
                     ];
                 }
             }
-        }
 
-        return DataController::createModel($labels,\App\Models\Pharmacy\PrescriptionsLabels::class);
+            return DataController::createModel($labels,\App\Models\Pharmacy\PrescriptionsLabels::class);
+        } else {
+            return ["success" => false, "errorTexts" => [["errorText"=>"Invalid prescription ID"]], "returnModels" => null];
+        }
     }
 
     public static function dispensingFromLabels($prescriptionId,$stockId) {
@@ -44,9 +46,22 @@ class PrescriptionController extends Controller
                     "stockId" => $stockId,
                 ];
             }
-        }
 
-        return DataController::createModel($dispensings,\App\Models\Pharmacy\PrescriptionsDispensings::class);
+            return DataController::createModel($dispensings,\App\Models\Pharmacy\PrescriptionsDispensings::class);
+        } else {
+            return ["success" => false, "errorTexts" => [["errorText"=>"Invalid prescription ID or stock ID"]], "returnModels" => null];
+        }        
+    }
+
+    public static function dispensePrescription($prescriptionId) {
+        $dispensings = \App\Models\Pharmacy\PrescriptionsDispensings::where('prescriptionId',$prescriptionId);
+        foreach($dispensings as $dispensing) {
+            if ($dispensing->status == 'prepared') {
+                $dispensing->status = "dispensed";
+                $dispensing->save();
+            }
+        }
+        return $dispensings;
     }
 
     public static function chargeDispensing($data) {
