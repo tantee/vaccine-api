@@ -93,7 +93,7 @@ class PrescriptionController extends Controller
                 $dispensing->isNotCharge = false;
                 $transactions = App\Http\Controllers\Encounter\TransactionController::addTransactions($dispensing->prescription->hn,$dispensing->prescription->encounterId,$dispensing->toArray());
                 if ($transactions["success"]) {
-                    $dispensing->transactionId = $dispensing["returnModels"][0]->id;
+                    $dispensing->transactionId = $transactions["returnModels"][0]->id;
                     $dispensing->save();
                 }
             }
