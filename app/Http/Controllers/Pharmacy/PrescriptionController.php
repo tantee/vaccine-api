@@ -54,7 +54,7 @@ class PrescriptionController extends Controller
     }
 
     public static function dispensePrescription($prescriptionId) {
-        $dispensings = \App\Models\Pharmacy\PrescriptionsDispensings::where('prescriptionId',$prescriptionId);
+        $dispensings = \App\Models\Pharmacy\PrescriptionsDispensings::where('prescriptionId',$prescriptionId)->get();
         foreach($dispensings as $dispensing) {
             if ($dispensing->status == 'prepared') {
                 $dispensing->status = "dispensed";
