@@ -72,7 +72,7 @@ class PrescriptionController extends Controller
             $tmpDispensing = \App\Models\Pharmacy\PrescriptionsDispensings::find($dispensing['id']);
             if (!$tmpDispensing->transactionId) {
                 $tmpDispensing->isNotCharge = false;
-                $transactions = App\Http\Controllers\Encounter\TransactionController::addTransactions($tmpDispensing->prescription->hn,$tmpDispensing->prescription->encounterId,$tmpDispensing);
+                $transactions = App\Http\Controllers\Encounter\TransactionController::addTransactions($tmpDispensing->prescription->hn,$tmpDispensing->prescription->encounterId,$tmpDispensing->toArray());
                 if ($transactions["success"]) {
                     $tmpDispensing->transactionId = $transactions["returnModels"][0]->id;
                     $tmpDispensing->save();
@@ -91,7 +91,7 @@ class PrescriptionController extends Controller
         foreach($dispensings as $dispensing) {
             if (!$dispensing->transactionId) {
                 $dispensing->isNotCharge = false;
-                $transactions = App\Http\Controllers\Encounter\TransactionController::addTransactions($dispensing->prescription->hn,$dispensing->prescription->encounterId,$dispensing);
+                $transactions = App\Http\Controllers\Encounter\TransactionController::addTransactions($dispensing->prescription->hn,$dispensing->prescription->encounterId,$dispensing->toArray());
                 if ($transactions["success"]) {
                     $dispensing->transactionId = $dispensing["returnModels"][0]->id;
                     $dispensing->save();
@@ -132,7 +132,7 @@ class PrescriptionController extends Controller
             }
             array_push($returnModels,$dispensing);
         }
-        
+
         return $returnModels;
     }
 }
