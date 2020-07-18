@@ -70,8 +70,7 @@ class PrescriptionController extends Controller
         if (\App\Utilities\ArrayType::isAssociative($data)) $data = [$data];
         foreach($data as $dispensing) {
             $tmpDispensing = \App\Models\Pharmacy\PrescriptionsDispensings::find($dispensing['id']);
-            if (!$tmpDispensing->transactionId) {
-                $tmpDispensing->isNotCharge = false;
+            if (!$tmpDispensing->transactionId && !$tmpDispensing->isNotCharge) {
                 $transactions = \App\Http\Controllers\Encounter\TransactionController::addTransactions($tmpDispensing->prescription->hn,$tmpDispensing->prescription->encounterId,$tmpDispensing->toArray());
                 if ($transactions["success"]) {
                     $tmpDispensing->transactionId = $transactions["returnModels"][0]->id;
@@ -89,7 +88,7 @@ class PrescriptionController extends Controller
 
         $dispensings = \App\Models\Pharmacy\PrescriptionsDispensings::where('prescriptionId',$prescriptionId)->get();
         foreach($dispensings as $dispensing) {
-            if (!$dispensing->transactionId) {
+            if (!$dispensing->transactionId && !$dispensing->isNotCharge) {
                 $dispensing->isNotCharge = false;
                 $transactions = \App\Http\Controllers\Encounter\TransactionController::addTransactions($dispensing->prescription->hn,$dispensing->prescription->encounterId,$dispensing->toArray());
                 if ($transactions["success"]) {
