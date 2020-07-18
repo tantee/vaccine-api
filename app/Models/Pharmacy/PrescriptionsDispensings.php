@@ -32,10 +32,10 @@ class PrescriptionsDispensings extends Model
     public static function boot() {
         static::saved(function($model) {
             $original = $model->getOriginal();
-            if ($model->status == 'dispensed' && (!$original["status"] || $original["status"] != 'dispensed')) {
+            if ($model->status == 'dispensed' && (!array_key_exists('status',$original) || $original["status"] != 'dispensed')) {
                 $model->createStockCard();
             }
-            if ($original["status"] && $original['status']=='dispensed' && $model->status!='dispensed') {
+            if (array_key_exists('status',$original) && $original['status']=='dispensed' && $model->status!='dispensed') {
                 $model->StocksCards()->delete();
             }
         });
