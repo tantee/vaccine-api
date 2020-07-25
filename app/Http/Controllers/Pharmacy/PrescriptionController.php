@@ -20,8 +20,8 @@ class PrescriptionController extends Controller
                     $labels[] = [
                         "productCode" => $prescriptionItem["productCode"],
                         "quantity" => $prescriptionItem["quantity"],
-                        "directions" => $prescriptionItem["directions"],
-                        "cautions" => $prescriptionItem["cautions"],
+                        "directions" => (isset($prescriptionItem["directions"])) ? $prescriptionItem["directions"] : null,
+                        "cautions" => (isset($prescriptionItem["cautions"])) ? $prescriptionItem["cautions"] : null,
                         "prescriptionId" => $prescription->id,
                     ];
                 }
@@ -29,7 +29,7 @@ class PrescriptionController extends Controller
 
             return DataController::createModel($labels,\App\Models\Pharmacy\PrescriptionsLabels::class);
         } else {
-            return ["success" => false, "errorTexts" => [["errorText"=>"Invalid prescription ID"]], "returnModels" => null];
+            return ["success" => false, "errorTexts" => [["errorText"=>"Invalid prescription ID"]], "returnModels" => []];
         }
     }
 
@@ -49,7 +49,7 @@ class PrescriptionController extends Controller
 
             return DataController::createModel($dispensings,\App\Models\Pharmacy\PrescriptionsDispensings::class);
         } else {
-            return ["success" => false, "errorTexts" => [["errorText"=>"Invalid prescription ID or stock ID"]], "returnModels" => null];
+            return ["success" => false, "errorTexts" => [["errorText"=>"Invalid prescription ID or stock ID"]], "returnModels" => []];
         }        
     }
 
