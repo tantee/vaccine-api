@@ -289,6 +289,9 @@ class PatientsTransactions extends Model
 
         static::deleting(function($model) {
             $model->childTransactions()->delete();
+
+            \App\Models\Pharmacy\PrescriptionsDispensings::where('transactionId',$model->id)->update(['transactionId'=>null]);
+            \App\Models\Registration\EncountersDispensings::where('transactionId',$model->id)->update(['transactionId'=>null]);
         });
 
         parent::boot();
