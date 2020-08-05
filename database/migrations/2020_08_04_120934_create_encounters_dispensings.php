@@ -15,8 +15,8 @@ class CreateEncountersDispensings extends Migration
     {
         Schema::create('encounters_dispensings', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('encounterId');
-            $table->string('productCode');
+            $table->string('encounterId',50);
+            $table->string('productCode',50);
             $table->integer('quantity');
             $table->integer('stockId')->nullable();
             $table->string('lotNo')->nullable();
