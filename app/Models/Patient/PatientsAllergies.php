@@ -12,4 +12,8 @@ class PatientsAllergies extends Model
     use SoftDeletes,UserStamps;
 
     protected $guarded = [];
+
+    protected $dates = [
+        'isNewOccurenceDate',
+    ];
 }
