@@ -12,6 +12,10 @@ class StocksCards extends Model
 
     protected $guarded = [];
 
+    public function Product() {
+        return $this->hasOne('App\Models\Master\Products','productCode','productCode')->withTrashed();
+    }
+
     public static function boot() {
         static::created(function($model) {
             if (isset($model->stockFrom) && !empty($model->stockFrom)) {
