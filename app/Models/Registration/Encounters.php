@@ -125,6 +125,10 @@ class Encounters extends Model
             $original = $model->getOriginal();
             if (($original['dischargeDateTime']==null && $model->dischargeDateTime!==null) || ($original['dischargeDateTime']!=$model->dischargeDateTime)) {
                 if ($model->encounterType == 'IMP') \App\Http\Controllers\Encounter\IPDController::autoRoundDischarge($model->encounterId);
+
+                //Auto dispense and charge when discharge
+                \App\Http\App\Http\Controllers\Encounter\DispensingController::dispenseEncounter($model->encounterId);
+                \App\Http\App\Http\Controllers\Encounter\DispensingController::chargeDispensingAll($model->encounterId);
             }
         });
 
