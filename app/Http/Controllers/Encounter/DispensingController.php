@@ -26,7 +26,7 @@ class DispensingController extends Controller
         foreach($data as $dispensing) {
             $tmpDispensing = \App\Models\Registration\EncountersDispensings::find($dispensing['id']);
             if (!$tmpDispensing->transactionId && !$tmpDispensing->isNotCharge) {
-                $transactions = \App\Http\Controllers\Encounter\TransactionController::addTransactions($tmpDispensing->prescription->hn,$tmpDispensing->prescription->encounterId,$tmpDispensing->toArray());
+                $transactions = \App\Http\Controllers\Encounter\TransactionController::addTransactions($tmpDispensing->encounter->hn,$tmpDispensing->encounter->encounterId,$tmpDispensing->toArray());
                 if ($transactions["success"]) {
                     $tmpDispensing->transactionId = $transactions["returnModels"][0]->id;
                     $tmpDispensing->save();
@@ -45,7 +45,7 @@ class DispensingController extends Controller
         foreach($dispensings as $dispensing) {
             if (!$dispensing->transactionId && !$dispensing->isNotCharge) {
                 $dispensing->isNotCharge = false;
-                $transactions = \App\Http\Controllers\Encounter\TransactionController::addTransactions($dispensing->prescription->hn,$dispensing->prescription->encounterId,$dispensing->toArray());
+                $transactions = \App\Http\Controllers\Encounter\TransactionController::addTransactions($dispensing->encounter->hn,$dispensing->encounter->encounterId,$dispensing->toArray());
                 if ($transactions["success"]) {
                     $dispensing->transactionId = $transactions["returnModels"][0]->id;
                     $dispensing->save();

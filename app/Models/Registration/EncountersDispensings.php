@@ -100,7 +100,7 @@ class EncountersDispensings extends Model
             $stockCard->lotNo = ($lotNo) ? $lotNo : $this->lotNo;
             $stockCard->expiryDate = $expiryDate;
             $stockCard->quantity = ($quantity) ? $quantity : $this->quantity;
-            $stockCard->hn = ($this->prescription) ? $this->prescription->hn : null;
+            $stockCard->hn = ($this->encounter) ? $this->encounter->hn : null;
             $stockCard->encounterId = $this->encounterId;
             $stockCard->save();
             return true;
