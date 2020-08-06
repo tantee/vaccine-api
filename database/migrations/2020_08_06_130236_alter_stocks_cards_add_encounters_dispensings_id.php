@@ -14,7 +14,7 @@ class AlterStocksCardsAddEncountersDispensingsId extends Migration
     public function up()
     {
         Schema::table('stocks_cards', function (Blueprint $table) {
-            $table->integer('encountersDispensingsId')->nullable()->after('prescriptionsDispensingId');
+            $table->integer('encountersDispensingId')->nullable()->after('prescriptionsDispensingId');
         });
     }
 
@@ -26,7 +26,7 @@ class AlterStocksCardsAddEncountersDispensingsId extends Migration
     public function down()
     {
         Schema::table('stocks_cards', function (Blueprint $table) {
-            $table->dropColumn(['encountersDispensingsId']);
+            $table->dropColumn(['encountersDispensingId']);
         });
     }
 }

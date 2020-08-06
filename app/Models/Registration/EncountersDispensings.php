@@ -102,6 +102,7 @@ class EncountersDispensings extends Model
             $stockCard->quantity = ($quantity) ? $quantity : $this->quantity;
             $stockCard->hn = ($this->encounter) ? $this->encounter->hn : null;
             $stockCard->encounterId = $this->encounterId;
+            $stockCard->encountersDispensingId = $this->id;
             $stockCard->save();
             return true;
         } catch (\Exception $e) {
