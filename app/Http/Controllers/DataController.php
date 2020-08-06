@@ -438,6 +438,8 @@ class DataController extends Controller
 
         if (ArrayType::isAssociative($request->data)) {
           foreach($request->data as $key=>$value) {
+            $key = explode('%',$key);
+            $key = $key[count($key)-1];
             $explodedKey = explode('#',$key);
             if (count($explodedKey)==3) {
               $key = $explodedKey[0]."#".$explodedKey[1];
