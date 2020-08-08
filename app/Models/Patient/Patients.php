@@ -72,6 +72,11 @@ class Patients extends Model
         return $this->hasMany('App\Models\Patient\PatientsDiagnoses','hn','hn');
     }
 
+    public function Allergies() {
+      return $this->hasMany('App\Models\Patient\PatientsAllergies','hn','hn');
+    }
+
+
     public function getNameThAttribute() {
       $name = \App\Models\Patient\PatientsNames::where('hn',$this->hn)->where('nameType','TH')->orWhere('nameType','ALIAS_TH')->orderBy('nameType')->orderBy('id','desc')->first();
       return ($name==null) ? $this->name_en : $name;

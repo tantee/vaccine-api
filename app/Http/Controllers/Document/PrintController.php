@@ -198,7 +198,7 @@ class PrintController extends Controller
         $patientData['primaryTelephoneNo'] = $patient->primaryTelephoneNo;
         $patientData['primaryEmail'] = $patient->primaryEmail;
         $patientData['insurances'] = $patient->insurances->toArray();
-        $patientData['allergies'] = null;
+        $patientData['allergies'] = $patient->allergies->toArray();
 
         if ($patient->Photos->count()>0) $patientData['photo'] = storage_path('app/'.$patient->Photos->first()->storagePath);
 
