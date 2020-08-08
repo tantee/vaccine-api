@@ -195,6 +195,30 @@ class MasterGroupsSeeder extends Seeder
             'description' => 'ICD-9-CM',
             'propertiesTemplate' => null,
           ],
+          [
+            'groupKey' => '$AllergyInformationSource',
+            'groupName' => 'ข้อมูลการแพ้ แหล่งที่มาของข้อมูล',
+            'description' => 'ข้อมูลการแพ้ แหล่งที่มาของข้อมูล',
+            'propertiesTemplate' => null,
+          ],
+          [
+            'groupKey' => '$AllergyProbability',
+            'groupName' => 'ข้อมูลการแพ้ ความน่าจะเป็น',
+            'description' => 'ข้อมูลการแพ้ ความน่าจะเป็น ตาม Naranjo Scale',
+            'propertiesTemplate' => null,
+          ],
+          [
+            'groupKey' => '$AllergySeverity',
+            'groupName' => 'ข้อมูลการแพ้ ความรุนแรง',
+            'description' => 'ข้อมูลการแพ้ ความรุนแรง',
+            'propertiesTemplate' => null,
+          ],
+          [
+            'groupKey' => '$AllergyType',
+            'groupName' => 'ข้อมูลการแพ้ ชนิดการแพ้',
+            'description' => 'ข้อมูลการแพ้ ชนิดการแพ้',
+            'propertiesTemplate' => null,
+          ],
         ];
 
         

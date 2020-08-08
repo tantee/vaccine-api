@@ -1,0 +1,4 @@
+itemCode,itemValue,itemValueEN
+low,ไม่ร้ายแรง,Not Critical
+high,ร้ายแรง,Critical
+unable-to-assess,ไม่ทราบ,Unknown
