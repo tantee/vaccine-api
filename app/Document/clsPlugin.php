@@ -77,9 +77,11 @@ class clsPlugin
         $Value = implode(" ",$tmpAddress);
       }
     }
+
     if ($ope == 'formatcurr') {
       $Value = number_format($Value,2);
     }
+
     if ($ope == 'formatinsurance') {
       if (isset($PrmLst['full'])) $full = (boolean)$PrmLst['full'];
       else $full = false;
@@ -108,6 +110,25 @@ class clsPlugin
         } else {
           $Value = ($English) ? "Cash" : "เงินสด";
         }
+      }
+    }
+
+    if ($ope == 'formatallergies') {
+      if (is_array($Value)) {
+        if (count($Value)>0) {
+          if (ArrayType::isAssociative($Value)) $Value = [$Value];
+
+          $tmpAllergyProducts = [];
+          foreach($Value as $allergy) {
+            if (isset($allergy["suspectedProduct"])) $tmpAllergyProducts[] = $allergy["suspectedProduct"];
+          }
+
+          $Value = implode(",",array_unique($tmpAllergyProducts));
+        } else {
+          $Value = 'ไม่มีประวัติแพ้ยา';
+        }
+      } else {
+        $Value = 'ไม่มีประวัติแพ้ยา';
       }
     }
 
