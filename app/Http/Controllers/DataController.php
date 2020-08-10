@@ -116,6 +116,10 @@ class DataController extends Controller
                 $existModel->fresh();
                 if ($returnWith!=null) $existModel->load($returnWith);
                 array_push($returnModels,$existModel);
+              } else {
+                $createdModel = $model::create($newItem)->fresh();
+                if ($returnWith!=null) $createdModel->load($returnWith);
+                array_push($returnModels,$createdModel);
               }
             } else {
               $createdModel = $model::create($newItem)->fresh();
