@@ -293,7 +293,10 @@ class DataController extends Controller
 
           if (isset($request->key)) $returnModels = $returnModels->find($request->key);
 
-          if (isset($request->scope)) $returnModels = $returnModels->{$request->scope}();
+          if (isset($request->scope)) {
+            if (isset($request->scopeParam)) $returnModels = $returnModels->{$request->scope}($request->scopeParam);
+            else $returnModels = $returnModels->{$request->scope}();
+          }
 
           if (isset($request->with)) $returnModels = $returnModels->with($request->with);
 
@@ -309,6 +312,7 @@ class DataController extends Controller
               if (isset($request->orderBy)) $returnModels->appends(['orderBy'=>$request->orderBy]);
               if (isset($request->with)) $returnModels->appends(['with'=>$request->with]);
               if (isset($request->scope)) $returnModels->appends(['scope'=>$request->scope]);
+              if (isset($request->scopeParam)) $returnModels->appends(['scope'=>$request->scopeParam]);
             }
             else $returnModels = $returnModels->get();
           }
@@ -349,14 +353,20 @@ class DataController extends Controller
               }
               if (method_exists($searchModel,'scopeActive')) {
                 $searchModel = $searchModel->active();
-                if (isset($request->data['scope'])) $searchModel = $searchModel->{$request->data['scope']}();
+                if (isset($request->data['scope'])) {
+                  if (isset($request->data['scopeParam'])) $searchModel = $searchModel->{$request->data['scope']}($request->data['scopeParam']);
+                  else $searchModel = $searchModel->{$request->data['scope']}();
+                }
 
                 $returnModels->mergeWheres($searchModel->getQuery()->wheres, $searchModel->getQuery()->bindings);
               }
               $returnModels = $model::hydrate($returnModels->get()->toArray())->fresh();
             } else {
               if (method_exists($searchModel,'scopeActive')) $searchModel = $searchModel->active();
-              if (isset($request->data['scope'])) $searchModel = $searchModel->{$request->data['scope']}();
+              if (isset($request->data['scope'])) {
+                if (isset($request->data['scopeParam'])) $searchModel = $searchModel->{$request->data['scope']}($request->data['scopeParam']);
+                else $searchModel = $searchModel->{$request->data['scope']}();
+              }
               if (isset($request->data['filter']) && is_array($request->data['filter'])) {
                 $searchModel = $searchModel->where($request->data['filter']);
               }
@@ -369,7 +379,10 @@ class DataController extends Controller
             }
           } else {
             if (method_exists($searchModel,'scopeActive')) $searchModel = $searchModel->active();
-            if (isset($request->data['scope'])) $searchModel = $searchModel->{$request->data['scope']}();
+            if (isset($request->data['scope'])) {
+              if (isset($request->data['scopeParam'])) $searchModel = $searchModel->{$request->data['scope']}($request->data['scopeParam']);
+              else $searchModel = $searchModel->{$request->data['scope']}();
+            }
 
             if (isset($request->data['all']) && $request->data['all']) {   
               if(isset($request->data['filter']) && is_array($request->data['filter'])) {
@@ -476,7 +489,10 @@ class DataController extends Controller
       if ($success) {
         try {
           $returnModels = new $model;
-          if (isset($request->scope)) $returnModels = $returnModels->{$request->scope}();
+          if (isset($request->scope)) {
+            if (isset($request->scopeParam)) $returnModels = $returnModels->{$request->scope}($request->scopeParam);
+            else $returnModels = $returnModels->{$request->scope}();
+          }
           
           foreach($data as $row) {
             $column = explode('$',$row[0]);
@@ -564,7 +580,10 @@ class DataController extends Controller
       if ($success) {
         try {
           $returnModels = new $model;
-          if (isset($request->scope)) $returnModels = $returnModels->{$request->scope}();
+          if (isset($request->scope)) {
+            if (isset($request->scopeParam)) $returnModels = $returnModels->{$request->scope}($request->scopeParam);
+            else $returnModels = $returnModels->{$request->scope}();
+          }
 
           foreach($data as $row) {
             $column = explode('$',$row[0]);

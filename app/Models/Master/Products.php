@@ -39,6 +39,16 @@ class Products extends Model
       return $query->where('productType','medicine')->orWhere('productType','supply');
     }
 
+    public function scopeAvailableAt($query,$stockId) {
+      return $query->whereHas('stocks',function($query) use ($stockId) {
+        $query->where('stockId',$stockId);
+      });
+    }
+
+    public function Stocks() {
+        return $this->hasMany('App\Models\Stock\StocksProducts','productCode','productCode')->active();
+    }
+
     public static function boot() {
         static::saved(function($model) {
             $model::flushCache();

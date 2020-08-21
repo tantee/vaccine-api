@@ -12,6 +12,10 @@ class StocksProducts extends Model
 
     protected $guarded = [];
 
+    public function scopeActive($query) {
+      return $query->where('quantity','>',0);
+    }
+
     public function Product() {
         return $this->hasOne('App\Models\Master\Products','productCode','productCode')->withTrashed();
     }
