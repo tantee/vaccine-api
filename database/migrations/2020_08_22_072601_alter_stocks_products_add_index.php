@@ -13,7 +13,9 @@ class AlterStocksProductsAddIndex extends Migration
      */
     public function up()
     {
-        $table->index(['stockId','productCode']);
+        Schema::table('stocks_products', function (Blueprint $table) {
+            $table->index(['stockId','productCode']);
+        });
     }
 
     /**
@@ -23,6 +25,8 @@ class AlterStocksProductsAddIndex extends Migration
      */
     public function down()
     {
-        $table->dropIndex(['stockId','productCode']);
+        Schema::table('stocks_products', function (Blueprint $table) {
+            $table->dropIndex(['stockId','productCode']);
+        });
     }
 }
