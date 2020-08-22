@@ -13,7 +13,11 @@ class StocksProducts extends Model
     protected $guarded = [];
 
     public function scopeActive($query) {
-      return $query->where('quantity','>',0);
+        return $query->where('quantity','>',0);
+    }
+
+    public function scopeNonZero($query) {
+        return $query->where('quantity','<>',0);
     }
 
     public function Product() {
