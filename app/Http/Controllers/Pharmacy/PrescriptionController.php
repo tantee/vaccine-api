@@ -33,7 +33,7 @@ class PrescriptionController extends Controller
         }
     }
 
-    public static function dispensingFromLabels($prescriptionId,$stockId) {
+    public static function dispensingFromLabels($prescriptionId,$stockId,$isTemporary=false) {
         $dispensings = [];
 
         $prescription = \App\Models\Pharmacy\Prescriptions::find($prescriptionId);
@@ -44,6 +44,7 @@ class PrescriptionController extends Controller
                     "quantity" => $label->quantity,
                     "prescriptionId" => $label->prescriptionId,
                     "stockId" => $stockId,
+                    "isTemporary" => $isTemporary,
                 ];
             }
 

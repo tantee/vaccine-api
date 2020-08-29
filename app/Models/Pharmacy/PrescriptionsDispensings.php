@@ -30,6 +30,10 @@ class PrescriptionsDispensings extends Model
     }
 
     public static function boot() {
+        static::saving(function($model) {
+            if ($model->isTemporary) $model->isNotCharge = true;
+        });
+
         static::saved(function($model) {
             $original = $model->getOriginal();
             if ($model->status == 'dispensed' && (!array_key_exists('status',$original) || $original["status"] != 'dispensed')) {
@@ -98,6 +102,7 @@ class PrescriptionsDispensings extends Model
             $stockCard->cardType = "dispensing";
             $stockCard->productCode = $this->productCode;
             $stockCard->stockFrom = ($stockId) ? $stockId : $this->stockId;
+            if ($this->isTemporary) $stockCard->stockTo = 99999;
             $stockCard->lotNo = ($lotNo) ? $lotNo : $this->lotNo;
             $stockCard->expiryDate = $expiryDate;
             $stockCard->quantity = ($quantity) ? $quantity : $this->quantity;

@@ -8,8 +8,25 @@ use App\Http\Controllers\DataController;
 
 class DispensingController extends Controller
 {
-    public static function dispenseEncounter($encounterId) {
-        $dispensings = \App\Models\Registration\EncountersDispensings::where('encounterId',$encounterId)->get();
+    public static function dispenseEncounterTemporary($encounterId) {
+        $tmpDispensings = [];
+        $tempStocks = \App\Models\Stock\StocksProducts::where('stockId',99999)->where('encounterId',$encounterId)->where('quantity','>',0)->get();
+        foreach($tempStocks as $tempStock) {
+            $tmpDispensings[] = [
+                "encounterId" => $encounterId,
+                "productCode" => $tempStock->productCode,
+                "quantity" => $tempStock->quantity,
+                "stockId" => $tempStock->stockId,
+                "lotNo" => $tempStock->lotNo,
+            ];
+        }
+        
+        return DataController::createModel($tmpDispensings,\App\Models\Registration\EncountersDispensings::class);
+    }
+
+    public static function dispenseEncounter($encounterId,$stockId=null) {
+        if (!$stockId) $dispensings = \App\Models\Registration\EncountersDispensings::where('encounterId',$encounterId)->get();
+        else $dispensings = \App\Models\Registration\EncountersDispensings::where('encounterId',$encounterId)->where('stockId',$stockId)->get();
         foreach($dispensings as $dispensing) {
             if ($dispensing->status == 'prepared') {
                 $dispensing->status = "dispensed";
@@ -38,10 +55,11 @@ class DispensingController extends Controller
         return $returnModels;
     }
 
-    public static function chargeDispensingAll($encounterId) {
+    public static function chargeDispensingAll($encounterId,$stockId=null) {
         $returnModels = [];
 
-        $dispensings = \App\Models\Registration\EncountersDispensings::where('encounterId',$encounterId)->get();
+        if (!$stockId) $dispensings = \App\Models\Registration\EncountersDispensings::where('encounterId',$encounterId)->get();
+        else $dispensings = \App\Models\Registration\EncountersDispensings::where('encounterId',$encounterId)->where('stockId',$stockId)->get();
         foreach($dispensings as $dispensing) {
             if (!$dispensing->transactionId && !$dispensing->isNotCharge) {
                 $dispensing->isNotCharge = false;
@@ -74,10 +92,11 @@ class DispensingController extends Controller
         return $returnModels;
     }
 
-    public static function unchargeDispensingAll($encounterId) {
+    public static function unchargeDispensingAll($encounterId,$stockId=null) {
         $returnModels = [];
 
-        $dispensings = \App\Models\Registration\EncountersDispensings::where('encounterId',$encounterId)->get();
+        if (!$stockId) $dispensings = \App\Models\Registration\EncountersDispensings::where('encounterId',$encounterId)->get();
+        else $dispensings = \App\Models\Registration\EncountersDispensings::where('encounterId',$encounterId)->where('stockId',$stockId)->get();
         foreach($dispensings as $dispensing) {
             if ($dispensing->transaction && !$dispensing->transaction->invoiceId) {
                 $dispensing->transaction->delete();

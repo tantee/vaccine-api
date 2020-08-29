@@ -40,9 +40,15 @@ class Products extends Model
     }
 
     public function scopeAvailableAt($query,$stockId) {
-      return $query->whereHas('stocks',function($query) use ($stockId) {
-        $query->where('stockId',$stockId);
-      });
+      if (!is_array($stockId)) {
+        return $query->whereHas('stocks',function($query) use ($stockId) {
+          $query->where('stockId',$stockId);
+        });
+      } else {
+        return $query->whereHas('stocks',function($query) use ($stockId) {
+          $query->where($stockId);
+        });
+      }
     }
 
     public function Stocks() {
