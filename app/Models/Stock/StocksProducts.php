@@ -25,7 +25,7 @@ class StocksProducts extends Model
     }
 
     public function Encounter() {
-        return $this->hasOne('App\Models\Registration\Encounters','encounterId','encounterId')->without(['patient','Location','Clinic','Doctor','fromAppointment']);
+        return $this->hasOne('App\Models\Registration\Encounters','encounterId','encounterId')->without(['fromAppointment']);
     }
 
     protected $dates = [
