@@ -57,7 +57,7 @@ class PrescriptionController extends Controller
     public static function dispensingFromLabelsItems($labelsItems,$stockId,$isTemporary=false) {
         $dispensings = [];
 
-        if ($prescription && $stockId) {
+        if ($stockId) {
             if (\App\Utilities\ArrayType::isAssociative($labelsItems)) $labelsItems = [$labelsItems];
             foreach($labelsItems as $label) {
                 $tmpLabel = \App\Models\Pharmacy\PrescriptionsLabels::find($label['id']);
@@ -73,7 +73,7 @@ class PrescriptionController extends Controller
 
             return DataController::createModel($dispensings,\App\Models\Pharmacy\PrescriptionsDispensings::class);
         } else {
-            return ["success" => false, "errorTexts" => [["errorText"=>"Invalid prescription ID or stock ID"]], "returnModels" => []];
+            return ["success" => false, "errorTexts" => [["errorText"=>"Invalid stock ID"]], "returnModels" => []];
         }        
     }
 
