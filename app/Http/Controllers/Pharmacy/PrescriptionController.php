@@ -54,6 +54,29 @@ class PrescriptionController extends Controller
         }        
     }
 
+    public static function dispensingFromLabelsItems($labelsItems,$stockId,$isTemporary=false) {
+        $dispensings = [];
+
+        if ($prescription && $stockId) {
+            if (\App\Utilities\ArrayType::isAssociative($labelsItems)) $labelsItems = [$labelsItems];
+            foreach($labelsItems as $label) {
+                $tmpLabel = \App\Models\Pharmacy\PrescriptionsLabels::find($label['id']);
+
+                $dispensings[] = [
+                    "productCode" => $tmpLabel->productCode,
+                    "quantity" => $tmpLabel->quantity,
+                    "prescriptionId" => $tmpLabel->prescriptionId,
+                    "stockId" => $stockId,
+                    "isTemporary" => $isTemporary,
+                ];
+            }
+
+            return DataController::createModel($dispensings,\App\Models\Pharmacy\PrescriptionsDispensings::class);
+        } else {
+            return ["success" => false, "errorTexts" => [["errorText"=>"Invalid prescription ID or stock ID"]], "returnModels" => []];
+        }        
+    }
+
     public static function dispensePrescription($prescriptionId) {
         $dispensings = \App\Models\Pharmacy\PrescriptionsDispensings::where('prescriptionId',$prescriptionId)->get();
         foreach($dispensings as $dispensing) {
