@@ -345,7 +345,7 @@ class DataController extends Controller
           $searchModel = new $model;
           $searchField = (isset($request->data['field'])) ? $request->data['field'] : array_diff(Schema::connection($searchModel->getConnectionName())->getColumnListing($searchModel->getTable()),$excludedField);
 
-          if (isset($request->data['keyword'])) {
+          if (isset($request->data['keyword']) && !(isset($request->data['all']) && $request->data['all'])) {
             if (empty($searchModel->getConnectionName()) || $searchModel->getConnectionName()==env('DB_CONNECTION', 'mysql')) {
               $returnModels = \Searchy::search($searchModel->getTable())->fields($searchField)->query($request->data['keyword'])->getQuery();
               if(isset($request->data['filter']) && is_array($request->data['filter'])) {
