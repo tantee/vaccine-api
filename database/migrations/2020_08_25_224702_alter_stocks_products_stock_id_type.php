@@ -14,7 +14,7 @@ class AlterStocksProductsStockIdType extends Migration
     public function up()
     {
         Schema::table('stocks_products', function (Blueprint $table) {
-            $table->interger('stockId')->change();
+            $table->integer('stockId')->change();
             $table->string('encounterId', 50)->nullable()->after('stockId');
             $table->index(['stockId','encounterId','productCode']);
         });
