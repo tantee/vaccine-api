@@ -24,6 +24,10 @@ class StocksProducts extends Model
         return $this->hasOne('App\Models\Master\Products','productCode','productCode')->withTrashed();
     }
 
+    public function Encounter() {
+        return $this->hasOne('App\Models\Registration\Encounters','encounterId','encounterId')->without(['patient','Location','Clinic','Doctor','fromAppointment']);
+    }
+
     protected $dates = [
         'expiryDate',
     ];
