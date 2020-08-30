@@ -11,4 +11,9 @@ class Stocks extends Model
     use SoftDeletes,UserStamps;
 
     protected $guarded = [];
+
+    public function StocksProducts()
+    {
+        return $this->hasMany('App\Models\Stock\StocksProducts','stockId','id')->nonZero();
+    }
 }

@@ -38,6 +38,21 @@ class clsPlugin
 
       $Value = Carbon::parse($Value)->locale($locale)->isoFormat($format);
     }
+    if ($ope == 'formatdatetime') {
+
+      if (isset($PrmLst['format'])) $format = $PrmLst['format'];
+      else $format = "DD MMMM YYYY H:i:s";
+
+      if (isset($PrmLst['locale'])) $locale = $PrmLst['locale'];
+      else $locale = 'th_TH';
+
+      if ($FieldName == "patientData.dateOfBirth" && substr($format, -5) == " YYYY") {
+        $byear = Carbon::parse($Value)->year + 543;
+        $format = \str_replace(" YYYY"," YYYY (".$byear.")",$format);
+      }
+
+      $Value = Carbon::parse($Value)->locale($locale)->isoFormat($format);
+    }
     if ($ope == 'formatname') {
       if (\is_array($Value)) {
         $forcedFullname = (isset($PrmLst['full'])) ? true : false;
