@@ -14,6 +14,6 @@ class Stocks extends Model
 
     public function StocksProducts()
     {
-        return $this->hasMany('App\Models\Stock\StocksProducts','stockId','id')->nonZero();
+        return $this->hasMany('App\Models\Stock\StocksProducts','stockId','id')->nonZero()->orderBy('productCode');
     }
 }
