@@ -41,7 +41,7 @@ class clsPlugin
     if ($ope == 'formatdatetime') {
 
       if (isset($PrmLst['format'])) $format = $PrmLst['format'];
-      else $format = "DD MMMM YYYY H:i:s";
+      else $format = "DD MMMM YYYY H:mm";
 
       if (isset($PrmLst['locale'])) $locale = $PrmLst['locale'];
       else $locale = 'th_TH';
