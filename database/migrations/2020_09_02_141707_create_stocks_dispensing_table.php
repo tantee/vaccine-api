@@ -23,6 +23,10 @@ class CreateStocksDispensingTable extends Migration
             $table->string('lotNo')->nullable();
             $table->string('status')->default('prepared');
             $table->json('statusLog')->nullable();
+            $table->string('created_by')->nullable();
+            $table->string('updated_by')->nullable();
+            $table->string('deleted_by')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

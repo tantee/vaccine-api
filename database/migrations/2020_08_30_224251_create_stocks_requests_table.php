@@ -15,6 +15,7 @@ class CreateStocksRequestsTable extends Migration
     {
         Schema::create('stocks_requests', function (Blueprint $table) {
             $table->increments('id');
+            $table->timestamp('requestDispensingDate')->useCurrent();
             $table->integer('stockTo');
             $table->integer('stockFrom');
             $table->json('requestData');
@@ -23,6 +24,7 @@ class CreateStocksRequestsTable extends Migration
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->string('deleted_by')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
