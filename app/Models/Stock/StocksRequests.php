@@ -15,4 +15,13 @@ class StocksRequests extends Model
     public function Dispensings() {
         return $this->hasMany('App\Models\Stock\StocksDispensings','stocksRequestId','id');
     }
+
+    protected $dates = [
+        'requestDispensingDate',
+    ];
+
+    protected $casts = [
+        'requestData' => 'array',
+        'statusLog' => 'array',
+    ];
 }
