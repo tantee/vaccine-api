@@ -19,6 +19,7 @@ class StockController extends Controller
                     "quantity" => $requestItem["quantity"],
                     "stockFrom" => $request->stockFrom,
                     "stockTo" => $request->stockTo,
+                    "stocksRequestId" => $stocksRequestId,
                 ];
             }
 
