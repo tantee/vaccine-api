@@ -33,35 +33,39 @@ class PrintController extends Controller
       $errorTexts = [];
       $returnModels = [];
 
-      $documentTemplate = \App\Models\Document\DocumentsTemplates::find($documentTemplate);
+      $documentIds = [];
 
-      if ($documentTemplate != null) {
-        if ($documentTemplate->isRequiredPatientInfo && (empty($hn) || !PatientController::isExistPatient($hn))) {
+      if (!is_array($documentTemplate)) $documentTemplate = [$documentTemplate];
+      if (ArrayType::isMultiDimension($documentTemplate)) $documentTemplate = array_pluck($documentTemplate,'templateCode');
+
+      $documentTemplates = \App\Models\Document\DocumentsTemplates::whereIn('templateCode',$documentTemplate)->get();
+
+      foreach($documentTemplates as $template) {
+        if ($template->isRequiredPatientInfo && (empty($hn) || !PatientController::isExistPatient($hn))) {
           $success = false;
           array_push($errorTexts,["errorText" => "Require HN"]);
         }
-        if ($documentTemplate->isRequiredEncounter && empty($encounterId)) {
+        if ($template->isRequiredEncounter && empty($encounterId)) {
           $success = false;
           array_push($errorTexts,["errorText" => "Require encounter ID"]);
         }
+      }
 
-        if ($success) {
-          $document = DocumentController::addDocument($hn,$documentTemplate->templateCode,$data,$documentTemplate->defaultCategory,$encounterId,$referenceId,$folder);
+      if ($success) {
+        foreach($documentTemplates as $template) {
+          $document = DocumentController::addDocument($hn,$template->templateCode,$data,$template->defaultCategory,$encounterId,$referenceId,$folder);
           if ($document["success"]) {
-            $document = $document["returnModels"][0];
+            $documentIds[] = $document["returnModels"][0]->id;
           } else {
             $success = false;
             array_push($errorTexts,["errorText" => 'Error creating new document']);
             $errorTexts = array_merge($errorTexts,$document["errorTexts"]);
           }
         }
+      }
 
-        if ($success) {
-          return self::printDocument($document->id);
-        }
-      } else {
-        $success = false;
-        array_push($errorTexts,["errorText" => "Invalid template code"]);
+      if ($success) {
+        return self::printDocument($documentIds);
       }
 
       return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
