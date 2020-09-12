@@ -32,7 +32,7 @@ class StocksDispensings extends Model
                 $model->createStockCard();
             }
             if (array_key_exists('status',$original) && $original['status']=='dispensed' && $model->status!='dispensed') {
-                $model->StocksCards()->delete();
+                $model->StocksCards->each->delete();
             }
         });
 
@@ -91,7 +91,7 @@ class StocksDispensings extends Model
     private function createStockCardDispense($stockId=null,$lotNo=null,$expiryDate=null,$quantity=null) {
         try {
             $stockCard = new \App\Models\Stock\StocksCards();
-            $stockCard->cardType = "dispensing";
+            $stockCard->cardType = "transfer";
             $stockCard->productCode = $this->productCode;
             $stockCard->stockFrom = ($stockId) ? $stockId : $this->stockFrom;
             $stockCard->stockTo = $this->stockTo;

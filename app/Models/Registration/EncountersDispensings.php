@@ -35,7 +35,7 @@ class EncountersDispensings extends Model
                 $model->createStockCard();
             }
             if (array_key_exists('status',$original) && $original['status']=='dispensed' && $model->status!='dispensed') {
-                $model->StocksCards()->delete();
+                $model->StocksCards->each->delete();
             }
         });
 

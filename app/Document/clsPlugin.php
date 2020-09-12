@@ -171,6 +171,20 @@ class clsPlugin
       }
     }
 
+    if ($ope == 'formatproduct') {
+      if (isset($PrmLst['lang']) && $PrmLst['lang']=="en") $English=true;
+      else $English=false;
+
+      if (isset($PrmLst['withCode'])) $withCode=true;
+      else $withCode=false;
+
+      $product = \App\Models\Master\Products::find($Value);
+      if ($product !== null) {
+        if ($withCode) $Value = $Value = $Value." ".(($English) ? $product->productNameEN : $product->productName);
+        else $Value = ($English) ? $product->productNameEN : $product->productName;
+      }
+    }
+
     if ($ope == 'checkbox') {
       $Value = ($Value) ? '☑' : '☐';
     }
