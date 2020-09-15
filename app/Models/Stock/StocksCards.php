@@ -130,6 +130,26 @@ class StocksCards extends Model
         }
     }
 
+    public function forceRecordFrom() {
+        if (isset($this->stockFrom) && !empty($this->stockFrom)) {
+            $stockQuery = ['productCode'=>$this->productCode,'stockId'=>$this->stockFrom,'lotNo'=>$this->lotNo];
+            if ($this->stockForm>10000) $stockQuery['encounterId'] = $this->encounterId;
+            $stockFrom = \App\Models\Stock\StocksProducts::firstOrCreate($stockQuery,['expiryDate'=>$this->expiryDate]);
+            $stockFrom->quantity = $stockFrom->quantity - $this->quantity;
+            $stockFrom->save();
+        }
+    }
+
+    public function forceRecordTo() {
+        if (isset($this->stockTo) && !empty($this->stockTo)) {
+            $stockQuery = ['productCode'=>$this->productCode,'stockId'=>$this->stockTo,'lotNo'=>$this->lotNo];
+            if ($this->stockTo>10000) $stockQuery['encounterId'] = $this->encounterId;
+            $stockTo = \App\Models\Stock\StocksProducts::firstOrCreate($stockQuery,['expiryDate'=>$this->expiryDate]);
+            $stockTo->quantity = $stockTo->quantity + $this->quantity;
+            $stockTo->save();
+        }
+    }
+
     protected $dates = [
         'expiryDate',
     ];
