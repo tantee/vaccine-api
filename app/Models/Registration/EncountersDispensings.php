@@ -21,7 +21,7 @@ class EncountersDispensings extends Model
     }
 
     public function StocksCards() {
-        return $this->hasMany('App\Models\Stock\StocksCards','encounterId','encounterId')->whereNull('prescriptionsDispensingId');
+        return $this->hasMany('App\Models\Stock\StocksCards','encountersDispensingId','id');
     }
 
     public function transaction() {
@@ -51,7 +51,8 @@ class EncountersDispensings extends Model
 
         //create fixed lotNo
         if ($this->lotNo) {
-            $existStocks = \App\Models\Stock\StocksProducts::where('stockId',$this->stockId)->where('productCode',$this->productCode)->where('lotNo',$this->lotNo)->where('quantity','>',0)->get();
+            if ($this->stockId>10000) $existStocks = \App\Models\Stock\StocksProducts::where('stockId',$this->stockId)->where('encounterId',$this->encounterId)->where('productCode',$this->productCode)->where('lotNo',$this->lotNo)->where('quantity','>',0)->get();
+            else $existStocks = \App\Models\Stock\StocksProducts::where('stockId',$this->stockId)->where('productCode',$this->productCode)->where('lotNo',$this->lotNo)->where('quantity','>',0)->get();
             foreach($existStocks as $existStock) {
                 $qtyStockDispense = ($existStock->quantity>=$qtyToDispense) ? $qtyToDispense : $existStock->quantity;
                 if ($qtyStockDispense>0 && $this->createStockCardDispense($existStock->stockId,$existStock->lotNo,$existStock->expiryDate,$qtyStockDispense)) {
@@ -63,7 +64,8 @@ class EncountersDispensings extends Model
 
         //create unspecific lotNo with expiry date
         if ($qtyToDispense>0) {
-            $existStocks = \App\Models\Stock\StocksProducts::where('stockId',$this->stockId)->where('productCode',$this->productCode)->where('quantity','>',0)->whereNotNull('expiryDate')->orderBy('expiryDate')->get();
+            if ($this->stockId>10000) $existStocks = \App\Models\Stock\StocksProducts::where('stockId',$this->stockId)->where('encounterId',$this->encounterId)->where('productCode',$this->productCode)->where('quantity','>',0)->whereNotNull('expiryDate')->orderBy('expiryDate')->get();
+            else $existStocks = \App\Models\Stock\StocksProducts::where('stockId',$this->stockId)->where('productCode',$this->productCode)->where('quantity','>',0)->whereNotNull('expiryDate')->orderBy('expiryDate')->get();
             foreach($existStocks as $existStock) {
                 $qtyStockDispense = ($existStock->quantity>=$qtyToDispense) ? $qtyToDispense : $existStock->quantity;
                 if ($qtyStockDispense>0 && $this->createStockCardDispense($existStock->stockId,$existStock->lotNo,$existStock->expiryDate,$qtyStockDispense)) {
@@ -75,7 +77,8 @@ class EncountersDispensings extends Model
 
         //create for the rest
         if ($qtyToDispense>0) {
-            $existStocks = \App\Models\Stock\StocksProducts::where('stockId',$this->stockId)->where('productCode',$this->productCode)->where('quantity','>',0)->whereNull('expiryDate')->orderBy('created_at')->get();
+            if ($this->stockId>10000) $existStocks = \App\Models\Stock\StocksProducts::where('stockId',$this->stockId)->where('encounterId',$this->encounterId)->where('productCode',$this->productCode)->where('quantity','>',0)->whereNull('expiryDate')->orderBy('created_at')->get();
+            else $existStocks = \App\Models\Stock\StocksProducts::where('stockId',$this->stockId)->where('productCode',$this->productCode)->where('quantity','>',0)->whereNull('expiryDate')->orderBy('created_at')->get();
             foreach($existStocks as $existStock) {
                 $qtyStockDispense = ($existStock->quantity>=$qtyToDispense) ? $qtyToDispense : $existStock->quantity;
                 if ($qtyStockDispense>0 && $this->createStockCardDispense($existStock->stockId,$existStock->lotNo,$existStock->expiryDate,$qtyStockDispense)) {
