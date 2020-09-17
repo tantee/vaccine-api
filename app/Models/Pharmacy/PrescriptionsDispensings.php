@@ -107,6 +107,7 @@ class PrescriptionsDispensings extends Model
         try {
             $stockCard = new \App\Models\Stock\StocksCards();
             $stockCard->cardType = "dispensing";
+            $stockCard->cardDateTime = $this->updated_at;
             $stockCard->productCode = $this->productCode;
             $stockCard->stockFrom = ($stockId) ? $stockId : $this->stockId;
             if ($this->isTemporary) $stockCard->stockTo = 99999;

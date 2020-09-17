@@ -105,6 +105,7 @@ class EncountersDispensings extends Model
         try {
             $stockCard = new \App\Models\Stock\StocksCards();
             $stockCard->cardType = "dispensing";
+            $stockCard->cardDateTime = $this->updated_at;
             $stockCard->productCode = $this->productCode;
             $stockCard->stockFrom = ($stockId) ? $stockId : $this->stockId;
             $stockCard->lotNo = ($lotNo) ? $lotNo : $this->lotNo;
@@ -122,11 +123,6 @@ class EncountersDispensings extends Model
 
     public function rebuildStocksCards () {
         if ($this->status == 'dispensed') {
-            if ($this->StocksCards->count()>1 && $this->created_at > '2020-08-31') {
-                $this->StocksCards->each->delete();
-                $this->createStockCard();
-            }
-
             if ($this->StocksCards->count()==0 && $this->created_at > '2020-08-31') {
                 $this->createStockCard();
             }
