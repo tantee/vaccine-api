@@ -105,7 +105,7 @@ class EncountersDispensings extends Model
         try {
             $stockCard = new \App\Models\Stock\StocksCards();
             $stockCard->cardType = "dispensing";
-            $stockCard->cardDateTime = $this->updated_at;
+            $stockCard->cardDateTime = $this->created_at;
             $stockCard->productCode = $this->productCode;
             $stockCard->stockFrom = ($stockId) ? $stockId : $this->stockId;
             $stockCard->lotNo = ($lotNo) ? $lotNo : $this->lotNo;
