@@ -185,6 +185,19 @@ class clsPlugin
       }
     }
 
+    if ($ope == 'formatmodel') {
+      if (isset($PrmLst['model']) && isset($PrmLst['valueField'])) {
+        $modelName = $PrmLst['model'];
+        try {
+          $model = $modelName::find($Value);
+          if ($model && $model->{$PrmLst['valueField']}) {
+            $Value = $model->{$PrmLst['valueField']};
+          }
+        } catch (\Exception $e) {
+        }
+      }
+    }
+
     if ($ope == 'checkbox') {
       $Value = ($Value) ? '☑' : '☐';
     }
