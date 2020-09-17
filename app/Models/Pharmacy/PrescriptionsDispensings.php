@@ -25,7 +25,7 @@ class PrescriptionsDispensings extends Model
         return $this->hasMany('App\Models\Stock\StocksCards','prescriptionsDispensingId','id');
     }
 
-    public function transaction() {
+    public function Transaction() {
         return $this->hasOne('App\Models\Patient\PatientsTransactions','id','transactionId');
     }
 
@@ -41,6 +41,13 @@ class PrescriptionsDispensings extends Model
             }
             if (array_key_exists('status',$original) && $original['status']=='dispensed' && $model->status!='dispensed') {
                 $model->StocksCards->each->delete();
+            }
+        });
+
+        static::deleting(function($model) {
+            if ($model->Transaction && !$model->Transaction->invoiceId) {
+                $model->Transaction->delete();
+                $model->transactionId = null;
             }
         });
 

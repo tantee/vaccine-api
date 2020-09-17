@@ -24,7 +24,7 @@ class EncountersDispensings extends Model
         return $this->hasMany('App\Models\Stock\StocksCards','encountersDispensingId','id');
     }
 
-    public function transaction() {
+    public function Transaction() {
         return $this->hasOne('App\Models\Patient\PatientsTransactions','id','transactionId');
     }
 
@@ -36,6 +36,13 @@ class EncountersDispensings extends Model
             }
             if (array_key_exists('status',$original) && $original['status']=='dispensed' && $model->status!='dispensed') {
                 $model->StocksCards->each->delete();
+            }
+        });
+
+        static::deleting(function($model) {
+            if ($model->Transaction && !$model->Transaction->invoiceId) {
+                $model->Transaction->delete();
+                $model->transactionId = null;
             }
         });
 
@@ -110,6 +117,14 @@ class EncountersDispensings extends Model
             return true;
         } catch (\Exception $e) {
             return false;
+        }
+    }
+
+    public function rebuildStocksCards () {
+        if ($this->status == 'dispensed') {
+            if ($this->StocksCards->count()==0 && $this->created_at > '2020-08-31') {
+                $this->createStockCard();
+            }
         }
     }
 
