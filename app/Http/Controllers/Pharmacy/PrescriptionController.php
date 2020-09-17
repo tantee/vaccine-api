@@ -111,6 +111,28 @@ class PrescriptionController extends Controller
         }  
     }
 
+    public static function adjustTemporary($item,$stockId) {
+        if (isset($item['id']) && isset($item['stockId']) && $item['stockId']>10000) {
+            $stockProduct = \App\Models\Stock\StocksProducts::find($item['id']);
+            if ($stockProduct) {
+                $stockCard = new \App\Models\Stock\StocksCards();
+                $stockCard->cardType = "correction";
+                $stockCard->productCode = $stockProduct->productCode;
+                $stockCard->stockFrom = $stockProduct->stockId;
+                $stockCard->lotNo = $stockProduct->lotNo;
+                $stockCard->expiryDate = $stockProduct->expiryDate;
+                $stockCard->quantity = $stockProduct->quantity;
+                $stockCard->hn = ($stockProduct->encounter) ? $stockProduct->encounter->hn : null;
+                $stockCard->encounterId = $stockProduct->encounterId;
+                $stockCard->save();
+
+                return $stockCard;
+            }
+        } else {
+            return ["success" => false, "errorTexts" => [["errorText"=>"Invalid item data"]], "returnModels" => []];
+        }  
+    }
+
     public static function chargeDispensing($data) {
         $returnModels = [];
 
