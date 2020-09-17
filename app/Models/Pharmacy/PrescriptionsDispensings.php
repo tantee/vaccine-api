@@ -123,6 +123,14 @@ class PrescriptionsDispensings extends Model
         }
     }
 
+    public function rebuildStocksCards () {
+        if ($this->status == 'dispensed') {
+            if ($this->StocksCards->count()==0) {
+                $this->createStockCard();
+            }
+        }
+    }
+
     protected $casts = [
       'statusLog' => 'array',
     ];
