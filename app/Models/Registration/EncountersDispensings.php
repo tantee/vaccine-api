@@ -122,6 +122,11 @@ class EncountersDispensings extends Model
 
     public function rebuildStocksCards () {
         if ($this->status == 'dispensed') {
+            if ($this->StocksCards->count()>1) {
+                $this->StocksCards->each->delete();
+                $this->createStockCard();
+            }
+
             if ($this->StocksCards->count()==0 && $this->created_at > '2020-08-31') {
                 $this->createStockCard();
             }
