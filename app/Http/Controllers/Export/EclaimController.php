@@ -45,8 +45,8 @@ class EclaimController extends Controller
                         $pseudoTransactions->push($tmpTransaction);
                     }
                 }
-
-                $hmainHospital = \App\Models\EclaimMaster\Hospitals::where('HMAIN',($insurance->nhsoHCode) ? $insurance->nhsoHCode : env('ECLAIM_HCODE','41711'))->first();
+                $hmainHospital = ($insurance->nhsoHCodeMain) ? $insurance->nhsoHCodeMain : $insurance->nhsoHCode;
+                $hmainHospital = \App\Models\EclaimMaster\Hospitals::where('HMAIN',($hmainHospital) ? $hmainHospital : env('ECLAIM_HCODE','41711'))->first();
                 $hmainProvince = ($hmainHospital) ? $hmainHospital->PROVINCE_ID : '';
                 $sameProvince = ($localProvince == $hmainProvince);
 
@@ -55,7 +55,8 @@ class EclaimController extends Controller
                 $ins = new \App\Models\Eclaim\INS();
                 $ins->HN = $invoice->hn;
                 $ins->INSCL = 'UCS';
-                $ins->HOSPMAIN = ($insurance->nhsoHCode) ? $insurance->nhsoHCode : env('ECLAIM_HCODE','41711');
+                $ins->HOSPMAIN = ($insurance->nhsoHCodeMain) ? $insurance->nhsoHCodeMain : $insurance->nhsoHCode;
+                if (!$ins->HOSPMAIN) $ins->HOSPMAIN = env('ECLAIM_HCODE','41711');
                 $ins->SEQ = $batch->format('ymd').$patient->hn;
                 $ins->batch = $batch;
                 $ins->save();
