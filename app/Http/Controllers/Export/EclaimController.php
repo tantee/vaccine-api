@@ -271,7 +271,7 @@ class EclaimController extends Controller
                         //ยา
                         if ($eclaimChrgItem=='31' || $eclaimChrgItem=='32' || $eclaimChrgItem=='41' || $eclaimChrgItem=='42') {
                             foreach ($summaryCgd as $item) {
-                                $drug = \App\Models\EclaimMaster\DrugCatalogs::find($item->product->cgdCode);
+                                $drug = \App\Models\EclaimMaster\DrugCatalogs::find(($item->product->cgdCode) ? $item->product->cgdCode : $item->product->productCode);
                                 if ($drug) {
                                     $dru = new \App\Models\Eclaim\DRU();
                                     $dru->HCODE = env('ECLAIM_HCODE','41711');
@@ -399,8 +399,8 @@ class EclaimController extends Controller
                         $adp->save();
                     }
                     
-                    if ($adpTransaction->product->eclaimAdpType=='6' && !empty($adpTransaction->product->cgdCode) && $sameProvince) {
-                        $drug = \App\Models\EclaimMaster\DrugCatalogs::find($adpTransaction->product->cgdCode);
+                    if ($adpTransaction->product->eclaimAdpType=='6' && $sameProvince) {
+                        $drug = \App\Models\EclaimMaster\DrugCatalogs::find(($adpTransaction->product->cgdCode) ? $adpTransaction->product->cgdCode : $adpTransaction->product->productCode);
                         if ($drug) {
                             $dru = new \App\Models\Eclaim\DRU();
                             $dru->HCODE = env('ECLAIM_HCODE','41711');

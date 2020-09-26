@@ -14,7 +14,7 @@ class AlterPatientsTransactionsRequireQuantity extends Migration
     public function up()
     {
         Schema::table('patients_transactions', function (Blueprint $table) {
-            $table->integer('quantity')->default(1)->change();
+            $table->integer('quantity')->nullable(false)->default(1)->change();
         });
     }
 
