@@ -279,7 +279,7 @@ class PatientsTransactions extends Model
         });
 
         static::updated(function($model) {
-            $original = $model->getOriginal()
+            $original = $model->getOriginal();
             if ($model->quantity != $original['quantity']) {
                 $model->childTransactions()->each(function ($item, $key) use ($original,$model) {
                    $item->quantity = ($original['quantity']>0) ? intval($item->quantity*$model->quantity/$original['quantity']) : $item->quantity*$model->quantity;
