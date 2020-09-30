@@ -269,8 +269,11 @@ class PatientsTransactions extends Model
         static::created(function($model) {
             if ($model->Product !== null) {
                 if ($model->Product->childProducts && count($model->Product->childProducts)>0) {
-                    for($i=0;$i<count($model->Product->childProducts);$i++) $model->Product->childProducts[$i]['quantity'] = ($model->Product->childProducts[$i]['quantity']) ? $model->Product->childProducts[$i]['quantity']*$model->quantity : 1;
-                    \App\Http\Controllers\Encounter\TransactionController::addTransactions($model->hn,$model->encounterId,$model->Product->childProducts,$model->id);
+                    $childProducts = $model->Product->childProducts;
+                    if ($model->quantity>1) {
+                        for($i=0;$i<count($childProducts);$i++) $childProducts[$i]['quantity'] = ($childProducts[$i]['quantity']) ? $childProducts[$i]['quantity']*$model->quantity : $model->quantity;
+                    }
+                    \App\Http\Controllers\Encounter\TransactionController::addTransactions($model->hn,$model->encounterId,$childProducts,$model->id);
                 }
             }
         });
@@ -302,7 +305,7 @@ class PatientsTransactions extends Model
         });
 
         static::deleting(function($model) {
-            $model->childTransactions()->delete();
+            $model->childTransactions->each->delete();
 
             \App\Models\Pharmacy\PrescriptionsDispensings::where('transactionId',$model->id)->update(['transactionId'=>null]);
             \App\Models\Registration\EncountersDispensings::where('transactionId',$model->id)->update(['transactionId'=>null]);
