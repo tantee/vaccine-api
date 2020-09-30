@@ -269,8 +269,19 @@ class PatientsTransactions extends Model
         static::created(function($model) {
             if ($model->Product !== null) {
                 if ($model->Product->childProducts && count($model->Product->childProducts)>0) {
+                    for($i=0;$i<count($model->Product->childProducts);$i++) $model->Product->childProducts[$i]['quantity'] = ($model->Product->childProducts[$i]['quantity']) ? $model->Product->childProducts[$i]['quantity']*$model->quantity : 1;
                     \App\Http\Controllers\Encounter\TransactionController::addTransactions($model->hn,$model->encounterId,$model->Product->childProducts,$model->id);
                 }
+            }
+        });
+
+        static::updated(function($model) {
+            $original = $model->getOriginal();
+            if ($model->quantity != $original['quantity']) {
+                $model->childTransactions()->each(function ($item, $key) {
+                   $item->quantity = ($original['quantity']>0) ? intval($item->quantity*$model->quantity/$original['quantity']) : $item->quantity*$model->quantity;
+                   $item->save();
+                });
             }
         });
 
