@@ -276,9 +276,12 @@ class PatientsTransactions extends Model
         });
 
         static::updated(function($model) {
+            \Log::debug('Check for change in quantity');
             $original = $model->getOriginal();
             if ($model->quantity != $original['quantity']) {
+                \Log::debug('Quantity changed');
                 $model->childTransactions()->each(function ($item, $key) {
+                    \Log::debug('Child transaction update quantity');
                    $item->quantity = ($original['quantity']>0) ? intval($item->quantity*$model->quantity/$original['quantity']) : $item->quantity*$model->quantity;
                    $item->save();
                 });
