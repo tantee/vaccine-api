@@ -44,6 +44,8 @@ class TransactionController extends Controller
                         "totalPrice" => $row->sum('totalPrice'),
                         "totalDiscount" => $row->sum('totalDiscount'),
                         "finalPrice" => $row->sum('finalPrice'),
+                        "finalCoverPrice" => $row->sum('finalCoverPrice'),
+                        "finalExcessPrice" => $row->sum('finalExcessPrice'),
                     ]];
                 })->flatten(1)->sortBy("categoryInsurance");
                 $summaryCgd = $detailCgd->map(function ($row,$key){
@@ -52,12 +54,14 @@ class TransactionController extends Controller
                         "totalPrice" => $row->sum('totalPrice'),
                         "totalDiscount" => $row->sum('totalDiscount'),
                         "finalPrice" => $row->sum('finalPrice'),
+                        "finalCoverPrice" => $row->sum('finalCoverPrice'),
+                        "finalExcessPrice" => $row->sum('finalExcessPrice'),
                     ]];
                 })->flatten(1)->sortBy("categoryCgd");
 
                 $detailInsurance = $detailInsurance->map(function ($row,$key){
                     $row = $row->map(function($row) {
-                        return array_except($row,['invoiceId','soldPatientsInsurancesId','soldPrice','soldDiscount','soldTotalPrice','soldTotalDiscount','soldFinalPrice']);
+                        return array_except($row,['invoiceId','soldPatientsInsurancesId','soldPrice','soldDiscount','soldTotalPrice','soldTotalDiscount','soldFinalPrice','soldCoverPrice','soldFinalCoverPrice','soldFinalExcessPrice']);
                     });
                     return [[
                         "categoryInsurance" => $key,
@@ -67,7 +71,7 @@ class TransactionController extends Controller
 
                 $detailCgd = $detailCgd->map(function ($row,$key){
                     $row = $row->map(function($row) {
-                        return array_except($row,['invoiceId','soldPatientsInsurancesId','soldPrice','soldDiscount','soldTotalPrice','soldTotalDiscount','soldFinalPrice']);
+                        return array_except($row,['invoiceId','soldPatientsInsurancesId','soldPrice','soldDiscount','soldTotalPrice','soldTotalDiscount','soldFinalPrice','soldCoverPrice','soldFinalCoverPrice','soldFinalExcessPrice']);
                     });
                     return [[
                         "categoryCgd" => $key,
@@ -86,6 +90,9 @@ class TransactionController extends Controller
                     "grandTotalDiscount" => $item->sum('totalDiscount'),
                     "grandFinalPrice" => $item->sum('finalPrice'),
 
+                    "grandFinalCoverPrice" => $item->sum('finalCoverPrice'),
+                    "grandFinalExcessPrice" => $item->sum('finalExcessPrice'),
+
                     "insurance" => ($insurance) ? $insurance->toArray() : null,
 
                     "invoiceDateTime" => Carbon::now(),
@@ -96,7 +103,7 @@ class TransactionController extends Controller
                 $invoice->hn = $hn;
                 $invoice->patientsInsurancesId = is_numeric($key) ? $key : null;
                 $invoice->amount = $invoiceData["grandFinalPrice"];
-                $invoice->amountDue = ($insurance && !$insurance->isChargeToPatient) ? 0 : $invoiceData["grandFinalPrice"];
+                $invoice->amountDue = ($insurance && !$insurance->isChargeToPatient) ? $invoiceData["grandFinalExcessPrice"] : $invoiceData["grandFinalPrice"];
                 if ($insurance && $insurance->payerCode=="CAH") {
                     $invoice->invoiceId = IdController::issueId('invoice-cah','\Cym',5);
                 }
@@ -118,6 +125,9 @@ class TransactionController extends Controller
                         "soldTotalPrice" => $itemTransaction->total_price,
                         "soldTotalDiscount" => $itemTransaction->total_discount,
                         "soldFinalPrice" => $itemTransaction->final_price,
+                        "soldCoverPrice" => $itemTransaction->cover_price,
+                        "soldFinalCoverPrice" => $itemTransaction->final_cover_price,
+                        "soldFinalExcessPrice" => $itemTransaction->final_excess_price,
                     ]);
                 });
 
@@ -254,6 +264,9 @@ class TransactionController extends Controller
                         'soldTotalPrice'=>null,
                         'soldTotalDiscount'=>null,
                         'soldFinalPrice'=>null,
+                        'soldCoverPrice'=>null,
+                        'soldFinalCoverPrice'=>null,
+                        'soldFinalExcessPrice'=>null,
                         'isRevised'=>true,
                     ]);
                 });

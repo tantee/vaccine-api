@@ -147,7 +147,7 @@ class PatientsTransactions extends Model
         if ($this->Encounter->Vouchers !== null) {
             foreach ($this->Encounter->Vouchers as $voucher) {
                 $matchedCondition = collect($voucher->conditions)->firstWhere('productCode',$this->productCode);
-                if ($matchedCondition!==null && !empty($matchedCondition['price'])) return floatval($matchedCondition['price']);
+                if ($matchedCondition!==null && (!empty($matchedCondition['price']) || $matchedCondition['price']===0 || $matchedCondition['price']==="0")) return floatval($matchedCondition['price']);
             }
         }
         $insurance = $this->Insurance;
@@ -193,6 +193,31 @@ class PatientsTransactions extends Model
     public function getFinalPriceAttribute() {
         if ($this->invoiceId !== null) return $this->soldFinalPrice;
         return round(($this->price*$this->quantity)-($this->price*$this->quantity*$this->discount/100),2);
+    }
+
+    public function getCoverPriceAttribute() {
+        if ($this->invoiceId !== null) return $this->soldCoverPrice;
+        $insurance = $this->Insurance;
+        $coverPrice = $this->price;
+        if ($insurance["Policy"] && $insurance["Policy"]->excess) {
+            if (!empty($insurance["Policy"]->coverPrices)) {
+                $first = array_first($insurance["Policy"]->coverPrices, function ($value, $key) {
+                    return is_array($value) && $value["productCode"] && $value["productCode"] == $this->productCode;
+                }, null);
+                if ($first && isset($first["coverPrice"])) $coverPrice = ($coverPrice > floatval($first["coverPrice"])) ? floatval($first["coverPrice"]) : $coverPrice;
+            }
+        }
+        return $coverPrice;
+    }
+
+    public function getFinalCoverPriceAttribute() {
+        if ($this->invoiceId !== null) return $this->soldFinalCoverPrice;
+        return round($this->cover_price*$this->quantity,2);
+    }
+
+    public function getFinalExcessPriceAttribute() {
+        if ($this->invoiceId !== null) return $this->soldFinalExcessPrice;
+        return round($this->final_price-$this->final_cover_price,2);
     }
 
     public function getCategoryInsuranceAttribute($value) {
@@ -260,6 +285,11 @@ class PatientsTransactions extends Model
         $toArray['totalPrice'] = $this->total_price;
         $toArray['finalPrice'] = $this->final_price;
 
+        $toArray['coverPrice'] = $this->cover_price;
+        $toArray['finalCoverPrice'] = $this->final_cover_price;
+        $toArray['excessPrice'] = $this->excess_price;
+        $toArray['finalExcessPrice'] = $this->final_excess_price;
+
         $toArray['itemizedProducts'] = $this->itemized_products_named;
         
         return $toArray;
@@ -321,6 +351,8 @@ class PatientsTransactions extends Model
         "soldTotalPrice" => "float",
         "soldTotalDiscount" => "float",
         "soldFinalPrice" => "float",
+        "soldExcessPrice" => "float",
+        "soldFinalExcessPrice" => "float",
         "overridePrice" => "float",
         "overrideDiscount" => "float",
         "itemizedProducts" => "array",
