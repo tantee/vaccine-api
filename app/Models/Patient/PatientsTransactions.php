@@ -199,7 +199,7 @@ class PatientsTransactions extends Model
         if ($this->invoiceId !== null) return $this->soldCoverPrice;
         $insurance = $this->Insurance;
         $coverPrice = $this->price;
-        if ($insurance["Policy"] && $insurance["Policy"]->excess) {
+        if ($insurance["Policy"] && $insurance["Policy"]->coverPrices) {
             if (!empty($insurance["Policy"]->coverPrices)) {
                 $first = array_first($insurance["Policy"]->coverPrices, function ($value, $key) {
                     return is_array($value) && $value["productCode"] && $value["productCode"] == $this->productCode;
@@ -287,7 +287,6 @@ class PatientsTransactions extends Model
 
         $toArray['coverPrice'] = $this->cover_price;
         $toArray['finalCoverPrice'] = $this->final_cover_price;
-        $toArray['excessPrice'] = $this->excess_price;
         $toArray['finalExcessPrice'] = $this->final_excess_price;
 
         $toArray['itemizedProducts'] = $this->itemized_products_named;
