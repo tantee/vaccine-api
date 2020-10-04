@@ -46,7 +46,7 @@ class PatientsInsurances extends Model
               ->where(function ($query) {
                   $query->whereDate('endDate','>=',Carbon::now())->orWhereNull('endDate');
                 })
-              ->where(function ($query) {
+              ->where(function ($query) use ($clinicCode) {
                   $query->whereNull('clinics')->orWhereJsonLength('clinics',0)->orWhereJsonContains('clinics',$clinicCode);
               });
     }
