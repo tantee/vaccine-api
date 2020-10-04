@@ -41,6 +41,16 @@ class PatientsInsurances extends Model
       });
     }
 
+    public function scopeActiveClinic($query,$clinicCode) {
+      return $query->whereDate('beginDate','<=',Carbon::now())
+              ->where(function ($query) {
+                  $query->whereDate('endDate','>=',Carbon::now())->orWhereNull('endDate');
+                })
+              ->where(function ($query) {
+                  $query->whereNull('clinics')->orWhereJsonLength('clinics',0)->orWhereJsonContains('clinics',$clinicCode);
+              });
+    }
+
     public function scopeInactive() {
       return $query->withTrashed()->whereNotNull('endDate')->whereDate('endDate','<',Carbon::now());
     }
