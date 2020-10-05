@@ -300,8 +300,7 @@ class PrintController extends Controller
             else if (!$TBS->GetBlockSource($key)) $TBS->MergeField($key,$value,false,$currPrm);
             else $TBS->MergeBlock($key,$value);
           } else {
-            if ($TBS->GetBlockSource($key)) $TBS->MergeBlock($key,$value);
-            else $TBS->MergeField($key,$value,false,$currPrm);
+            $TBS->MergeField($key,$value,false,$currPrm);
           }
         }
       }
