@@ -74,6 +74,10 @@ return [
             'driver' => 'monolog',
             'tap' => [App\Logging\TapRequestInfo::class],
             'handler' => StreamHandler::class,
+            'formatter' => Monolog\Formatter\LineFormatter::class,
+            'formatter_with' => [
+                'ignoreEmptyContextAndExtra' => true
+            ],
             'with' => [
                 'stream' => 'php://stderr',
             ],
