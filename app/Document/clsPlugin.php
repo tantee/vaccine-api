@@ -94,7 +94,7 @@ class clsPlugin
     }
 
     if ($ope == 'formatcurr') {
-      $Value = number_format($Value,2);
+      $Value = number_format(floatval($Value),2);
     }
 
     if ($ope == 'formatinsurance') {
