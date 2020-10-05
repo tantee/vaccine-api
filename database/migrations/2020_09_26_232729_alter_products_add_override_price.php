@@ -14,7 +14,7 @@ class AlterProductsAddOverridePrice extends Migration
     public function up()
     {
         Schema::table('products', function (Blueprint $table) {
-            //
+            $table->json('overridePrices')->nullable()->after('itemizedProducts');
         });
     }
 
@@ -26,7 +26,7 @@ class AlterProductsAddOverridePrice extends Migration
     public function down()
     {
         Schema::table('products', function (Blueprint $table) {
-            //
+            $table->dropColumn(['overridePrices']);
         });
     }
 }

@@ -15,6 +15,15 @@ class CreateProductsPromotionsTable extends Migration
     {
         Schema::create('products_promotions', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('productCode', 50);
+            $table->datetime('beginDateTime');
+            $table->datetime('endDateTime')->nullable();
+            $table->decimal('price1', 10);
+            $table->decimal('price2', 10)->nullable();
+            $table->decimal('price3', 10)->nullable();
+            $table->decimal('price4', 10)->nullable();
+            $table->decimal('price5', 10)->nullable();
+            $table->text('note')->nullable();
             $table->timestamps();
         });
     }
