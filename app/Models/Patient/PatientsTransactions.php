@@ -212,7 +212,9 @@ class PatientsTransactions extends Model
 
     public function getFinalCoverPriceAttribute() {
         if ($this->invoiceId !== null) return $this->soldFinalCoverPrice;
-        return round($this->cover_price*$this->quantity,2);
+        $coverPrice = $this->cover_price*$this->quantity;
+        $coverPrice = ($coverPrice>$this->final_price) ? $this->final_price : $coverPrice;
+        return round($coverPrice,2);
     }
 
     public function getFinalExcessPriceAttribute() {

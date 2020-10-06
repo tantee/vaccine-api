@@ -19,6 +19,7 @@ class Products extends Model
       'specification' => 'array',
       'childProducts' => 'array',
       'itemizedProducts' => 'array',
+      'overridePrices' => 'array',
       'price1' => 'float',
       'price2' => 'float',
       'price3' => 'float',
