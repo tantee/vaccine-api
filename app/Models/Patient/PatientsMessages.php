@@ -33,6 +33,9 @@ class PatientsMessages extends Model
       if (!empty($locationCode)) {
         $query = $query->where(function ($query) use ($locationCode) {
                     $query->whereNull('locations')->orWhereJsonLength('locations',0)->orWhereJsonContains('locations',$locationCode);
+                    if (Auth::guard('api')->check()) {
+                      $query->orWhere('created_by',Auth::guard('api')->user()->username);
+                    }
                  });
       }
       return $query;
