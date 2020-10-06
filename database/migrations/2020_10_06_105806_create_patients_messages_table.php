@@ -16,6 +16,7 @@ class CreatePatientsMessagesTable extends Migration
         Schema::create('patients_messages', function (Blueprint $table) {
             $table->increments('id');
             $table->string('hn', 20)->index();
+            $table->string('importantLevel');
             $table->timestamp('beginDateTime')->useCurrent();
             $table->datetime('endDateTime')->nullable();
             $table->json('locations')->nullable();
