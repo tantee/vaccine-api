@@ -4,6 +4,7 @@ namespace App\Models\Patient;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Traits\UserStamps;
 use Carbon\Carbon;
 
