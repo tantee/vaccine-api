@@ -15,21 +15,21 @@ class PatientsMessages extends Model
     protected $guarded = [];
 
     public function scopeActive($query) {
-      return $query->whereDate('beginDateTime','<=',Carbon::now())->where(function ($query) {
-        $query->whereDate('endDateTime','>=',Carbon::now())->orWhereNull('endDateTime');
+      return $query->where('beginDateTime','<=',Carbon::now())->where(function ($query) {
+        $query->where('endDateTime','>=',Carbon::now())->orWhereNull('endDateTime');
       });
     }
 
     public function scopeActiveAt($query,$date) {
-      return $query->whereDate('beginDateTime','<=',$date)->where(function ($query) use ($date) {
-        $query->whereDate('endDateTime','>=',$date)->orWhereNull('endDateTime');
+      return $query->where('beginDateTime','<=',$date)->where(function ($query) use ($date) {
+        $query->where('endDateTime','>=',$date)->orWhereNull('endDateTime');
       });
     }
 
     public function scopeActiveLocation($query,$locationCode = null) {
-      $query = $query->whereDate('beginDateTime','<=',Carbon::now())
+      $query = $query->where('beginDateTime','<=',Carbon::now())
                 ->where(function ($query) {
-                  $query->whereDate('endDateTime','>=',Carbon::now())->orWhereNull('endDateTime');
+                  $query->where('endDateTime','>=',Carbon::now())->orWhereNull('endDateTime');
                 });
       if (!empty($locationCode)) {
         $query = $query->where(function ($query) use ($locationCode) {
