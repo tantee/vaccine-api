@@ -219,6 +219,12 @@ class MasterGroupsSeeder extends Seeder
             'description' => 'ข้อมูลการแพ้ ชนิดการแพ้',
             'propertiesTemplate' => null,
           ],
+          [
+            'groupKey' => '$MessageImportantLevel',
+            'groupName' => 'ระดับความสำคัญของบันทึกข้อความ',
+            'description' => 'ระดับความสำคัญของบันทึกข้อความ',
+            'propertiesTemplate' => null,
+          ],
         ];
 
         
