@@ -315,7 +315,7 @@ class ExportController extends Controller
                 $Oestkl->save();
             }
         }
-        return $batch->format('Y-m-d H:i:s');
+        return $invoiceId;
     }
 
     public static function ExportPaymentId($receiptId) {
@@ -335,7 +335,7 @@ class ExportController extends Controller
             $Oerel->save();
         }
 
-        return $batch->format('Y-m-d H:i:s');
+        return $receiptId;
     }
 
     public static function Export($afterDate=null) {
