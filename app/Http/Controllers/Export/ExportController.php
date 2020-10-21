@@ -212,6 +212,132 @@ class ExportController extends Controller
         return $batch->format('Y-m-d H:i:s');
     }
 
+    public static function ExportInvoiceId($invoiceId) {
+        $batch = \App\Models\Export\Oeinvhs::max('batch');
+
+        $invoices = \App\Models\Accounting\AccountingInvoices::where('invoiceId',$invoiceId)->get();
+
+        foreach($invoices as $invoice) {
+            //skip if CAH invoice
+            if ($invoice->insurance!=null && $invoice->insurance->payerCode=='CAH') continue;
+
+            $Oeinvh = \App\Models\Export\Oeinvhs::firstOrNew(['DOCNUM'=>$invoice->invoiceId]);
+            $Oeinvh->DOCNUM = $invoice->invoiceId;
+            $Oeinvh->DOCDAT = $invoice->created_at;
+            $Oeinvh->DEPCOD = ($invoice->insurance!=null && $invoice->insurance->payerType!=null) ? $invoice->insurance->payerType : '99';
+            //$Oeinvh->SLMCOD = $invoice->invoiceId;
+            $Oeinvh->CUSCOD = ($invoice->insurance!=null && $invoice->insurance->payerCode!=null) ? $invoice->insurance->payerCode : $invoice->hn;
+            $Oeinvh->YOUREF = mb_substr(self::name($invoice->patient->name_real_th)." ".$invoice->patient->hn,0,30);
+            $Oeinvh->PAYTRM = ($invoice->insurance!=null && $invoice->insurance->payer!=null) ? $invoice->insurance->payer->creditPeriod : null;
+            $Oeinvh->DUEDAT = (!empty($Oeinvh->PAYTRM)) ? $invoice->created_at->addDays($invoice->insurance->payer->creditPeriod)->format('dmY') : null;
+            $Oeinvh->NXTSEQ = $invoice->transactions->count();
+            $Oeinvh->AMOUNT = $invoice->amount;
+            $Oeinvh->TOTAL = $invoice->amount;
+            $Oeinvh->NETAMT = $invoice->amount;
+            $Oeinvh->CUSNAM =  mb_substr(($invoice->insurance!=null && $invoice->insurance->payer!=null) ? $invoice->insurance->payer->payerName : self::name($invoice->patient->name_real_th),0,60);
+            $Oeinvh->DOCSTAT = ($invoice->isVoid || ($invoice->insurance!=null && $invoice->insurance->payerCode=='CAH')) ? 'C' : 'N';
+            $Oeinvh->batch = $batch;
+            $Oeinvh->save();
+
+            $seq = 1;
+            $dispensings = [];
+
+            \App\Models\Export\Oeinvls::where('DOCNUM',$invoice->invoiceId)->delete();
+
+            foreach($invoice->transactions as $transaction) {
+                $Oeinvl = new \App\Models\Export\Oeinvls();
+                $Oeinvl->DOCNUM = $invoice->invoiceId;
+                $Oeinvl->SEQNUM = str_pad($seq,3,'0',STR_PAD_LEFT);
+                $Oeinvl->LOCCOD = $transaction->encounter->encounterType;
+                $Oeinvl->STKCOD = $transaction->productCode;
+                $Oeinvl->STKDES = mb_substr($transaction->product->productName,0,50);
+                $Oeinvl->TRNQTY = $transaction->quantity;
+                $Oeinvl->UNITPR = $transaction->price;
+                $Oeinvl->TQUCOD = ($transaction->product->saleUnit) ? mb_substr($transaction->product->saleUnit,0,2) : 'ea';;
+                $Oeinvl->DISC = ($transaction->discount==0) ? '-' : $transaction->discount.'%';
+                $Oeinvl->DISCAMT = $transaction->total_discount;
+                $Oeinvl->TRNVAL = $transaction->final_price;
+
+                $Oeinvl->batch = $batch;
+                $Oeinvl->save();
+
+                if (($transaction->product->productType == "medicine" || $transaction->product->productType == "supply") && !$invoice->isVoid) {
+                    $dispensings[] = [
+                        "transactionDateTime" => $transaction->transactionDateTime,
+                        "encounterType" => $transaction->encounter->encounterType,
+                        "productCode" => $transaction->productCode,
+                        "productName" => mb_substr($transaction->product->productName,0,50),
+                        "quantity" => $transaction->quantity,
+                        "invoiceId" => $invoice->invoiceId,
+                    ];
+                }
+
+                if ($transaction->itemizedProducts != null && is_array($transaction->itemizedProducts) && !$invoice->isVoid) {
+                    foreach($transaction->itemizedProducts as $itemizeProduct) {
+                        $tmpProduct = \App\Models\Master\Products::find($itemizeProduct["productCode"]);
+                        if ($tmpProduct->productType == "medicine" || $tmpProduct->productType=="supply") {
+                            $dispensings[] = [
+                                "transactionDateTime" => $transaction->transactionDateTime,
+                                "encounterType" => $transaction->encounter->encounterType,
+                                "productCode" => $tmpProduct->productCode,
+                                "productName" => mb_substr($tmpProduct->productName,0,50),
+                                "quantity" => $itemizeProduct["quantity"],
+                                "invoiceId" => $invoice->invoiceId,
+                            ];
+                        }
+                    }
+                }
+
+                $seq++;
+            }
+
+            \App\Models\Export\Oestkhs::where('REMARK',$invoice->invoiceId)->delete();
+            \App\Models\Export\Oestkls::where('REMARK',$invoice->invoiceId)->delete();
+
+            foreach($dispensings as $dispensing) {
+                $Oestkh = new \App\Models\Export\Oestkhs();
+                $Oestkh->DOCNUM = IdController::issueId('stock','y',8,'',false);
+                $Oestkh->DOCDAT = $dispensing['transactionDateTime'];
+                $Oestkh->DEPCOD = $dispensing['encounterType'];
+                $Oestkh->REMARK = $dispensing['invoiceId'];
+                $Oestkh->batch = $batch;
+                $Oestkh->save();
+
+                $Oestkl = new \App\Models\Export\Oestkls();
+                $Oestkl->DOCNUM = $Oestkh->DOCNUM;
+                $Oestkl->SEQNUM = '001';
+                $Oestkl->LOCCOD = '01';
+                $Oestkl->STKCOD = $dispensing['productCode'];
+                $Oestkl->STKDES = $dispensing['productName'];
+                $Oestkl->TRNQTY = $dispensing['quantity'];
+                $Oestkl->REMARK = $dispensing['invoiceId'];
+                $Oestkl->batch = $batch;
+                $Oestkl->save();
+            }
+        }
+        return $batch->format('Y-m-d H:i:s');
+    }
+
+    public static function ExportPaymentId($receiptId) {
+        $batch = \App\Models\Export\Oeinvhs::max('batch');
+
+        $payments = \App\Models\Accounting\AccountingPayments::where('receiptId',$receiptId)->get();
+
+        foreach($payments as $payment) {
+            $Oerel = \App\Models\Export\Oerels::firstOrNew(['DOCNUM'=>$payment->receiptId]);
+            $Oerel->DOCNUM = $payment->receiptId;
+            $Oerel->DOCDAT = $payment->created_at;
+            $Oerel->IVNUM = $payment->invoiceId;
+            $Oerel->AMOUNT = $payment->amountPaid;
+            $Oerel->PAYTYP = $payment->paymentMethod;
+            $Oerel->PAYNOTE = $payment->paymentDetail;
+            $Oerel->batch = $batch;
+            $Oerel->save();
+        }
+
+        return $batch->format('Y-m-d H:i:s');
+    }
+
     public static function Export($afterDate=null) {
         Log::info('Export to express begin');
         $output = [];
