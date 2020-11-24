@@ -39,6 +39,10 @@ class Encounters extends Model
         return $this->hasOne('App\Models\Master\Doctors','doctorCode','doctorCode');
     }
 
+    public function Insurances() {
+        return $this->hasMany('App\Models\Patient\PatientsInsurances','hn','hn')->whereNull('clinics')->orWhereJsonLength('clinics',0)->orWhereJsonContains('clinics',$this->clinicCode);
+    }
+
     public function Transactions() {
         return $this->hasMany('App\Models\Patient\PatientsTransactions',['hn','encounterId'],['hn','encounterId']);
     }

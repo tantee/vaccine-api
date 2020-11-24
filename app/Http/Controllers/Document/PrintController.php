@@ -221,6 +221,8 @@ class PrintController extends Controller
         $encounterData['doctorNameEN'] = $encounter->Doctor->nameEN;
         $encounterData['doctorLicenseNo'] = $encounter->Doctor->licenseNo;
 
+        $patientData['insurances'] = $encounter->insurances->toArray();
+
         $data['encounterData'] = $encounterData;
 
         if ($encounter->encounterType=="AMB" && !$data['created_at']->isSameDay($encounter->admitDateTime)) {
