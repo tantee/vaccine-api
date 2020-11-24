@@ -147,7 +147,7 @@ class PatientsTransactions extends Model
         if ($this->Encounter->Vouchers !== null) {
             foreach ($this->Encounter->Vouchers as $voucher) {
                 $matchedCondition = collect($voucher->conditions)->firstWhere('productCode',$this->productCode);
-                if ($matchedCondition!==null && (!empty($matchedCondition['price']) || $matchedCondition['price']===0 || $matchedCondition['price']==="0")) return floatval($matchedCondition['price']);
+                if ($matchedCondition!==null && isset($matchedCondition['price']) && (!empty($matchedCondition['price']) || $matchedCondition['price']===0 || $matchedCondition['price']==="0")) return floatval($matchedCondition['price']);
             }
         }
         $insurance = $this->Insurance;
