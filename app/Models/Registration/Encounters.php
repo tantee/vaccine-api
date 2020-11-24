@@ -40,7 +40,10 @@ class Encounters extends Model
     }
 
     public function Insurances() {
-        return $this->hasMany('App\Models\Patient\PatientsInsurances','hn','hn')->whereNull('clinics')->orWhereJsonLength('clinics',0)->orWhereJsonContains('clinics',$this->clinicCode);
+        return $this->hasMany('App\Models\Patient\PatientsInsurances','hn','hn')->where(function ($query) use ($this) {
+                    $query->whereNull('clinics')->orWhereJsonLength('clinics',0)
+                        ->orWhereJsonContains('clinics',$this->clinicCode);
+                });
     }
 
     public function Transactions() {
