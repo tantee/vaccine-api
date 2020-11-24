@@ -221,7 +221,7 @@ class PrintController extends Controller
         $encounterData['doctorNameEN'] = $encounter->Doctor->nameEN;
         $encounterData['doctorLicenseNo'] = $encounter->Doctor->licenseNo;
 
-        $patientData['insurances'] = $encounter->insurances->toArray();
+        if (isset($data['patientData']) && isset($data['patientData']['insurances'])) $data['patientData']['insurances'] = $encounter->insurances->toArray();
 
         $data['encounterData'] = $encounterData;
 
