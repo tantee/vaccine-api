@@ -78,7 +78,7 @@ class PatientsTransactions extends Model
         if ($returnInsurance == null && !$this->isForceSelfPay) {
             if ($this->invoiceId !== null) {
                 $this->_insurance = [
-                    "PatientsInsurances" => \App\Models\Patient\PatientsInsurances::withTrashed()->find($this->soldPatientsInsurancesId),
+                    "PatientsInsurances" => \App\Models\Patient\PatientsInsurances::withTrashed()->find($this->soldPatientsInsurancesId)->makeHidden('amount'),
                     "Policy" => \App\Models\Master\Insurances::withTrashed()->find($this->soldInsuranceCode),
                 ];
                 return $this->_insurance;
@@ -86,13 +86,13 @@ class PatientsTransactions extends Model
 
             if ($this->soldPatientsInsurancesId !== null && $this->soldInsuranceCode !== null) {
                 $this->_insurance =  [
-                    "PatientsInsurances" => \App\Models\Patient\PatientsInsurances::withTrashed()->find($this->soldPatientsInsurancesId),
+                    "PatientsInsurances" => \App\Models\Patient\PatientsInsurances::withTrashed()->find($this->soldPatientsInsurancesId)->makeHidden('amount'),
                     "Policy" => \App\Models\Master\Insurances::withTrashed()->find($this->soldInsuranceCode),
                 ];
                 return $this->_insurance;
             }
 
-            $Insurances = \App\Models\Patient\PatientsInsurances::remember(1)->cacheTags('patientsinsurances_query')->where('hn',$this->hn)->activeAt($this->transactionDateTime)->orderBy('priority')->get();
+            $Insurances = \App\Models\Patient\PatientsInsurances::remember(1)->cacheTags('patientsinsurances_query')->where('hn',$this->hn)->activeAt($this->transactionDateTime)->orderBy('priority')->makeHidden('amount')->get();
 
             foreach($Insurances as $PatientInsurance) {
                 if ($PatientInsurance->clinics !== null && count(array_wrap($PatientInsurance->clinics)) > 0) {
