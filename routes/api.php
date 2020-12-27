@@ -38,20 +38,21 @@ Route::get('IDCard/read',function (Request $request) {
   return response($returnJson)->header('content-type','application/json');
 });
 
-try {
-  $apis = \App\Models\Api\Apis::all();
-  foreach($apis as $api) {
-    Route::match([$api->apiMethod],'/wrapper/'.ltrim($api->apiRoute,'/'),function(Request $request) use ($api) {
-      $args = func_get_args();
-      array_shift($args);
-      $apiMethod = (!empty($api->sourceApiMethod)) ? $api->sourceApiMethod : $api->ApiMethod;
-      return \App\Http\Controllers\ApiController::RemoteRESTApiRequest($request,$api->name,$apiMethod,$api->sourceApiUrl,$api->ETLCode,$api->ETLCodeError,$api->isFlatten,$api->isMaskError,$args);
-    });
-  };
-} catch (\Exception $e) {
-}
 
 Route::get('{methodNamespace}/{methodClass}/{methodName}','GenericAPIController@route');
 Route::post('{methodNamespace}/{methodClass}/{methodName}','GenericAPIController@route');
 Route::get('direct/{methodNamespace}/{methodClass}/{methodName}','GenericAPIController@routeDirect');
 Route::post('direct/{methodNamespace}/{methodClass}/{methodName}','GenericAPIController@routeDirect');
+
+// try {
+//   $apis = \App\Models\Api\Apis::all();
+//   foreach($apis as $api) {
+//     Route::match([$api->apiMethod],'/wrapper/'.ltrim($api->apiRoute,'/'),function(Request $request) use ($api) {
+//       $args = func_get_args();
+//       array_shift($args);
+//       $apiMethod = (!empty($api->sourceApiMethod)) ? $api->sourceApiMethod : $api->ApiMethod;
+//       return \App\Http\Controllers\ApiController::RemoteRESTApiRequest($request,$api->name,$apiMethod,$api->sourceApiUrl,$api->ETLCode,$api->ETLCodeError,$api->isFlatten,$api->isMaskError,$args);
+//     });
+//   };
+// } catch (\Exception $e) {
+// }

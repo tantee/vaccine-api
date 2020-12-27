@@ -232,10 +232,18 @@ class ApiController extends Controller
       $errorTexts = [];
       $returnModels = [];
 
-      $client = new SoapClient($ApiUrl);
+      $client = new SoapClient($ApiUrl,[
+          'trace'=> true,
+          'exceptions' => true,
+          'cache_wsdl'=> WSDL_CACHE_NONE,
+          'keep-alive' => false,
+          'user_agent' => 'Mozilla/1.0N (Windows)'
+        ]);
       $params = [];
       try {
-        $ApiData = $client->__soapCall($ApiMethod,array($params));
+        $ApiData = $client->__soapCall($ApiMethod,array_wrap($params));
+        //Todo convert xml to json
+        $ApiData = simplexml_load_string($ApiData);
 
         if (!empty($ETLCode)) eval($ETLCode);
         else $returnModels = $ApiData;
