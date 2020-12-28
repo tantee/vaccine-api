@@ -58,22 +58,6 @@ class PatientsInsurances extends Model
       return $query->withTrashed()->whereNotNull('endDate')->whereDate('endDate','<',Carbon::now());
     }
 
-    public static function boot() {
-        static::saved(function($model) {
-            $model::flushCache();
-        });
-
-        static::deleted(function($model) {
-            $model::flushCache();
-        });
-
-        static::restored(function($model) {
-            $model::flushCache();
-        });
-
-        parent::boot();
-    }
-
     protected $dates = [
         'beginDate',
         'endDate'
@@ -91,7 +75,4 @@ class PatientsInsurances extends Model
     protected $with = ['payer'];
 
     protected $appends = ['amount'];
-
-    protected $rememberFor = 1;
-    protected $rememberCacheTag = 'patients_insurances_query';
 }
