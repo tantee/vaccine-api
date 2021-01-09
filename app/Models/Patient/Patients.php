@@ -16,22 +16,6 @@ class Patients extends Model
     protected $keyType = 'string';
     protected $guarded = [];
 
-    public function scopeActive($query) {
-        return $query->has('ActiveEncounters');
-    }
-
-    public function scopeActiveOpd($query) {
-        return $query->whereHas('ActiveEncounters', function (Builder $query) {
-            $query->where('encounterType', 'AMB');
-        });
-    }
-
-    public function scopeActiveIpd($query) {
-        return $query->whereHas('ActiveEncounters', function (Builder $query) {
-            $query->where('encounterType', 'IMP');
-        });
-    }
-
     public function Names() {
       return $this->hasMany('App\Models\Patient\PatientsNames','hn','hn');
     }
@@ -79,9 +63,17 @@ class Patients extends Model
     public function Encounters() {
       return $this->hasMany('App\Models\Registration\Encounters','hn','hn')->without('Patient');
     }
-
+    
     public function ActiveEncounters() {
       return $this->hasMany('App\Models\Registration\Encounters','hn','hn')->active()->without('Patient');
+    }
+
+    public function ActiveEncountersOpd() {
+      return $this->hasMany('App\Models\Registration\Encounters','hn','hn')->active()->where('encounterType', 'AMB')->without('Patient');
+    }
+
+    public function ActiveEncountersIpd() {
+      return $this->hasMany('App\Models\Registration\Encounters','hn','hn')->active()->where('encounterType', 'IMP')->without('Patient');
     }
 
     public function Diagnoses() {
