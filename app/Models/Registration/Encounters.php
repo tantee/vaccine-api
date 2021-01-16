@@ -151,8 +151,8 @@ class Encounters extends Model
     protected $casts = [
         'locationLog' => 'array',
         'screening' => 'array',
-        'diagnosis' => 'array',
         'summary' => 'array',
+        'autoCharge' => 'array',
         'statusLog' => 'array',
     ];
 
