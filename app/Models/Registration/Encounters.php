@@ -67,6 +67,10 @@ class Encounters extends Model
         return $this->hasMany('App\Models\Registration\EncountersDiagnoses','encounterId','encounterId');
     }
 
+    public function Autocharges() {
+        return $this->hasMany('App\Models\Registration\EncountersAutocharges','encounterId','encounterId')->active();
+    }
+
     public static function boot() {
         static::creating(function($model) {
             if (!isset($model->encounterId) || empty($model->encounterId)) {
@@ -100,7 +104,22 @@ class Encounters extends Model
         static::created(function($model) {
             if ($model->Clinic !== null) {
                 if (isset($model->Clinic->autoCharge) && !empty($model->Clinic->autoCharge) && count($model->Clinic->autoCharge)>0) {
-                    \App\Http\Controllers\Encounter\TransactionController::addTransactions($model->hn,$model->encounterId,$model->Clinic->autoCharge);
+                    if ($model->encounterType=="IMP") {
+                        $autoCharges = $model->Clinic->autoCharge;
+                        data_fill($autoCharges,"*.encounterId",$model->encounterId);
+
+                        $autoCharges = array_map(function ($value) {
+                            return array_only($value,['encounterId','productCode','quantity','repeatHour','roundHour','limitPerEncounter','limitPerDay']);
+                        }, $autoCharges);
+
+                        $validationRule = [
+                          'encounterId' => 'required',
+                          'productCode' => 'required',
+                        ];
+                        \App\Http\Controllers\DataController::createModel($autoCharges,\App\Models\Registration\EncountersAutocharges::class,$validationRule);
+                    } else {
+                        \App\Http\Controllers\Encounter\TransactionController::addTransactions($model->hn,$model->encounterId,$model->Clinic->autoCharge);
+                    }
                 }
             }
         });
@@ -152,7 +171,6 @@ class Encounters extends Model
         'locationLog' => 'array',
         'screening' => 'array',
         'summary' => 'array',
-        'autoCharge' => 'array',
         'statusLog' => 'array',
     ];
 
