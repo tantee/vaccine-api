@@ -117,9 +117,9 @@ class Encounters extends Model
                           'productCode' => 'required',
                         ];
                         \App\Http\Controllers\DataController::createModel($autoCharges,\App\Models\Registration\EncountersAutocharges::class,$validationRule);
-                    } else {
-                        \App\Http\Controllers\Encounter\TransactionController::addTransactions($model->hn,$model->encounterId,$model->Clinic->autoCharge);
                     }
+                    
+                    \App\Http\Controllers\Encounter\TransactionController::addTransactions($model->hn,$model->encounterId,$model->Clinic->autoCharge);
                 }
             }
         });
