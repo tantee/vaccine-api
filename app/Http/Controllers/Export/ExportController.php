@@ -92,6 +92,8 @@ class ExportController extends Controller
         foreach($invoices as $invoice) {
             //skip if CAH invoice
             if ($invoice->insurance!=null && $invoice->insurance->payerCode=='CAH') continue;
+            //Do not autoexport if transaction count > 999
+            if ($invoice->transactions->count() > 999) continue;
 
             $Oeinvh = \App\Models\Export\Oeinvhs::firstOrNew(['DOCNUM'=>$invoice->invoiceId]);
             $Oeinvh->DOCNUM = $invoice->invoiceId;
