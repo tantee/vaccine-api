@@ -64,6 +64,16 @@ class PatientsInsurances extends Model
       return $query->withTrashed()->whereNotNull('endDate')->whereDate('endDate','<',Carbon::now());
     }
 
+    public static function boot() {
+        static::creating(function($model) {
+            if ($model->payerCode == 20) {
+                $model->isTechnicalActive = false;
+            }
+        });
+
+        parent::boot();
+    }
+
     protected $dates = [
         'beginDate',
         'endDate'
