@@ -56,6 +56,12 @@ class Kernel extends ConsoleKernel
         })->daily()
             ->name('AutoCloseEncounterOPD')
             ->onOneServer();
+
+        $schedule->call(function() {
+            return App\Http\Controllers\Patient\PatientInsuranceController::autoTechnicalDisableNhso();
+        })->daily()
+            ->name('autoTechnicalDisableNhso')
+            ->onOneServer();
     }
 
     /**

@@ -30,19 +30,25 @@ class PatientsInsurances extends Model
     }
 
     public function scopeActive($query) {
+      return $query->where('isActive',true)->where('isTechnicalActive',true)->whereDate('beginDate','<=',Carbon::now())->where(function ($query) {
+        $query->whereDate('endDate','>=',Carbon::now())->orWhereNull('endDate');
+      });
+    }
+
+    public function scopeValid($query) {
       return $query->whereDate('beginDate','<=',Carbon::now())->where(function ($query) {
         $query->whereDate('endDate','>=',Carbon::now())->orWhereNull('endDate');
       });
     }
 
     public function scopeActiveAt($query,$date) {
-      return $query->whereDate('beginDate','<=',$date)->where(function ($query) use ($date) {
+      return $query->where('isActive',true)->where('isTechnicalActive',true)->whereDate('beginDate','<=',$date)->where(function ($query) use ($date) {
         $query->whereDate('endDate','>=',$date)->orWhereNull('endDate');
       });
     }
 
     public function scopeActiveClinic($query,$clinicCode = null) {
-      $query = $query->whereDate('beginDate','<=',Carbon::now())
+      $query = $query->where('isActive',true)->where('isTechnicalActive',true)->whereDate('beginDate','<=',Carbon::now())
                 ->where(function ($query) {
                   $query->whereDate('endDate','>=',Carbon::now())->orWhereNull('endDate');
                 });
