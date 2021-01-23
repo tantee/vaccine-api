@@ -9,7 +9,7 @@ use Carbon\Carbon;
 
 class EclaimController extends Controller
 {
-    public static function ExportUcsOpd($backDate=7) {
+    public static function ExportUcsOpd($backDate=10) {
         $localHospital = \App\Models\EclaimMaster\Hospitals::where('HMAIN',env('ECLAIM_HCODE','41711'))->first();
         $localProvince = ($localHospital) ? $localHospital->PROVINCE_ID : '';
 
@@ -18,6 +18,8 @@ class EclaimController extends Controller
             $patients = \App\Models\Accounting\AccountingInvoices::eclaimUcs()->whereDate('created_at',$batch)->select('hn')->distinct()->get();
             
             foreach ($patients as $patient) {
+                $authCode = \App\Models\Patient\PatientsCodes::where('codeType','nhsoauthcode')->where('hn',$patient->hn)->whereDate('issuedDateTime',$batch)->first();
+                
                 $invoices = \App\Models\Accounting\AccountingInvoices::eclaimUcs()->where('hn',$patient->hn)->whereDate('created_at',$batch)->get();
                 $invoice = $invoices->firstWhere('payerCode','NHSO');
 
@@ -57,6 +59,7 @@ class EclaimController extends Controller
                 $ins->INSCL = 'UCS';
                 $ins->HOSPMAIN = ($insurance->nhsoHCodeMain) ? $insurance->nhsoHCodeMain : $insurance->nhsoHCode;
                 if (!$ins->HOSPMAIN) $ins->HOSPMAIN = env('ECLAIM_HCODE','41711');
+                $ins->PERMITNO = ($authCode) ? $authCode->code : null;
                 $ins->SEQ = $batch->format('ymd').$patient->hn;
                 $ins->batch = $batch;
                 $ins->save();
@@ -103,32 +106,33 @@ class EclaimController extends Controller
                 //clean up table before export
                 \App\Models\Eclaim\ORF::where('SEQ',$batch->format('ymd').$patient->hn)->delete();
                 \App\Models\Eclaim\AER::where('SEQ',$batch->format('ymd').$patient->hn)->delete();
-                if ($insurance->nhsoHCode!=null) {
-                    $orf = new \App\Models\Eclaim\ORF();
-                    $orf->HN = $invoice->hn;
-                    $orf->DATEOPD = $invoice->created_at->format('Ymd');
-                    $orf->REFER = $insurance->nhsoHCode;
-                    $orf->REFERTYPE = '1';
-                    $orf->SEQ = $batch->format('ymd').$patient->hn;
-                    $orf->save();
+                //Comment out to use ADP type 5 , Project Code = "CANCER"
+                // if ($insurance->nhsoHCode!=null) {
+                //     $orf = new \App\Models\Eclaim\ORF();
+                //     $orf->HN = $invoice->hn;
+                //     $orf->DATEOPD = $invoice->created_at->format('Ymd');
+                //     $orf->REFER = $insurance->nhsoHCode;
+                //     $orf->REFERTYPE = '1';
+                //     $orf->SEQ = $batch->format('ymd').$patient->hn;
+                //     $orf->save();
 
-                    $aer = new \App\Models\Eclaim\AER();
-                    $aer->HN = $invoice->hn;
-                    $aer->DATEOPD = $invoice->created_at->format('Ymd');
-                    $aer->AUTHAE = '';
-                    $aer->AEDATE = '';
-                    $aer->AETIME = '';
-                    $aer->AETYPE = '';
-                    $aer->REFER_NO = ($insurance->contractNo) ? $insurance->contractNo : '';
-                    $aer->REFMAINI = $insurance->nhsoHCode;
-                    $aer->IREFTYPE = '0100';
-                    $aer->REFMAINO = '';
-                    $aer->OREFTYPE = '';
-                    $aer->UCAE = ($sameProvince) ? '' : 'O';
-                    $aer->EMTYPE = '';
-                    $aer->SEQ = $batch->format('ymd').$patient->hn;
-                    $aer->save();
-                } 
+                //     $aer = new \App\Models\Eclaim\AER();
+                //     $aer->HN = $invoice->hn;
+                //     $aer->DATEOPD = $invoice->created_at->format('Ymd');
+                //     $aer->AUTHAE = '';
+                //     $aer->AEDATE = '';
+                //     $aer->AETIME = '';
+                //     $aer->AETYPE = '';
+                //     $aer->REFER_NO = ($insurance->contractNo) ? $insurance->contractNo : '';
+                //     $aer->REFMAINI = $insurance->nhsoHCode;
+                //     $aer->IREFTYPE = '0100';
+                //     $aer->REFMAINO = '';
+                //     $aer->OREFTYPE = '';
+                //     $aer->UCAE = ($sameProvince) ? '' : 'O';
+                //     $aer->EMTYPE = '';
+                //     $aer->SEQ = $batch->format('ymd').$patient->hn;
+                //     $aer->save();
+                // }
 
                 //clean up table before export
                 \App\Models\Eclaim\OOP::where('SEQ',$batch->format('ymd').$patient->hn)->delete();
@@ -175,6 +179,18 @@ class EclaimController extends Controller
                 \App\Models\Eclaim\ADP::where('SEQ',$batch->format('ymd').$patient->hn)->delete();
                 \App\Models\Eclaim\DRU::where('SEQ',$batch->format('ymd').$patient->hn)->delete();
 
+                //Add ADP type 5, project Code "CANCER"
+                $adp = new \App\Models\Eclaim\ADP();
+                $adp->HN = $invoice->hn;
+                $adp->DATEOPD = $invoice->created_at->format('Ymd');
+                $adp->TYPE = '5';
+                $adp->CODE = "CANCER";
+                $adp->QTY = 1;
+                $adp->RATE = 0;
+                $adp->SEQ = $batch->format('ymd').$patient->hn;
+                $adp->CAGCODE = $nhsoCAGCode;
+                $adp->save();
+
                 //List diagnosis first, insert later. Wait for auto add code
                 $sumDiagnosis = [];
                 $dxDoctorCode = null;
@@ -215,14 +231,9 @@ class EclaimController extends Controller
                     }
                 }
 
-                $adpTransactions = \App\Models\Patient\PatientsTransactions::whereIn('invoiceId',$invoices->pluck('invoiceId')->all())->whereHas('product',function ($query) {
-                    $query->whereNotNull('eclaimAdpType');
-                })->get();
-
+                $allTransactions = \App\Models\Patient\PatientsTransactions::whereIn('invoiceId',$invoices->pluck('invoiceId')->all())->get();
                 foreach($pseudoTransactions as $pseudoTransaction) {
-                    if ($pseudoTransaction->product->eclaimAdpType != null) {
-                        $adpTransactions->push($pseudoTransaction);
-                    }
+                    $allTransactions->push($pseudoTransaction);
                 }
 
                 $nhsoCAGCode = '';
@@ -235,80 +246,120 @@ class EclaimController extends Controller
                 }
                 if ($nhsoCAGCode==null || $nhsoCAGCode=='') $nhsoCAGCode = $insurance->nhsoCAGCode;
 
-                //OP Refer low cost
-                if (!$sameProvince) {
-                    $chaTransactions = \App\Models\Patient\PatientsTransactions::whereIn('invoiceId',$invoices->pluck('invoiceId')->all())->whereHas('product',function ($query) {
-                        $query->whereNotNull('cgdCode')->whereNull('eclaimAdpType');
-                        $query->orWhere('eclaimAdpType',6);
-                    })->get();
+                $summaryCgds = $allTransactions->groupBy('categoryCgd');
 
-                    foreach($pseudoTransactions as $pseudoTransaction) {
-                        if (($pseudoTransaction->product->cgdCode != null && $pseudoTransaction->product->eclaimAdpType == null) || ($pseudoTransaction->product->eclaimAdpType == "6")) {
-                            $chaTransactions->push($pseudoTransaction);
-                        }
+                foreach ($summaryCgds as $key=>$summaryCgd) {
+                    $categoryCgd = \App\Models\Master\MasterItems::where('groupKey','$ProductCategoryCgd')->where('itemCode',$key)->first();
+                    $eclaimChrgItem = $categoryCgd->properties['eclaimChrgItem'];
+
+                    //อวัยวะเทียม
+                    if ($eclaimChrgItem=='21' || $eclaimChrgItem=='22') {
+
                     }
 
-                    $summaryCgds = $chaTransactions->groupBy('categoryCgd');
+                    //ยา
+                    if ($eclaimChrgItem=='31' || $eclaimChrgItem=='32' || $eclaimChrgItem=='41' || $eclaimChrgItem=='42') {
+                        foreach ($summaryCgd as $item) {
+                            $drug = \App\Models\EclaimMaster\DrugCatalogs::find(($item->product->cgdCode) ? $item->product->cgdCode : $item->product->productCode);
+                            if ($drug) {
+                                $dru = new \App\Models\Eclaim\DRU();
+                                $dru->HCODE = env('ECLAIM_HCODE','41711');
+                                $dru->HN = $item->hn;
+                                $dru->AN = ($item->encounter->encounterType=="IMP") ? $item->encounterId : '';
+                                $dru->CLINIC = '10';
+                                $dru->PERSON_ID = $invoice->patient->personId;
+                                $dru->DATE_SERV = $item->transactionDateTime->format('Ymd');
+                                $dru->DID = $drug->HOSPDRUGCODE;
+                                $dru->DIDNAME = $drug->TRADENAME;
+                                $dru->AMOUNT = $item->quantity;
+                                $dru->DRUGPRIC = $item->soldPrice;
+                                $dru->DRUGCOST = '';
+                                $dru->DIDSTD = '';
+                                $dru->UNIT = '';
+                                $dru->UNIT_PACK = '';
+                                $dru->SEQ =  $batch->format('ymd').$patient->hn;
+                                $dru->DRUGREMARK = '';
+                                $dru->PA_NO = '';
+                                $dru->TOTCOPAY = 0;
+                                $dru->USE_STATUS = ($item->quantity<=5 || ($item->product->eclaimAdpType=='6')) ? '1' : '2';
+                                $dru->TOTAL = $item->soldFinalPrice;
+                                $dru->SIGCODE = '';
+                                $dru->SIGTEXT = '';
+                                $dru->save();
+                            }
 
-                    foreach ($summaryCgds as $key=>$summaryCgd) {
-                        $categoryCgd = \App\Models\Master\MasterItems::where('groupKey','$ProductCategoryCgd')->where('itemCode',$key)->first();
-                        $eclaimChrgItem = $categoryCgd->properties['eclaimChrgItem'];
-
-                        $cha = new \App\Models\Eclaim\CHA();
-                        $cha->HN = $invoice->hn;
-                        $cha->DATE = $invoice->created_at->format('Ymd');
-                        $cha->CHRGITEM = ($eclaimChrgItem) ? $eclaimChrgItem : $key;
-                        $cha->AMOUNT = $summaryCgd->sum('finalPrice');
-                        $cha->PERSON_ID = $invoice->patient->personId;
-                        $cha->SEQ = $batch->format('ymd').$patient->hn;
-                        $cha->save();
-
-                        //อวัยวะเทียม
-                        if ($eclaimChrgItem=='21' || $eclaimChrgItem=='22') {
-
+                            if ($item->product->eclaimAdpType=='6') $nshoMustAddZ511 = true;
                         }
 
-                        //ยา
-                        if ($eclaimChrgItem=='31' || $eclaimChrgItem=='32' || $eclaimChrgItem=='41' || $eclaimChrgItem=='42') {
-                            foreach ($summaryCgd as $item) {
-                                $drug = \App\Models\EclaimMaster\DrugCatalogs::find(($item->product->cgdCode) ? $item->product->cgdCode : $item->product->productCode);
-                                if ($drug) {
-                                    $dru = new \App\Models\Eclaim\DRU();
-                                    $dru->HCODE = env('ECLAIM_HCODE','41711');
-                                    $dru->HN = $item->hn;
-                                    $dru->AN = ($item->encounter->encounterType=="IMP") ? $item->encounterId : '';
-                                    $dru->CLINIC = '10';
-                                    $dru->PERSON_ID = $invoice->patient->personId;
-                                    $dru->DATE_SERV = $item->transactionDateTime->format('Ymd');
-                                    $dru->DID = $drug->HOSPDRUGCODE;
-                                    $dru->DIDNAME = $drug->TRADENAME;
-                                    $dru->AMOUNT = $item->quantity;
-                                    $dru->DRUGPRIC = $item->soldPrice;
-                                    $dru->DRUGCOST = '';
-                                    $dru->DIDSTD = '';
-                                    $dru->UNIT = '';
-                                    $dru->UNIT_PACK = '';
-                                    $dru->SEQ =  $batch->format('ymd').$patient->hn;
-                                    $dru->DRUGREMARK = '';
-                                    $dru->PA_NO = '';
-                                    $dru->TOTCOPAY = 0;
-                                    $dru->USE_STATUS = ($item->quantity>5) ? '2' : '1';
-                                    $dru->TOTAL = $item->soldFinalPrice;
-                                    $dru->SIGCODE = '';
-                                    $dru->SIGTEXT = '';
-                                    $dru->save();
+                    }
+
+                    //lab,xray,invesitgation
+                    if ($eclaimChrgItem=='71' || $eclaimChrgItem=='72' || $eclaimChrgItem=='81' || $eclaimChrgItem=='82' || $eclaimChrgItem=='91' || $eclaimChrgItem=='92') {
+                        foreach ($summaryCgd as $item) {
+                            if ($item->product->eclaimAdpType == '7') {
+                                $productEclaimCode = $item->product->eclaimCode;
+
+                                if ($nhsoCAGCode=="NonPr" || $nhsoCAGCode=="Gca" || $nhsoCAGCode=='' || $nhsoCAGCode==null) {
+                                    $productEclaimCode = str_replace('RTX','RTX216_',$productEclaimCode);
+                                }
+
+                                $unitPrice = $item->soldPrice;
+                                $finalPrice = $item->soldFinalPrice;
+
+                                $caradio = \App\Models\EclaimMaster\CARadios::active()->where('CAR_CLAIMCODE',$productEclaimCode)->first();
+                                if ($caradio!=null) {
+                                    if ($unitPrice > $caradio->CAR_RATE) {
+                                        $unitPrice = $caradio->CAR_RATE;
+                                        $finalPrice = $unitPrice * $item->quantity;
+                                    }
+                                }
+
+                                if (!empty($productEclaimCode)) {
+                                    $adp = new \App\Models\Eclaim\ADP();
+                                    $adp->HN = $invoice->hn;
+                                    $adp->DATEOPD = $item->transactionDateTime->format('Ymd');
+                                    $adp->TYPE = $item->product->eclaimAdpType;
+                                    $adp->CODE = $productEclaimCode;
+                                    $adp->QTY = $item->quantity;
+                                    $adp->RATE = $unitPrice;
+                                    $adp->SEQ = $batch->format('ymd').$patient->hn;
+                                    $adp->CAGCODE = ($nhsoCAGCode=='' || $nhsoCAGCode==null) ? "Gca" : $nhsoCAGCode;
+                                    $adp->TOTAL = $finalPrice;
+                                    $adp->save();
+                                }
+                            } else {
+                                if ($item->product->cgdCode) {
+                                    $adp = new \App\Models\Eclaim\ADP();
+                                    $adp->HN = $invoice->hn;
+                                    $adp->DATEOPD = $item->transactionDateTime->format('Ymd');
+                                    $adp->TYPE = ($item->product->eclaimAdpType) ? $item->product->eclaimAdpType : '8';
+                                    $adp->CODE = $item->product->cgdCode;
+                                    $adp->QTY = $item->quantity;
+                                    $adp->RATE = $item->soldPrice;
+                                    $adp->SEQ = $batch->format('ymd').$patient->hn;
+                                    $adp->CAGCODE = $nhsoCAGCode;
+                                    $adp->TOTAL = $item->soldFinalPrice;
+                                    $adp->save();
                                 }
                             }
 
+                            if ($item->product->eclaimAdpType=='7') $nshoMustAddZ510 = true;
                         }
+                    }
 
-                        //lab,xray,invesitgation
-                        if ($eclaimChrgItem=='71' || $eclaimChrgItem=='72' || $eclaimChrgItem=='81' || $eclaimChrgItem=='82' || $eclaimChrgItem=='91' || $eclaimChrgItem=='92') {
-                            foreach ($summaryCgd as $item) {
+                    //หัตถการ
+                    if ($eclaimChrgItem=='B1' || $eclaimChrgItem=='B2') {
+
+                    }
+
+                    //เวชภัณฑ์, อุปกรณ์, เครื่องมือแพทย์, ค่าบริการพยาบาล, รายการอื่นๆ
+                    if ($eclaimChrgItem=='51' || $eclaimChrgItem=='52' || $eclaimChrgItem=='A1' || $eclaimChrgItem=='A2' || $eclaimChrgItem=='C1' || $eclaimChrgItem=='C2' || $eclaimChrgItem=='J1' || $eclaimChrgItem=='J2') {
+                        foreach ($summaryCgd as $item) {
+                            if ($item->product->cgdCode) {
                                 $adp = new \App\Models\Eclaim\ADP();
                                 $adp->HN = $invoice->hn;
                                 $adp->DATEOPD = $item->transactionDateTime->format('Ymd');
-                                $adp->TYPE = '8';
+                                $adp->TYPE = ($item->product->eclaimAdpType) ? $item->product->eclaimAdpType : '8';
                                 $adp->CODE = $item->product->cgdCode;
                                 $adp->QTY = $item->quantity;
                                 $adp->RATE = $item->soldPrice;
@@ -317,115 +368,6 @@ class EclaimController extends Controller
                                 $adp->TOTAL = $item->soldFinalPrice;
                                 $adp->save();
                             }
-                        }
-
-                        //หัตถการ
-                        if ($eclaimChrgItem=='B1' || $eclaimChrgItem=='B2') {
-
-                        }
-
-                        //ค่าบริการพยาบาล
-                        if ($eclaimChrgItem=='C1' || $eclaimChrgItem=='C2') {
-                            foreach ($summaryCgd as $item) {
-                                $adp = new \App\Models\Eclaim\ADP();
-                                $adp->HN = $invoice->hn;
-                                $adp->DATEOPD = $item->transactionDateTime->format('Ymd');
-                                $adp->TYPE = '8';
-                                $adp->CODE = $item->product->cgdCode;
-                                $adp->QTY = $item->quantity;
-                                $adp->RATE = $item->soldPrice;
-                                $adp->SEQ = $batch->format('ymd').$patient->hn;
-                                $adp->CAGCODE = $nhsoCAGCode;
-                                $adp->TOTAL = $item->soldFinalPrice;
-                                $adp->save();
-                            }
-                        }
-
-                        //รายการอื่นๆ
-                        if ($eclaimChrgItem=='J1' || $eclaimChrgItem=='J2') {
-
-                        }
-                    }
-                }
-
-                //OP and OPR high
-                foreach ($adpTransactions as $adpTransaction) {
-                    $productEclaimCode = $adpTransaction->product->eclaimCode;
-                    if ($nhsoCAGCode=="NonPr" || $nhsoCAGCode=="Gca" || $nhsoCAGCode=='' || $nhsoCAGCode==null) {
-                        $productEclaimCode = str_replace('RTX','RTX216_',$productEclaimCode);
-                    }
-
-                    $unitPrice = $adpTransaction->soldPrice;
-                    $finalPrice = $adpTransaction->soldFinalPrice;
-
-                    if ($adpTransaction->product->eclaimAdpType=='7') {
-                        $caradio = \App\Models\EclaimMaster\CARadios::active()->where('CAR_CLAIMCODE',$productEclaimCode)->first();
-                        if ($caradio!=null) {
-                            if ($unitPrice > $caradio->CAR_RATE) {
-                                $unitPrice = $caradio->CAR_RATE;
-                                $finalPrice = $unitPrice * $adpTransaction->quantity;
-                            }
-                        }
-                    }
-
-                    if ($adpTransaction->product->eclaimAdpType=='7') $nshoMustAddZ510 = true;
-                    if ($adpTransaction->product->eclaimAdpType=='6') $nshoMustAddZ511 = true;
-
-                    if (!empty($productEclaimCode)) {
-                        $adp = new \App\Models\Eclaim\ADP();
-                        $adp->HN = $invoice->hn;
-                        $adp->DATEOPD = $adpTransaction->transactionDateTime->format('Ymd');
-                        $adp->TYPE = $adpTransaction->product->eclaimAdpType;
-                        $adp->CODE = $productEclaimCode;
-                        $adp->QTY = $adpTransaction->quantity;
-                        $adp->RATE = $unitPrice;
-                        $adp->SEQ = $batch->format('ymd').$patient->hn;
-                        $adp->CAGCODE = (($nhsoCAGCode=='' || $nhsoCAGCode==null) && ($adpTransaction->product->eclaimAdpType=='6' || $adpTransaction->product->eclaimAdpType=='7')) ? "Gca" : $nhsoCAGCode;
-                        $adp->TOTAL = $finalPrice;
-                        $adp->save();
-                    }
-
-                    if ($adpTransaction->product->eclaimAdpType=='7' && !empty($adpTransaction->product->cgdCode) && !$sameProvince) {
-                        $adp = new \App\Models\Eclaim\ADP();
-                        $adp->HN = $invoice->hn;
-                        $adp->DATEOPD = $adpTransaction->transactionDateTime->format('Ymd');
-                        $adp->TYPE = '8';
-                        $adp->CODE = $adpTransaction->product->cgdCode;
-                        $adp->QTY = $adpTransaction->quantity;
-                        $adp->RATE = $unitPrice;
-                        $adp->SEQ = $batch->format('ymd').$patient->hn;
-                        $adp->CAGCODE = (($nhsoCAGCode=='' || $nhsoCAGCode==null) && ($adpTransaction->product->eclaimAdpType=='6' || $adpTransaction->product->eclaimAdpType=='7')) ? "Gca" : $nhsoCAGCode;
-                        $adp->TOTAL = $finalPrice;
-                        $adp->save();
-                    }
-                    
-                    if ($adpTransaction->product->eclaimAdpType=='6' && $sameProvince) {
-                        $drug = \App\Models\EclaimMaster\DrugCatalogs::find(($adpTransaction->product->cgdCode) ? $adpTransaction->product->cgdCode : $adpTransaction->product->productCode);
-                        if ($drug) {
-                            $dru = new \App\Models\Eclaim\DRU();
-                            $dru->HCODE = env('ECLAIM_HCODE','41711');
-                            $dru->HN = $adpTransaction->hn;
-                            $dru->AN = ($adpTransaction->encounter->encounterType=="IMP") ? $adpTransaction->encounterId : '';
-                            $dru->CLINIC = '10';
-                            $dru->PERSON_ID = $invoice->patient->personId;
-                            $dru->DATE_SERV = $adpTransaction->transactionDateTime->format('Ymd');
-                            $dru->DID = $drug->HOSPDRUGCODE;
-                            $dru->DIDNAME = $drug->TRADENAME;
-                            $dru->AMOUNT = $adpTransaction->quantity;
-                            $dru->DRUGPRIC = $adpTransaction->soldPrice;
-                            $dru->DRUGCOST = '';
-                            $dru->DIDSTD = '';
-                            $dru->UNIT = '';
-                            $dru->UNIT_PACK = '';
-                            $dru->SEQ =  $batch->format('ymd').$patient->hn;
-                            $dru->DRUGREMARK = '';
-                            $dru->PA_NO = '';
-                            $dru->TOTCOPAY = 0;
-                            $dru->USE_STATUS = ($adpTransaction->quantity>5) ? '2' : '1';
-                            $dru->TOTAL = $adpTransaction->soldFinalPrice;
-                            $dru->SIGCODE = '';
-                            $dru->SIGTEXT = '';
-                            $dru->save();
                         }
                     }
                 }
@@ -504,15 +446,15 @@ class EclaimController extends Controller
         }
 
         self::Export16Folder($backDate);
-        self::Export16Folder($backDate,true);
+        // self::Export16Folder($backDate,true);
     }
 
-    public static function Export16Folder($backDate=7,$oprefer=false) {
+    public static function Export16Folder($backDate=10,$oprefer=false) {
         $outputDirectory = ($oprefer) ? 'exports/eclaim/oprefer' : 'exports/eclaim/op';
         Storage::makeDirectory($outputDirectory);
 
-        $localHospital = \App\Models\EclaimMaster\Hospitals::where('HMAIN',env('ECLAIM_HCODE','41711'))->first();
-        $localProvince = ($localHospital) ? $localHospital->PROVINCE_ID : '';
+        // $localHospital = \App\Models\EclaimMaster\Hospitals::where('HMAIN',env('ECLAIM_HCODE','41711'))->first();
+        // $localProvince = ($localHospital) ? $localHospital->PROVINCE_ID : '';
 
         for ($subDate=1; $subDate<=$backDate; $subDate++) {
             $exportDate = \Carbon\Carbon::now()->subDay($subDate)->endOfDay();
@@ -537,11 +479,11 @@ class EclaimController extends Controller
             $inss =  \App\Models\Eclaim\INS::whereDate('batch',$exportDate)->get();
             foreach($inss as $ins) {
 
-                $hmainHospital = \App\Models\EclaimMaster\Hospitals::where('HMAIN',($ins->HOSPMAIN) ? $ins->HOSPMAIN : env('ECLAIM_HCODE','41711'))->first();
-                $hmainProvince = ($hmainHospital) ? $hmainHospital->PROVINCE_ID : '';
-                $sameProvince = ($localProvince == $hmainProvince);
+                // $hmainHospital = \App\Models\EclaimMaster\Hospitals::where('HMAIN',($ins->HOSPMAIN) ? $ins->HOSPMAIN : env('ECLAIM_HCODE','41711'))->first();
+                // $hmainProvince = ($hmainHospital) ? $hmainHospital->PROVINCE_ID : '';
+                // $sameProvince = ($localProvince == $hmainProvince);
 
-                if (($sameProvince && $oprefer) || (!$sameProvince && !$oprefer)) continue;
+                // if (($sameProvince && $oprefer) || (!$sameProvince && !$oprefer)) continue;
                 
                 $insItem = [
                     "HN" => $ins->HN,

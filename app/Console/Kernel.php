@@ -60,7 +60,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(function() {
             return App\Http\Controllers\Patient\PatientInsuranceController::autoTechnicalDisableNhso();
         })->daily()
-            ->name('autoTechnicalDisableNhso')
+            ->name('AutoTechnicalDisableNhso')
             ->onOneServer();
     }
 
