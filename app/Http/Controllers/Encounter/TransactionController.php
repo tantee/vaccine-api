@@ -17,7 +17,7 @@ class TransactionController extends Controller
         $success = true;
         $errorTexts = [];
         $returnModels = [];
-        
+
         DB::beginTransaction();
 
         $transactionsIds = array_pluck($transactions,'id');
@@ -29,6 +29,138 @@ class TransactionController extends Controller
             });
 
             $transactions->each(function($itemCollection,$key) use (&$hn,&$success,&$errorTexts,&$returnModels,$cashiersPeriodsId) {
+                $item = collect($itemCollection->toArray())->map(function($row) {
+                    return array_except($row,['insurance','encounter']);
+                })->sortBy("transactionDateTime");
+
+                $insurance =  \App\Models\Patient\PatientsInsurances::find($key);
+
+                $detailInsurance = $item->groupBy('categoryInsurance');
+                $detailCgd = $item->groupBy('categoryCgd');
+
+                $summaryInsurance = $detailInsurance->map(function ($row,$key){
+                    return [[
+                        "categoryInsurance" => $key,
+                        "totalPrice" => $row->sum('totalPrice'),
+                        "totalDiscount" => $row->sum('totalDiscount'),
+                        "finalPrice" => $row->sum('finalPrice'),
+                        "finalCoverPrice" => $row->sum('finalCoverPrice'),
+                        "finalExcessPrice" => $row->sum('finalExcessPrice'),
+                    ]];
+                })->flatten(1)->sortBy("categoryInsurance");
+                $summaryCgd = $detailCgd->map(function ($row,$key){
+                    return [[
+                        "categoryCgd" => $key,
+                        "totalPrice" => $row->sum('totalPrice'),
+                        "totalDiscount" => $row->sum('totalDiscount'),
+                        "finalPrice" => $row->sum('finalPrice'),
+                        "finalCoverPrice" => $row->sum('finalCoverPrice'),
+                        "finalExcessPrice" => $row->sum('finalExcessPrice'),
+                    ]];
+                })->flatten(1)->sortBy("categoryCgd");
+
+                $detailInsurance = $detailInsurance->map(function ($row,$key){
+                    $row = $row->map(function($row) {
+                        return array_except($row,['invoiceId','soldPatientsInsurancesId','soldPrice','soldDiscount','soldTotalPrice','soldTotalDiscount','soldFinalPrice','soldCoverPrice','soldFinalCoverPrice','soldFinalExcessPrice']);
+                    });
+                    return [[
+                        "categoryInsurance" => $key,
+                        "transactions" => $row
+                    ]];
+                })->flatten(1)->sortBy("categoryInsurance");
+
+                $detailCgd = $detailCgd->map(function ($row,$key){
+                    $row = $row->map(function($row) {
+                        return array_except($row,['invoiceId','soldPatientsInsurancesId','soldPrice','soldDiscount','soldTotalPrice','soldTotalDiscount','soldFinalPrice','soldCoverPrice','soldFinalCoverPrice','soldFinalExcessPrice']);
+                    });
+                    return [[
+                        "categoryCgd" => $key,
+                        "transactions" => $row
+                    ]];
+                })->flatten(1)->sortBy("categoryCgd");
+
+                $invoiceData = [
+                    "raw" => $item->toArray(),
+                    "detailInsurance" => $detailInsurance->toArray(),
+                    "detailCgd" => $detailCgd->toArray(),
+                    "summaryInsurance" => $summaryInsurance->toArray(),
+                    "summaryCgd" => $summaryCgd->toArray(),
+
+                    "grandTotalPrice" => $item->sum('totalPrice'),
+                    "grandTotalDiscount" => $item->sum('totalDiscount'),
+                    "grandFinalPrice" => $item->sum('finalPrice'),
+
+                    "grandFinalCoverPrice" => $item->sum('finalCoverPrice'),
+                    "grandFinalExcessPrice" => $item->sum('finalExcessPrice'),
+
+                    "insurance" => ($insurance) ? $insurance->toArray() : null,
+
+                    "invoiceDateTime" => Carbon::now(),
+                ];
+
+                $invoice = new \App\Models\Accounting\AccountingInvoices();
+                $invoice->cashiersPeriodsId = $cashiersPeriodsId;
+                $invoice->hn = $hn;
+                $invoice->patientsInsurancesId = is_numeric($key) ? $key : null;
+                $invoice->amount = $invoiceData["grandFinalPrice"];
+                $invoice->amountDue = ($insurance && !$insurance->isChargeToPatient) ? $invoiceData["grandFinalExcessPrice"] : $invoiceData["grandFinalPrice"];
+                if ($insurance && $insurance->payerCode=="CAH") {
+                    $invoice->invoiceId = IdController::issueId('invoice-cah','\Cym',5);
+                }
+                $invoice->save();
+
+                $invoiceDocument = DocumentController::addDocument($hn,env('INVOICE_TEMPLATE', 'invoice'),$invoiceData,env('INVOICE_CATEGORY', '999'),null,$invoice->invoiceId,'accounting');
+                DocumentController::approveDocuments($invoiceDocument["returnModels"][0]->id);
+
+                $invoice->documentId = $invoiceDocument["returnModels"][0]->id;
+                $invoice->save();
+
+                $itemCollection->each(function($itemTransaction,$key) use ($invoice) {
+                    $itemTransaction->update([
+                        "invoiceId" => $invoice->invoiceId,
+                        "soldPatientsInsurancesId" => ($itemTransaction->insurance && $itemTransaction->insurance["PatientsInsurances"]) ? $itemTransaction->insurance["PatientsInsurances"]->id : null,
+                        "soldInsuranceCode" => ($itemTransaction->insurance && $itemTransaction->insurance["Policy"]) ? $itemTransaction->insurance["Policy"]->insuranceCode : null,
+                        "soldPrice" => $itemTransaction->price,
+                        "soldDiscount" => $itemTransaction->discount,
+                        "soldTotalPrice" => $itemTransaction->total_price,
+                        "soldTotalDiscount" => $itemTransaction->total_discount,
+                        "soldFinalPrice" => $itemTransaction->final_price,
+                        "soldCoverPrice" => $itemTransaction->cover_price,
+                        "soldFinalCoverPrice" => $itemTransaction->final_cover_price,
+                        "soldFinalExcessPrice" => $itemTransaction->final_excess_price,
+                    ]);
+                });
+
+                array_push($returnModels,$invoice);
+            });
+
+            DB::commit();
+        } else {
+            DB::rollBack();
+
+            $success = false;
+            array_push($errorTexts,["errorText" => 'Transactions not found']);
+        }
+
+        return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
+    }
+
+    public static function createStatement($hn,$transactions) {
+        $success = true;
+        $errorTexts = [];
+        $returnModels = [];
+        
+        DB::beginTransaction();
+
+        $transactionsIds = array_pluck($transactions,'id');
+        $transactions = \App\Models\Patient\PatientsTransactions::whereIn('id',$transactionsIds)->whereNull('invoiceId')->where('isChargable',true)->get();
+
+        if ($transactions != null) {
+            $transactions = $transactions->groupBy(function ($item, $key) {
+                return ($item->insurance['PatientsInsurances']==null) ? null : $item->insurance["PatientsInsurances"]->id;
+            });
+
+            $transactions->each(function($itemCollection,$key) use (&$hn,&$success,&$errorTexts,&$returnModels) {
                 $item = collect($itemCollection->toArray())->map(function($row) {
                     return array_except($row,['insurance','encounter']);
                 })->sortBy("transactionDateTime");
@@ -98,40 +230,10 @@ class TransactionController extends Controller
                     "invoiceDateTime" => Carbon::now(),
                 ];
 
-                $invoice = new \App\Models\Accounting\AccountingInvoices();
-                $invoice->cashiersPeriodsId = $cashiersPeriodsId;
-                $invoice->hn = $hn;
-                $invoice->patientsInsurancesId = is_numeric($key) ? $key : null;
-                $invoice->amount = $invoiceData["grandFinalPrice"];
-                $invoice->amountDue = ($insurance && !$insurance->isChargeToPatient) ? $invoiceData["grandFinalExcessPrice"] : $invoiceData["grandFinalPrice"];
-                if ($insurance && $insurance->payerCode=="CAH") {
-                    $invoice->invoiceId = IdController::issueId('invoice-cah','\Cym',5);
-                }
-                $invoice->save();
-
-                $invoiceDocument = DocumentController::addDocument($hn,env('INVOICE_TEMPLATE', 'invoice'),$invoiceData,env('INVOICE_CATEGORY', '999'),null,$invoice->invoiceId,'accounting');
+                $invoiceDocument = DocumentController::addDocument($hn,env('STATEMENT_TEMPLATE', 'statement'),$invoiceData,env('STATEMENT_CATEGORY', '999'),null,IdController::issueId('statement',env('STATEMENT_ID_FORMAT', 'ym'),env('STATEMENT_ID_DIGIT', 6)),'accounting');
                 DocumentController::approveDocuments($invoiceDocument["returnModels"][0]->id);
 
-                $invoice->documentId = $invoiceDocument["returnModels"][0]->id;
-                $invoice->save();
-
-                $itemCollection->each(function($itemTransaction,$key) use ($invoice) {
-                    $itemTransaction->update([
-                        "invoiceId" => $invoice->invoiceId,
-                        "soldPatientsInsurancesId" => ($itemTransaction->insurance && $itemTransaction->insurance["PatientsInsurances"]) ? $itemTransaction->insurance["PatientsInsurances"]->id : null,
-                        "soldInsuranceCode" => ($itemTransaction->insurance && $itemTransaction->insurance["Policy"]) ? $itemTransaction->insurance["Policy"]->insuranceCode : null,
-                        "soldPrice" => $itemTransaction->price,
-                        "soldDiscount" => $itemTransaction->discount,
-                        "soldTotalPrice" => $itemTransaction->total_price,
-                        "soldTotalDiscount" => $itemTransaction->total_discount,
-                        "soldFinalPrice" => $itemTransaction->final_price,
-                        "soldCoverPrice" => $itemTransaction->cover_price,
-                        "soldFinalCoverPrice" => $itemTransaction->final_cover_price,
-                        "soldFinalExcessPrice" => $itemTransaction->final_excess_price,
-                    ]);
-                });
-
-                array_push($returnModels,$invoice);
+                array_push($returnModels,$invoiceDocument);
             });
 
             DB::commit();
