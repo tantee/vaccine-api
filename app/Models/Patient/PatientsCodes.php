@@ -16,7 +16,7 @@ class PatientsCodes extends Model
     public static function boot() {
         static::created(function($model) {
             if (Carbon::now()->isSameDay($model->issuedDateTime) && $model->codeType == 'nhsoauthcode') {
-                \App\Models\Patient\PatientsInsurances::valid()->where('hn',$model->hn)->where('payerType',20)->update(['isTechnicalActive',true]);
+                \App\Models\Patient\PatientsInsurances::valid()->where('hn',$model->hn)->where('payerType',20)->update(['isTechnicalActive'=>true]);
             }
         });
 
