@@ -233,7 +233,7 @@ class TransactionController extends Controller
                 $invoiceDocument = DocumentController::addDocument($hn,env('STATEMENT_TEMPLATE', 'statement'),$invoiceData,env('STATEMENT_CATEGORY', '999'),null,IdController::issueId('statement',env('STATEMENT_ID_FORMAT', 'ym'),env('STATEMENT_ID_DIGIT', 6)),'accounting');
                 DocumentController::approveDocuments($invoiceDocument["returnModels"][0]->id);
 
-                array_push($returnModels,$invoiceDocument);
+                array_push($returnModels,$invoiceDocument["returnModels"][0]);
             });
 
             DB::commit();
