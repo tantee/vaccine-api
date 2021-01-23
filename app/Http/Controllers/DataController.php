@@ -689,6 +689,89 @@ class DataController extends Controller
       return GenericApiController::resultToResource(["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels]);
     }
 
+    public static function existModelByRequest(Request $request,$model) {
+      $success = true;
+      $errorTexts = [];
+      $returnModels = collect();
+
+      $searchDataValidator = Validator::make($request->all(),[
+        'data' => 'required|array',
+      ]);
+
+      if ($searchDataValidator->fails()) {
+        foreach($searchDataValidator->errors()->all() as $value) array_push($errorTexts,["errorText"=>$value]);
+        $success = false;
+      }
+
+
+      if ($success) {
+        $data = [];
+
+        if (ArrayType::isAssociative($request->data)) {
+          foreach($request->data as $key=>$value) {
+            $key = explode('%',$key);
+            $key = $key[count($key)-1];
+            $explodedKey = explode('#',$key);
+            if (count($explodedKey)==3) {
+              $key = $explodedKey[0]."#".$explodedKey[1];
+              array_push($data,[$key,$explodedKey[2],$value]);
+            } else {
+              array_push($data,[$key,'=',$value]);
+            }
+          }
+        } else {
+          if (ArrayType::isMultiDimension($request->data)) $data = $request->data;
+          else $data = [$request->data];
+        }
+
+        $searchDataValidator = Validator::make($data,[
+          '*' => 'array|size:3',
+        ]);
+
+        if ($searchDataValidator->fails()) {
+          foreach($searchDataValidator->errors()->all() as $value) array_push($errorTexts,["errorText"=>$value]);
+          $success = false;
+        }
+      }
+
+      if ($success) {
+        try {
+          $returnModels = new $model;
+          if (isset($request->scope)) {
+            if (isset($request->scopeParam)) $returnModels = $returnModels->{$request->scope}($request->scopeParam);
+            else $returnModels = $returnModels->{$request->scope}();
+          }
+
+          foreach($data as $row) {
+            $column = explode('$',$row[0]);
+            if (count($column)==1) {
+              $returnModels = self::searchQuery($returnModels,$row);
+            } else {
+              $row[0] = $column[count($column)-1];
+              if (count($column)==3) {
+                $returnModels = $returnModels->{$column[0]}($column[1],function($query) use ($row) {
+                  DataController::searchQuery($query,$row);
+                });
+              } else {
+                $returnModels = $returnModels->whereHas($column[0],function($query) use ($row) {
+                  DataController::searchQuery($query,$row);
+                });
+              }
+            }
+          }
+
+          $returnModels = $returnModels->exists();
+
+        } catch (\Exception $e) {
+          $success = false;
+          $returnModels = [];
+          array_push($errorTexts,["errorText" => $e->getMessage()]);
+        }
+      }
+
+      return GenericApiController::resultToResource(["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels]);
+    }
+
     public static function isCurrentRecord($model,$modelId,$updated_at) {
       try {
         $record = $model::findOrFail($modelId);
