@@ -66,7 +66,7 @@ class PatientsInsurances extends Model
 
     public static function boot() {
         static::creating(function($model) {
-            if ($model->payerCode == 20) {
+            if ($model->payerType == 20) {
                 $model->isTechnicalActive = false;
             }
         });
