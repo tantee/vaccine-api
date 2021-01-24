@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Export;
 
+use Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
