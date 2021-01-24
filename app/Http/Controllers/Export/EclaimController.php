@@ -262,7 +262,7 @@ class EclaimController extends Controller
                     //ยา
                     if ($eclaimChrgItem=='31' || $eclaimChrgItem=='32' || $eclaimChrgItem=='41' || $eclaimChrgItem=='42') {
                         foreach ($summaryCgd as $item) {
-                            $drug = \App\Models\EclaimMaster\DrugCatalogs::find(($item->product->cgdCode) ? $item->product->cgdCode : $item->product->productCode);
+                            $drug = \App\Models\EclaimMaster\DrugCatalogs::where('HOSPDRUGCODE',($item->product->cgdCode) ? $item->product->cgdCode : $item->product->productCode)->orderBy('DATEEFFECTIVE','DESC')->first();
                             if ($drug) {
                                 $dru = new \App\Models\Eclaim\DRU();
                                 $dru->HCODE = env('ECLAIM_HCODE','41711');

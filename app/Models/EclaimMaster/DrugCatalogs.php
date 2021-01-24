@@ -9,7 +9,6 @@ class DrugCatalogs extends Model
     protected $connection = 'eclaim';
     protected $table = 'l_drug_catalog';
 
-    protected $primaryKey = 'HOSPDRUGCODE';
+    protected $primaryKey = null;
     public $incrementing = false;
-    protected $keyType = 'string';
 }
