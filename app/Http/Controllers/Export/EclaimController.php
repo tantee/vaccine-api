@@ -10,6 +10,8 @@ use Carbon\Carbon;
 class EclaimController extends Controller
 {
     public static function ExportUcsOpd($backDate=10) {
+        Log::info('Export to eclaim begin');
+
         $localHospital = \App\Models\EclaimMaster\Hospitals::where('HMAIN',env('ECLAIM_HCODE','41711'))->first();
         $localProvince = ($localHospital) ? $localHospital->PROVINCE_ID : '';
 
@@ -179,18 +181,6 @@ class EclaimController extends Controller
                 \App\Models\Eclaim\ADP::where('SEQ',$batch->format('ymd').$patient->hn)->delete();
                 \App\Models\Eclaim\DRU::where('SEQ',$batch->format('ymd').$patient->hn)->delete();
 
-                //Add ADP type 5, project Code "CANCER"
-                $adp = new \App\Models\Eclaim\ADP();
-                $adp->HN = $invoice->hn;
-                $adp->DATEOPD = $invoice->created_at->format('Ymd');
-                $adp->TYPE = '5';
-                $adp->CODE = "CANCER";
-                $adp->QTY = 1;
-                $adp->RATE = 0;
-                $adp->SEQ = $batch->format('ymd').$patient->hn;
-                $adp->CAGCODE = $nhsoCAGCode;
-                $adp->save();
-
                 //List diagnosis first, insert later. Wait for auto add code
                 $sumDiagnosis = [];
                 $dxDoctorCode = null;
@@ -245,6 +235,18 @@ class EclaimController extends Controller
                     if (isset($icd10data->properties['nhsoCAGCode'])) $nhsoCAGCode = $icd10data->properties['nhsoCAGCode'];
                 }
                 if ($nhsoCAGCode==null || $nhsoCAGCode=='') $nhsoCAGCode = $insurance->nhsoCAGCode;
+
+                //Add ADP type 5, project Code "CANCER"
+                $adp = new \App\Models\Eclaim\ADP();
+                $adp->HN = $invoice->hn;
+                $adp->DATEOPD = $invoice->created_at->format('Ymd');
+                $adp->TYPE = '5';
+                $adp->CODE = "CANCER";
+                $adp->QTY = 1;
+                $adp->RATE = 0;
+                $adp->SEQ = $batch->format('ymd').$patient->hn;
+                $adp->CAGCODE = $nhsoCAGCode;
+                $adp->save();
 
                 $summaryCgds = $allTransactions->groupBy('categoryCgd');
 
@@ -447,6 +449,7 @@ class EclaimController extends Controller
 
         self::Export16Folder($backDate);
         // self::Export16Folder($backDate,true);
+        Log::info('Export to eclaim finish');
     }
 
     public static function Export16Folder($backDate=10,$oprefer=false) {
