@@ -10,7 +10,7 @@ use Carbon\Carbon;
 
 class EclaimController extends Controller
 {
-    public static function ExportUcsOpd($backDate=10) {
+    public static function ExportUcsOpd($backDate=11) {
         Log::info('Export to eclaim begin');
 
         $localHospital = \App\Models\EclaimMaster\Hospitals::where('HMAIN',env('ECLAIM_HCODE','41711'))->first();
@@ -263,7 +263,7 @@ class EclaimController extends Controller
                     //ยา
                     if ($eclaimChrgItem=='31' || $eclaimChrgItem=='32' || $eclaimChrgItem=='41' || $eclaimChrgItem=='42') {
                         foreach ($summaryCgd as $item) {
-                            $drug = \App\Models\EclaimMaster\DrugCatalogs::where('HOSPDRUGCODE',($item->product->cgdCode) ? $item->product->cgdCode : $item->product->productCode)->orderBy('DATEEFFECTIVE','DESC')->first();
+                            $drug = \App\Models\EclaimMaster\DrugCatalogs::where('HOSPDRUGCODE',($item->product->cgdCode) ? $item->product->cgdCode : $item->product->productCode)->whereDate('DATEEFFECTIVE','<=',$batch)->orderBy('DATEEFFECTIVE','DESC')->first();
                             if ($drug) {
                                 $dru = new \App\Models\Eclaim\DRU();
                                 $dru->HCODE = env('ECLAIM_HCODE','41711');
@@ -275,17 +275,17 @@ class EclaimController extends Controller
                                 $dru->DID = $drug->HOSPDRUGCODE;
                                 $dru->DIDNAME = $drug->TRADENAME;
                                 $dru->AMOUNT = $item->quantity;
-                                $dru->DRUGPRIC = $item->soldPrice;
+                                $dru->DRUGPRIC = $drug->UNITPRICE;
                                 $dru->DRUGCOST = '';
                                 $dru->DIDSTD = '';
                                 $dru->UNIT = '';
                                 $dru->UNIT_PACK = '';
                                 $dru->SEQ =  $batch->format('ymd').$patient->hn;
-                                $dru->DRUGREMARK = '';
+                                $dru->DRUGREMARK = ($drug->ISED=='N') ? 'EB' : '';
                                 $dru->PA_NO = '';
                                 $dru->TOTCOPAY = 0;
                                 $dru->USE_STATUS = ($item->quantity<=5 || ($item->product->eclaimAdpType=='6')) ? '1' : '2';
-                                $dru->TOTAL = $item->soldFinalPrice;
+                                $dru->TOTAL = $drug->UNITPRICE*$item->quantity;
                                 $dru->SIGCODE = '';
                                 $dru->SIGTEXT = '';
                                 $dru->save();
@@ -453,7 +453,7 @@ class EclaimController extends Controller
         Log::info('Export to eclaim finish');
     }
 
-    public static function Export16Folder($backDate=10,$oprefer=false) {
+    public static function Export16Folder($backDate=11,$oprefer=false) {
         $outputDirectory = ($oprefer) ? 'exports/eclaim/oprefer' : 'exports/eclaim/op';
         Storage::makeDirectory($outputDirectory);
 
