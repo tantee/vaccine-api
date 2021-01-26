@@ -10,7 +10,7 @@ use Carbon\Carbon;
 
 class EclaimController extends Controller
 {
-    public static function ExportUcsOpd($backDate=11) {
+    public static function ExportUcsOpd($backDate=10) {
         Log::info('Export to eclaim begin');
 
         $localHospital = \App\Models\EclaimMaster\Hospitals::where('HMAIN',env('ECLAIM_HCODE','41711'))->first();
@@ -453,7 +453,7 @@ class EclaimController extends Controller
         Log::info('Export to eclaim finish');
     }
 
-    public static function Export16Folder($backDate=11,$oprefer=false) {
+    public static function Export16Folder($backDate=10,$oprefer=false) {
         $outputDirectory = ($oprefer) ? 'exports/eclaim/oprefer' : 'exports/eclaim/op';
         Storage::makeDirectory($outputDirectory);
 

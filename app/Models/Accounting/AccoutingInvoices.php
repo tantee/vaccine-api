@@ -29,7 +29,7 @@ class AccountingInvoices extends Model
 
     public function scopeEclaimUcs($query) {
         return $query->whereHas('Insurance', function($query) {
-            $query->where('payerType','20')->where('payerCode','<>','CAH');
+            $query->where('payerType','20')->where('payerCode','<>','CAH')->whereRaw('JSON_SEARCH(`policies`,\'one\',\'HD%\',NULL,\'$[*].insuranceCode\') IS NULL');
         })->where('isVoid',false);
     }
 

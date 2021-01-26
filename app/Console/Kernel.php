@@ -35,7 +35,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->call(function() {
             return \App\Http\Controllers\Export\EclaimController::ExportUcsOpd();
-        })->dailyAt('06:45')
+        })->dailyAt('0:30')
             ->name('ExportToEclaim16FolderDb')
             ->onOneServer();
         
