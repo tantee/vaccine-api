@@ -40,7 +40,7 @@ class EclaimController extends Controller
                         $tmpTransaction->hn = $packageTransaction->hn;
                         $tmpTransaction->encounterId = $packageTransaction->encounterId;
                         $tmpTransaction->productCode = $product["productCode"];
-                        $tmpTransaction->quantity = $product["quantity"];
+                        $tmpTransaction->quantity = $packageTransaction->quantity * $product["quantity"];
                         $tmpTransaction->categoryCgd = null;
                         $tmpTransaction->transactionDateTime = $packageTransaction->transactionDateTime;
                         $tmpTransaction->performDoctorCode = $packageTransaction->performDoctorCode;
