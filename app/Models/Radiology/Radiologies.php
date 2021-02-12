@@ -44,5 +44,5 @@ class Radiologies extends Model
         return $this->hasOne('App\Models\Master\Doctors','doctorCode','reportingDoctorCode');
     }
 
-    protected $with = ['reportingDoctor','requestDocument','reportDocument','product'];
+    protected $with = ['Patient','reportingDoctor','requestDocument','reportDocument','product'];
 }
