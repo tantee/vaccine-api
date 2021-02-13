@@ -18,7 +18,7 @@ class CreateAccountingPaymentsTable extends Migration
 			$table->increments('id');
 			$table->integer('cashiersPeriodsId')->index();
 			$table->string('receiptId', 50)->index();
-			$table->string('invoiceId', 50);
+			$table->string('invoiceId', 50)->index();
 			$table->string('paymentMethod', 50)->index();
 			$table->string('paymentDetail')->nullable();
 			$table->string('paymentAccount')->nullable();

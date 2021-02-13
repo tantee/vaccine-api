@@ -50,7 +50,7 @@ class AccountingInvoices extends Model
     }
 
     public function Insurance() {
-        return $this->hasOne('App\Models\Patient\PatientsInsurances','id','patientsInsurancesId')->withTrashed()->makeHidden(['amount']);
+        return $this->hasOne('App\Models\Patient\PatientsInsurances','id','patientsInsurancesId')->withTrashed();
     }
 
     public function getAmountOutstandingAttribute() {
