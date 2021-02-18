@@ -14,7 +14,7 @@ class ReportAccoutingController extends Controller
         $from = Carbon::parse($beginDate)->startOfDay()->toDateTimeString();
         $to = Carbon::parse($endDate)->endOfDay()->toDateTimeString();
 
-        $invoices = \App\Models\Accounting\AccountingInvoices::Hemodialysis()->whereBetween('created_at',[$from,$to])->with(['transaction','patient'])->get();
+        $invoices = \App\Models\Accounting\AccountingInvoices::Hemodialysis()->whereBetween('created_at',[$from,$to])->with(['transactions','patient'])->get();
 
         foreach ($invoices as $invoice) {
             $returnItem = $invoice->toArray();
