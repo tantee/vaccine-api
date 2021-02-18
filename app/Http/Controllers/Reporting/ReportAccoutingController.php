@@ -31,7 +31,7 @@ class ReportAccoutingController extends Controller
             })->flatten(1)->sortBy("categoryCgd");
 
             foreach($summaryCgds as $summaryCgd) {
-                $returnItem["category_"+$summaryCgd["categoryCgd"]] = $summaryCgd["finalPrice"];
+                $returnItem["category_".$summaryCgd["categoryCgd"]] = $summaryCgd["finalPrice"];
             }
             $returnData[] = $returnItem;
         }
