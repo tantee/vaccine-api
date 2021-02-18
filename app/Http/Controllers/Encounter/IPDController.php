@@ -17,7 +17,10 @@ class IPDController extends Controller
             $autoCharges = $encounter->autocharges;
             foreach($autoCharges as $charge) {
                 if (!empty($charge->repeatHour)) {
-                    $existCharge = $encounter->transactions()->where('productCode',$charge->productCode)->where('transactionDateTime','>',\Carbon\Carbon::now()->subHours($charge->repeatHour)->roundMinute())->exists();
+                    $roundHour = (empty($charge->roundHour)) ? 0 : $charge->roundHour;
+                    $existHour = $charge->repeatHour + $roundHour;
+
+                    $existCharge = $encounter->transactions()->where('productCode',$charge->productCode)->where('transactionDateTime','>',\Carbon\Carbon::now()->subHours($existHour)->roundMinute())->exists();
                     if (!$existCharge) {                        
                         if (!empty($charge->limitPerEncounter)) {
                             $countChargeEncounter = $encounter->transactions()->where('productCode',$charge->productCode)->count();
@@ -28,7 +31,9 @@ class IPDController extends Controller
                             if ($charge->limitPerDay <= $countChargeDay) continue;
                         }
                         Log::debug('Auto charge HN '.$encounter->hn.', Encounter '.$encounter->encounterId.', ProductCode '.$charge->productCode);
-                        \App\Http\Controllers\Encounter\TransactionController::addTransactions($encounter->hn,$encounter->encounterId,$charge->toArray());
+                        $chargeTransaction = $charge->toArray();
+                        $chargeTransaction["transactionDateTime"] = \Carbon\Carbon::now()->subHours($roundHour);
+                        \App\Http\Controllers\Encounter\TransactionController::addTransactions($encounter->hn,$encounter->encounterId,$chargeTransaction);
                     }
                 }
             }
