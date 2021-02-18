@@ -21,7 +21,7 @@ class ReportAccoutingController extends Controller
             unset($returnItem['transactions']);
 
             $detailCgd = $invoice->transactions->groupBy('categoryCgd');
-            $$returnItem['summaryCgd'] = $detailCgd->map(function ($row,$key){
+            $summaryCgds = $detailCgd->map(function ($row,$key){
                 return [[
                     "categoryCgd" => $key,
                     "totalPrice" => $row->sum('totalPrice'),
@@ -30,6 +30,9 @@ class ReportAccoutingController extends Controller
                 ]];
             })->flatten(1)->sortBy("categoryCgd");
 
+            foreach($summaryCgds as $summaryCgd) {
+                $returnItem["category_"+$summaryCgd["categoryCgd"]] = $summaryCgd["finalPrice"];
+            }
             $returnData[] = $returnItem;
         }
 
