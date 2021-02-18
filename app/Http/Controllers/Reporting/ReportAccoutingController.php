@@ -19,9 +19,17 @@ class ReportAccoutingController extends Controller
         foreach ($invoices as $invoice) {
             $returnItem = $invoice->toArray();
             unset($returnItem['transactions']);
-            foreach($invoice->transactions as $transaction) {
-                $returnItem[$transaction->productCode] = $transaction->soldFinalPrice;
-            }
+
+            $detailCgd = $invoice->transactions->groupBy('categoryCgd');
+            $$returnItem['summaryCgd'] = $detailCgd->map(function ($row,$key){
+                return [[
+                    "categoryCgd" => $key,
+                    "totalPrice" => $row->sum('totalPrice'),
+                    "totalDiscount" => $row->sum('totalDiscount'),
+                    "finalPrice" => $row->sum('finalPrice'),
+                ]];
+            })->flatten(1)->sortBy("categoryCgd");
+
             $returnData[] = $returnItem;
         }
 
