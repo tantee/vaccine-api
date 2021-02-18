@@ -33,6 +33,12 @@ class AccountingInvoices extends Model
         })->where('isVoid',false);
     }
 
+    public function scopeHemodialysis($query) {
+        return $query->whereHas('Insurance', function($query) {
+            $query->where('payerCode','<>','CAH')->whereRaw('JSON_SEARCH(`policies`,\'one\',\'HD%\',NULL,\'$[*].insuranceCode\') IS NOT NULL');
+        })->where('isVoid',false);
+    }
+
     public function Transactions() {
         return $this->hasMany('App\Models\Patient\PatientsTransactions','invoiceId','invoiceId');
     }
