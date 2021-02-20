@@ -10,7 +10,7 @@ use Carbon\Carbon;
 
 class EclaimController extends Controller
 {
-    public static function ExportUcsOpd($backDate=10) {
+    public static function ExportUcsOpd($backDate=20) {
         Log::info('Export to eclaim begin');
 
         $localHospital = \App\Models\EclaimMaster\Hospitals::where('HMAIN',env('ECLAIM_HCODE','41711'))->first();
@@ -329,6 +329,20 @@ class EclaimController extends Controller
                                     $adp->CAGCODE = ($nhsoCAGCode=='' || $nhsoCAGCode==null) ? "Gca" : $nhsoCAGCode;
                                     $adp->TOTAL = $finalPrice;
                                     $adp->save();
+
+                                    if ($item->product->cgdCode) {
+                                        $adp = new \App\Models\Eclaim\ADP();
+                                        $adp->HN = $invoice->hn;
+                                        $adp->DATEOPD = $item->transactionDateTime->format('Ymd');
+                                        $adp->TYPE = '8';
+                                        $adp->CODE = $item->product->cgdCode;
+                                        $adp->QTY = $item->quantity;
+                                        $adp->RATE = $unitPrice;
+                                        $adp->SEQ = $batch->format('ymd').$patient->hn;
+                                        $adp->CAGCODE = ($nhsoCAGCode=='' || $nhsoCAGCode==null) ? "Gca" : $nhsoCAGCode;
+                                        $adp->TOTAL = $finalPrice;
+                                        $adp->save();
+                                    }
                                 }
                             } else {
                                 if ($item->product->cgdCode) {
