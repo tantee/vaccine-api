@@ -10,7 +10,7 @@ use Carbon\Carbon;
 
 class EclaimController extends Controller
 {
-    public static function ExportUcsOpd($backDate=20) {
+    public static function ExportUcsOpd($backDate=30) {
         Log::info('Export to eclaim begin');
 
         $localHospital = \App\Models\EclaimMaster\Hospitals::where('HMAIN',env('ECLAIM_HCODE','41711'))->first();
@@ -249,6 +249,19 @@ class EclaimController extends Controller
                 $adp->CAGCODE = $nhsoCAGCode;
                 $adp->save();
 
+                //Add ค่าบริการผู้ป่วยนอกทุกราย
+                $adp = new \App\Models\Eclaim\ADP();
+                $adp->HN = $invoice->hn;
+                $adp->DATEOPD = $invoice->created_at->format('Ymd');
+                $adp->TYPE = '8';
+                $adp->CODE = "55020";
+                $adp->QTY = 1;
+                $adp->RATE = 100;
+                $adp->SEQ = $batch->format('ymd').$patient->hn;
+                $adp->CAGCODE = $nhsoCAGCode;
+                $adp->TOTAL = 100;
+                $adp->save();
+
                 $summaryCgds = $allTransactions->groupBy('categoryCgd');
 
                 foreach ($summaryCgds as $key=>$summaryCgd) {
@@ -372,7 +385,7 @@ class EclaimController extends Controller
                     //เวชภัณฑ์, อุปกรณ์, เครื่องมือแพทย์, ค่าบริการพยาบาล, รายการอื่นๆ
                     if ($eclaimChrgItem=='51' || $eclaimChrgItem=='52' || $eclaimChrgItem=='A1' || $eclaimChrgItem=='A2' || $eclaimChrgItem=='C1' || $eclaimChrgItem=='C2' || $eclaimChrgItem=='J1' || $eclaimChrgItem=='J2') {
                         foreach ($summaryCgd as $item) {
-                            if ($item->product->cgdCode) {
+                            if ($item->product->cgdCode && $item->product->cgdCode!="55020") {
                                 $adp = new \App\Models\Eclaim\ADP();
                                 $adp->HN = $invoice->hn;
                                 $adp->DATEOPD = $item->transactionDateTime->format('Ymd');
