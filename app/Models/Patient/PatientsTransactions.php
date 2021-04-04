@@ -162,7 +162,11 @@ class PatientsTransactions extends Model
         if ($insurance["Policy"] == null) return $this->Product->price1;
         else {
             $price = 'price'.$insurance["Policy"]->priceLevel;
-            return ($this->Product->$price!==null) ? $this->Product->$price : $this->Product->price1;
+
+            $multiplier = 1;
+            if ($insurance["Policy"]->priceLevel=='5') $multiplier = 1.1;
+
+            return ($this->Product->$price!==null) ? $this->Product->$price : $this->Product->price1*$multiplier;
         }
     }
 
