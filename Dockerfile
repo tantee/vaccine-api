@@ -25,7 +25,8 @@ VOLUME [ "/var/www/html/storage" ]
 
 RUN echo "Asia/Bangkok" > /etc/TZ && \
     docker-php-ext-install sockets && \
-    sed -i "s/;decorate_workers_output = no/decorate_workers_output = no/g" ${fpm_conf} 
+    sed -i "s/;decorate_workers_output = no/decorate_workers_output = no/g" ${fpm_conf}  && \
+    echo "max_execution_time = 120"  >> ${php_vars}
 
 ADD . /var/www/html/
 WORKDIR "/var/www/html"
