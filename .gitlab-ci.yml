@@ -48,7 +48,7 @@ docker-deploy_prod:
   script:
     - cd /var/local/cah/
     - sed -i "s/CAH_API_VERSION=.*/CAH_API_VERSION=$CI_COMMIT_TAG/g" .env
-    - docker stack deploy -c docker-compose.yml cah-his
+    - set -a && . .env && set +a && docker stack deploy -c /var/local/cah/docker-compose.yml cah-his
     - docker container prune -f
     - docker image prune -f
   tags: 
