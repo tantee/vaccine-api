@@ -1,6 +1,3 @@
-before_script:
-  - docker info
-
 stages:
   - build
   - tag
@@ -17,15 +14,30 @@ docker_build:
 docker_tag:
   stage: tag
   script:
-    - docker tag cah-api docker.canceralliance.co.th/cah-api:latest
-    - docker push docker.canceralliance.co.th/cah-api:latest
+    - docker tag cah-api docker.canceralliance.co.th/cah-api:$CI_COMMIT_BRANCH
+    - docker push docker.canceralliance.co.th/cah-api:$CI_COMMIT_BRANCH
   tags: 
     - cah-test
+  only:
+      - branches
+
+docker_tag_prod:
+  stage: tag
+  script:
+    - docker tag cah-api docker.canceralliance.co.th/cah-api:$CI_COMMIT_TAG
+    - docker tag cah-api docker.canceralliance.co.th/cah-api:prod
+    - docker push docker.canceralliance.co.th/cah-api:$CI_COMMIT_TAG
+    - docker push docker.canceralliance.co.th/cah-api:prod
+  tags: 
+    - cah-test
+  only:
+    - tags
     
 docker_deploy_test:
   stage: deploy_test
   script:
-    - cd /var/local/cah/ && docker-compose up -d
+    - cd /var/local/cah/ && docker-compose pull && docker-compose up -d
+    - docker-compose restart cah-proxy
     - docker container prune -f
     - docker image prune -f
   tags: 
@@ -34,7 +46,9 @@ docker_deploy_test:
 docker-deploy_prod:
   stage: deploy_prod
   script:
-    - docker stack deploy -c /var/local/cah/docker-compose.yml cah-his
+    - cd /var/local/cah/
+    - sed -i "s/CAH_API_VERSION=.*/CAH_API_VERSION=$CI_COMMIT_TAG/g" .env
+    - docker stack deploy -c docker-compose.yml cah-his
     - docker container prune -f
     - docker image prune -f
   tags: 
