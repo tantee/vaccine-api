@@ -26,6 +26,7 @@ class CreateDocumentsTable extends Migration
 			$table->json('data')->nullable();
 			$table->text('note')->nullable();
 			$table->string('status')->default('draft');
+			$table->json('statusLog')->nullable();
 			$table->json('revision')->nullable();
 			$table->string('created_by')->nullable();
 			$table->string('updated_by')->nullable();
@@ -35,6 +36,7 @@ class CreateDocumentsTable extends Migration
 			$table->index(['hn','encounterId','category','folder']);
 			$table->index(['folder','referenceId']);
 			$table->index(['hn','encounterId','templateCode']);
+			$table->index(['templateCode','status']);
 		});
 	}
 

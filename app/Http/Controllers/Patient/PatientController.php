@@ -46,7 +46,7 @@ class PatientController extends Controller
       }
 
       if ($success) {
-        if (!isset($data['patient']['hn'])) $hn = \App\Http\Controllers\Master\IdController::issueId('hn',date('y'),5);
+        if (!isset($data['patient']['hn'])) $hn = $data['patient']['personId'];
         else $hn = $data['patient']['hn'];
 
         $data['patient'] = array_merge(['hn'=>$hn],$data['patient']);
