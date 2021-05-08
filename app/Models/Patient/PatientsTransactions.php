@@ -14,7 +14,14 @@ class PatientsTransactions extends Model
     protected $guarded = [];
 
     public function scopeUninvoiced($query) {
-      return $query->whereNull('invoiceId');
+        return $query->whereNull('invoiceId');
+    }
+
+    public function scopeUnpaid($query) {
+        return $query->whereNull('invoiceId')
+                    ->orWhereHas('Invoice',function($query) {
+                        $query->whereColumn('amountDue','>','amountPaid')->where('isVoid',false);
+                    });
     }
 
     public function Product() {
