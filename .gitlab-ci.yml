@@ -53,4 +53,6 @@ docker-deploy_prod:
     - docker image prune -f
   tags: 
     - cah-api
+  only:
+    - tags
   when: manual
