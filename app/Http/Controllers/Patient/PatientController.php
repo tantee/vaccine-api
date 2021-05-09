@@ -17,7 +17,7 @@ class PatientController extends Controller
 
       $success = true;
       $errorTexts = [];
-      $returnModels = [];
+      $returnModels = null;
 
       $createDataValidator = Validator::make($data,[
         'patient' => 'required|array',
@@ -28,7 +28,6 @@ class PatientController extends Controller
         'patient.primaryMobileNo' => 'required',
         'name' => 'required|array',
         'address' => 'sometimes|required|array',
-        'relative' => 'sometimes|required|array'
       ]);
 
       if ($createDataValidator->fails()) {
@@ -41,7 +40,11 @@ class PatientController extends Controller
           if (PatientController::isExistPersonId($data['patient']['personIdType'],$data['patient']['personId'])) {
             $success = false;
             array_push($errorTexts,["errorText" => 'Person ID is duplicated.']);
+
+            $returnModels = \App\Models\Patient\Patients::find($data['patient']['personId']);
           }
+        } else {
+
         }
       }
 
@@ -52,7 +55,6 @@ class PatientController extends Controller
         $data['patient'] = array_merge(['hn'=>$hn],$data['patient']);
         data_fill($data['name'],'*.hn',$hn);
         data_fill($data['address'],'*.hn',$hn);
-        data_fill($data['relative'],'*.hn',$hn);
 
         if ($success && isset($data['photoIDCard'])) {
           $assetResult = AssetController::addAssetBase64($hn,$data['photoIDCard'],'id_photo');
@@ -102,13 +104,6 @@ class PatientController extends Controller
               ];
               $returnResults['address'] = DataController::createModel($addresses,\App\Models\Patient\PatientsAddresses::class,$validator,[],true);
             }
-            if (isset($data['relative'])) {
-              $validator = [
-                'hn' => 'required',
-                'name' => 'required',
-              ];
-              $returnResults['relative'] = DataController::createModel($data['relative'],\App\Models\Patient\PatientsRelatives::class,$validator,[],true);
-            }
 
             $docApplicationData = [
               'hn' => $hn,
@@ -120,20 +115,21 @@ class PatientController extends Controller
 
             foreach($returnResults as $key=>$returnResult) {
               $success = $success && $returnResult['success'];
-              if ($returnResult['success']) $returnModels[$key] = $returnResult['returnModels'];
-              else {
+              if (!$returnResult['success']) {
                 data_fill($returnResult,'errorTexts.*.field',$key);
                 $errorTexts = array_merge($errorTexts,$returnResult['errorTexts']);
               }
             }
 
-            if (!$success) {
+            if ($success) {
+              $returnModels = \App\Models\Patient\Patients::find($hn);
+            } else {
               DB::rollBack();
-              $returnModels = [];
+              $returnModels = null;
             }
           } catch (\Exception $e) {
             DB::rollBack();
-            $returnModels = [];
+            $returnModels = null;
             $success = false;
             array_push($errorTexts,["errorText" => $e->getMessage()]);
           }
@@ -141,6 +137,8 @@ class PatientController extends Controller
         }
       }
 
+      if ($returnModels) $success = true;
+      
       return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }
 

@@ -21,7 +21,7 @@ class ExtendedResource extends JsonResource
         if (!is_array($resource) && !method_exists ($resource,'toArray')) $resource = [$resource];
         if ($preventFaultUnnesting) {
           if (!is_array($resource)) $resource = $resource->toArray();
-          if (array_key_exists('data',$resource)) $resource = ['data'=>$resource];
+          if (isset($resource["data"])) $resource = ['data'=>$resource];
         }
 
         parent::__construct($resource);

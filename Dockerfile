@@ -1,4 +1,4 @@
-FROM richarvey/nginx-php-fpm:latest
+FROM tantee/vaccine-base:latest
 
 ENV APP_ENV=DEV
 ENV APP_DEBUG=true
@@ -16,19 +16,6 @@ ENV SKIP_CHOWN 1
 ENV SKIP_COMPOSER 1
 
 VOLUME [ "/var/www/html/storage" ]
-
-RUN set -ex \
-    && apk add --no-cache --virtual .phpize-deps $PHPIZE_DEPS imagemagick-dev libtool \
-    && export CFLAGS="$PHP_CFLAGS" CPPFLAGS="$PHP_CPPFLAGS" LDFLAGS="$PHP_LDFLAGS" \
-    && pecl install imagick \
-    && docker-php-ext-enable imagick \
-    && apk add --no-cache --virtual .imagick-runtime-deps imagemagick ghostscript\
-    && apk del .phpize-deps
-
-RUN echo "Asia/Bangkok" > /etc/TZ && \
-    docker-php-ext-install iconv ldap pdo_mysql pdo_sqlite pgsql pdo_pgsql mysqli gd exif intl xsl json soap dom zip opcache sockets bcmath && \
-    sed -i "s/;decorate_workers_output = no/decorate_workers_output = no/g" ${fpm_conf}  && \
-    echo "max_execution_time = 120"  >> ${php_vars}
 
 ADD . /var/www/html/
 WORKDIR "/var/www/html"

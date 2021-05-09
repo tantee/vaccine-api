@@ -27,40 +27,11 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
-        $schedule->call(function() {
-            return \App\Http\Controllers\Export\ExportController::Export();
-        })->everyFiveMinutes()
-            ->name('ExportToAccounting')
-            ->onOneServer();
-
-        $schedule->call(function() {
-            return \App\Http\Controllers\Export\EclaimController::ExportUcsOpd();
-        })->dailyAt('3:15')
-            ->name('ExportToEclaim16FolderDb')
-            ->onOneServer();
-        
-        $schedule->call(function() {
-            return \App\Http\Controllers\Import\PacsImportController::Import();
-        })->everyMinute()
-            ->name('ImportPacsStudy')
-            ->onOneServer();
-
-        $schedule->call(function() {
-            return \App\Http\Controllers\Encounter\IPDController::autoCharge();
-        })->everyFiveMinutes()
-            ->name('AutoChargeIPD')
-            ->onOneServer();
 
         $schedule->call(function() {
             return \App\Http\Controllers\Encounter\OPDController::autoCloseEncounter();
         })->daily()
             ->name('AutoCloseEncounterOPD')
-            ->onOneServer();
-
-        $schedule->call(function() {
-            return \App\Http\Controllers\Patient\PatientInsuranceController::autoTechnicalDisableNhso();
-        })->daily()
-            ->name('AutoTechnicalDisableNhso')
             ->onOneServer();
     }
 

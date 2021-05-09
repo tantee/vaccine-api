@@ -16,7 +16,7 @@ class ArrayType
 
     public static function keyExists($key, $array)
     {
-        $result = array_key_exists($key, $array);
+        $result = isset($array[$key]);
         if ($result) return $result;
 
         foreach ($array as $subarray) {

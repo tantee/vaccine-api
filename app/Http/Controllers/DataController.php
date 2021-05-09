@@ -146,7 +146,7 @@ class DataController extends Controller
       $returnModels = [];
 
       if ($success) {
-        if (!array_key_exists('updateWhere',$data)) {
+        if (!isset($data["updateWhere"])) {
           if (array_keys($data) !== range(0, count($data) - 1)) $data = array($data);
 
           $tempModel = new $model;

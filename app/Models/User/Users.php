@@ -8,7 +8,7 @@ class Users extends Model
 {
     //
     protected $fillable = [
-        'name','username', 'email', 'doctorCode','roles','permissions'
+        'name','username', 'email','position', 'licenseNo','roles','permissions'
     ];
 
     /**

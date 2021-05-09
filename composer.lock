@@ -1690,16 +1690,16 @@
         },
         {
             "name": "lanin/laravel-api-debugger",
-            "version": "3.5.0",
+            "version": "3.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mlanin/laravel-api-debugger.git",
-                "reference": "2474809b8c2b93389c2ed3fcc3a11ddd108768a5"
+                "reference": "00a28a4e0afd50f8b1aa3905bcc981e5a187c96d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mlanin/laravel-api-debugger/zipball/2474809b8c2b93389c2ed3fcc3a11ddd108768a5",
-                "reference": "2474809b8c2b93389c2ed3fcc3a11ddd108768a5",
+                "url": "https://api.github.com/repos/mlanin/laravel-api-debugger/zipball/00a28a4e0afd50f8b1aa3905bcc981e5a187c96d",
+                "reference": "00a28a4e0afd50f8b1aa3905bcc981e5a187c96d",
                 "shasum": ""
             },
             "require": {
@@ -1753,7 +1753,11 @@
                 "log",
                 "queries"
             ],
-            "time": "2019-10-31T08:33:08+00:00"
+            "support": {
+                "issues": "https://github.com/mlanin/laravel-api-debugger/issues",
+                "source": "https://github.com/mlanin/laravel-api-debugger/tree/3.5.1"
+            },
+            "time": "2020-07-07T09:27:13+00:00"
         },
         {
             "name": "laravel/framework",
@@ -8477,10 +8481,10 @@
     ],
     "aliases": [
         {
-            "alias": "1.34.0",
-            "alias_normalized": "1.34.0.0",
+            "package": "nesbot/carbon",
             "version": "2.22.0.0",
-            "package": "nesbot/carbon"
+            "alias": "1.34.0",
+            "alias_normalized": "1.34.0.0"
         }
     ],
     "minimum-stability": "dev",
@@ -8490,5 +8494,6 @@
     "platform": {
         "php": "^7.1.3"
     },
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "2.0.0"
 }

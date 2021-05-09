@@ -26,6 +26,14 @@ class Documents extends Model
       return $this->belongsTo('App\Models\Registration\Encounters','encounterId','encounterId')->without(['patient'])->withTrashed();
     }
 
+    public function Mophsent() {
+      return $this->hasMany('App\Models\Moph\MophApiSents','documentId','id');
+    }
+
+    public function Mophsentsuccess() {
+      return $this->hasMany('App\Models\Moph\MophApiSents','documentId','id')->where('isSuccess',true);
+    }
+
     public function getPatientAgeAttribute() {
       if ($this->patient->dateOfDeath!==null && $this->created_at->greaterThan($this->patient->dateOfDeath)) $interval = $this->patient->dateOfDeath->diffAsCarbonInterval($this->patient->dateOfBirth);
       else $interval = $this->created_at->diffAsCarbonInterval($this->patient->dateOfBirth);
@@ -104,17 +112,14 @@ class Documents extends Model
         });
 
         static::saved(function($model) {
-            $original = $model->getOriginal();
-            if ($model->status=="approved" && (!array_key_exists('status',$original) || $original["status"] != 'approved')) {
-                if ($model->Template && $model->Template->templateCompatibility=='prescription' && $model->encounterId != null) {
-                    $prescriptionData = [
-                      'hn' => $model->hn,
-                      'encounterId' => $model->encounterId,
-                      'documentId' => $model->id,
-                      'status' => 'new',
-                    ];
-                    \App\Http\Controllers\DataController::createModel($prescriptionData,\App\Models\Pharmacy\Prescriptions::class);
-                }
+            if ($model->templateCode=='cv19-vaccine-administration' && $model->status=='approved') {
+              \App\Models\Document\Documents::where('templateCode','cv19-vaccine-administration')
+                ->where('hn',$model->hn)
+                ->whereDate('created_at',$model->created_at)
+                ->where('created_at','<',$model->created_at)
+                ->where('created_by',$model->created_by)
+                ->where('status','approved')
+                ->update(['status'=>'review']);
             }
         });
 

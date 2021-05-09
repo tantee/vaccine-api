@@ -69,6 +69,12 @@ class MasterGroupsSeeder extends Seeder
             'description' => 'ชนิดผู้ชำระค่าใช้จ่าย',
             'propertiesTemplate' => null,
           ],
+          [
+            'groupKey' => '$UserPosition',
+            'groupName' => 'ตำแหน่งหน้าที่',
+            'description' => 'ตำแหน่งหน้าที่ของผู้ใช้งาน',
+            'propertiesTemplate' => null,
+          ],
         ];
 
         

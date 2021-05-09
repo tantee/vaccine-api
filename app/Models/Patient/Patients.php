@@ -2,7 +2,6 @@
 
 namespace App\Models\Patient;
 
-use Watson\Rememberable\Rememberable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UserStamps;
@@ -10,7 +9,7 @@ use Carbon\Carbon;
 
 class Patients extends Model
 {
-    use SoftDeletes,UserStamps,Rememberable;
+    use SoftDeletes,UserStamps;
     protected $primaryKey = 'hn';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -26,30 +25,6 @@ class Patients extends Model
 
     public function Relatives() {
       return $this->hasMany('App\Models\Patient\PatientsRelatives','hn','hn');
-    }
-
-    public function Insurances() {
-      return $this->hasMany('App\Models\Patient\PatientsInsurances','hn','hn')->active()->orderBy('priority');
-    }
-
-    public function AllInsurances() {
-      return $this->hasMany('App\Models\Patient\PatientsInsurances','hn','hn')->withTrashed()->orderBy('priority');
-    }
-
-    public function Transactions() {
-      return $this->hasMany('App\Models\Patient\PatientsTransactions','hn','hn');
-    }
-
-    public function UninvoicedTransactions() {
-      return $this->hasMany('App\Models\Patient\PatientsTransactions','hn','hn')->uninvoiced();
-    }
-
-    public function Invoices() {
-      return $this->hasMany('App\Models\Accounting\AccountingInvoices','hn','hn')->with('Insurance');
-    }
-
-    public function UnpaidInvoices() {
-      return $this->hasMany('App\Models\Accounting\AccountingInvoices','hn','hn')->unpaid()->with('Insurance');
     }
 
     public function Assets() {
@@ -74,10 +49,6 @@ class Patients extends Model
 
     public function ActiveEncountersIpd() {
       return $this->hasMany('App\Models\Registration\Encounters','hn','hn')->active()->where('encounterType', 'IMP')->without('Patient');
-    }
-
-    public function Diagnoses() {
-        return $this->hasMany('App\Models\Patient\PatientsDiagnoses','hn','hn');
     }
 
     public function Allergies() {
@@ -148,6 +119,4 @@ class Patients extends Model
     protected $appends = ['name_th','name_en','name_real_th','name_real_en','age'];
 
     protected $hidden = ['personIdDetail'];
-
-    protected $rememberFor = 1;
 }
