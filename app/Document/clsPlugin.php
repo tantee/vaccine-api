@@ -24,20 +24,26 @@ class clsPlugin
   function OnOperation($FieldName,&$Value,&$PrmLst,&$Txt,$PosBeg,$PosEnd,&$Loc) {
     $ope = $PrmLst['ope'];
     if ($ope == 'formatdate') {
+      if (!empty($Value)) {
+        if (isset($PrmLst['format'])) $format = $PrmLst['format'];
+        else $format = "DD MMMM YYYY";
 
-      if (isset($PrmLst['format'])) $format = $PrmLst['format'];
-      else $format = "DD MMMM YYYY";
+        if (isset($PrmLst['locale'])) $locale = $PrmLst['locale'];
+        else $locale = 'th_TH';
 
-      if (isset($PrmLst['locale'])) $locale = $PrmLst['locale'];
-      else $locale = 'th_TH';
+        if ($FieldName == "patientData.dateOfBirth" && substr($format, -5) == " YYYY") {
+          $byear = Carbon::parse($Value)->year + 543;
+          $format = \str_replace(" YYYY"," YYYY (".$byear.")",$format);
+        } else if ($locale = 'th_TH') {
+          $byear = Carbon::parse($Value)->year + 543;
+          $format = \str_replace("YYYY",$byear,$format);
+          $format = \str_replace("YY",substr($byear, -2),$format);
+        }
 
-      if ($FieldName == "patientData.dateOfBirth" && substr($format, -5) == " YYYY") {
-        $byear = Carbon::parse($Value)->year + 543;
-        $format = \str_replace(" YYYY"," YYYY (".$byear.")",$format);
+        $Value = Carbon::parse($Value)->locale($locale)->isoFormat($format);
       }
-
-      $Value = Carbon::parse($Value)->locale($locale)->isoFormat($format);
     }
+
     if ($ope == 'formatdatetime') {
 
       if (isset($PrmLst['format'])) $format = $PrmLst['format'];
@@ -49,10 +55,15 @@ class clsPlugin
       if ($FieldName == "patientData.dateOfBirth" && substr($format, -5) == " YYYY") {
         $byear = Carbon::parse($Value)->year + 543;
         $format = \str_replace(" YYYY"," YYYY (".$byear.")",$format);
+      } else if ($locale = 'th_TH') {
+        $byear = Carbon::parse($Value)->year + 543;
+        $format = \str_replace("YYYY",$byear,$format);
+        $format = \str_replace("YY",substr($byear, -2),$format);
       }
 
       $Value = Carbon::parse($Value)->locale($locale)->isoFormat($format);
     }
+    
     if ($ope == 'formatname') {
       if (\is_array($Value)) {
         $forcedFullname = (isset($PrmLst['full'])) ? true : false;
@@ -198,8 +209,22 @@ class clsPlugin
       }
     }
 
+    if ($ope == 'formatuser') {
+      $user = \App\Models\User\Users::where('username',$Value)->first();
+      if ($user !== null) {
+        $Value = $user->name;
+      }
+    }
+
     if ($ope == 'checkbox') {
-      $Value = ($Value) ? '☑' : '☐';
+      if (isset($PrmLst['inverse'])) $Value=!$Value;
+      $Value = ($Value) ? '☒' : '☐';
+    }
+
+    if ($ope == 'code128') {
+      if (!empty($Value)) {
+        $Value = Code128Encoder::encode($Value);
+      }
     }
   }
 }

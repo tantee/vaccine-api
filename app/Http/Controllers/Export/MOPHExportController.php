@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Master\MasterController;
 
 class MOPHExportController extends Controller
 {
@@ -59,8 +60,8 @@ class MOPHExportController extends Controller
             try {
                 $CallData = [
                     "hospital" => [
-                        "hospital_code" => "13781",
-                        "hospital_name" => "โรงพยาบาลรามาธิบดี มหาวิทยาลัยมหิดล"
+                        "hospital_code" => env('HOSPITAL_CODE', '13781'),
+                        "hospital_name" => env('HOSPITAL_NAME', 'โรงพยาบาลรามาธิบดี มหาวิทยาลัยมหิดล')
                     ]
                 ];
 
@@ -100,16 +101,16 @@ class MOPHExportController extends Controller
     }
 
     public static function buildPatient($patient) {
-        $mophPatient = \App\Models\Moph\MophPatients::firstOrCreate(['hn'=>$patient['mrn']],['guid'=>Str::uuid()->toString()]);
-        $target = self::getTarget($patient['citizenId']);
+        $mophPatient = \App\Models\Moph\MophPatients::firstOrCreate(['hn'=>$patient->hn],['guid'=>Str::uuid()->toString()]);
+        $target = self::getTarget($patient->hn);
 
         $patientData = [
-            "CID" => $patient['citizenId'],
-            "hn" => $patient['mrn'],
+            "CID" => $patient->hn,
+            "hn" => $patient->hn,
             "patient_guid" => '{'.strtoupper($mophPatient->guid).'}',
-            "prefix" => $patient['initial'],
-            "first_name" => $patient['firstName'],
-            "last_name" => $patient['lastName'],
+            "prefix" => MasterController::translateMaster('$NamePrefix',$patient->name_th->namePrefix),
+            "first_name" => $patient->name_th->firstName,
+            "last_name" => $patient->name_th->lastName,
             "gender" => (isset($target["person"]["gender"])) ? $target["person"]["gender"] : "",
             "birth_date" => (isset($target["person"]["birth_date"])) ? $target["person"]["birth_date"] : "",
             "marital_status_id" =>  null,
@@ -122,8 +123,9 @@ class MOPHExportController extends Controller
             "mobile_phone" => (isset($target["person"]["mobile_phone"])) ? $target["person"]["mobile_phone"] : ""
         ];
 
-        if ($patientData["gender"] == "") $patientData["gender"] = ($patient['gender']=="ชาย") ? 1 : 2;
-        if ($patientData["birth_date"] == "") $patientData["birth_date"] = $patient["dateOfBirth"]->format('Y-m-d');
+        if ($patientData["gender"] == "") $patientData["gender"] = $patient->sex;
+        if ($patientData["birth_date"] == "") $patientData["birth_date"] = $patient->dateOfBirth->format('Y-m-d');
+        if ($patientData["mobile_phone"] == "") $patientData["mobile_phone"] = $patient->primaryMobileNo;
 
         return $patientData;
     }
@@ -139,7 +141,7 @@ class MOPHExportController extends Controller
                         ->count();
         
         if ($previousVisitCount==0) {
-            $target = self::getTarget($document->patient['citizenId']);
+            $target = self::getTarget($document->hn);
             $history = collect($target["vaccine_history"]);
             $previousVisitCount = $history->filter(function($value) use ($document) {
                                         return \Carbon\Carbon::parse($value["immunization_datetime"])->endOfDay()->isBefore($document->created_at);
@@ -172,8 +174,7 @@ class MOPHExportController extends Controller
         $vaccine = \App\Models\Master\MasterItems::where('groupKey','covid19Vaccine')->where('itemCode',$document->data["productCode"])->first();
         $vaccineRoute = \App\Models\Master\MasterItems::where('groupKey','covid19VaccineAdminRoute')->where('itemCode',$document->data["adminRoute"])->first();
 
-        $personnel = \App\Http\Controllers\ApiController::RemoteSOAPApiRaw('http://staffservice.rama.mahidol.ac.th:8080/StaffService/services/StaffService?wsdl','getStaffInfoById',[['staffId'=>$document->created_by]],null,null,30*60);
-        $personnel = $personnel["returnModels"];
+        $personnel = \App\Models\User\Users::find($document->created_by);
 
         $visit = [
            "visit_guid" => '{'.strtoupper($mophEncounter->guid).'}',
@@ -181,11 +182,11 @@ class MOPHExportController extends Controller
            "visit_datetime" => $document->created_at->format('Y-m-d H:i:s'),
            "claim_fund_pcode" => "A1",
            "visit_observation" => [
-              "systolic_blood_pressure" => (!empty($document->data["SBP"])) ? $document->data["SBP"] : 0,
-              "diastolic_blood_pressure" => (!empty($document->data["DBP"])) ? $document->data["DBP"] : 0,
-              "body_weight_kg" => (!empty($document->data["BW"])) ? $document->data["BW"] : 0,
-              "body_height_cm" => (!empty($document->data["high"])) ? $document->data["high"] : 0,
-              "temperature" => (!empty($document->data["temp"])) ? $document->data["temp"] : 0
+              "systolic_blood_pressure" => (!empty($document->data["bloodPressureSystolic"])) ? $document->data["bloodPressureSystolic"] : 0,
+              "diastolic_blood_pressure" => (!empty($document->data["bloodPressureDiastolic"])) ? $document->data["bloodPressureDiastolic"] : 0,
+              "body_weight_kg" => (!empty($document->data["weight"])) ? $document->data["weight"] : 0,
+              "body_height_cm" => (!empty($document->data["height"])) ? $document->data["height"] : 0,
+              "temperature" => (!empty($document->data["temperature"])) ? $document->data["temperature"] : 0
            ],
            "visit_immunization" => [
               [
@@ -202,9 +203,9 @@ class MOPHExportController extends Controller
                  "vaccine_plan_no" => $previousVisitCount+1,
                  "vaccine_route_name" => $vaccineRoute->itemValue,
                  "practitioner" => [
-                    "license_number" => $personnel["LICENSE_NUMBER"],
-                    "name" => $personnel["FIRSTNAME"]." ".$personnel["LASTNAME"],
-                    "role" => $personnel["POSITION_NAME"],
+                    "license_number" => $personnel->licenseNo,
+                    "name" => $personnel->name,
+                    "role" => MasterController::translateMaster('$UserPosition',$personnel->position),
                  ],
                  "immunization_plan_ref_code" => "",
                  "immunization_plan_schedule_ref_code" => ""
@@ -623,40 +624,23 @@ class MOPHExportController extends Controller
     }
 
     public static function buildAppointment($document) {
-        $appointmentList = \App\Http\Controllers\ApiController::RemoteRESTApi('PatientAppointments',['mrn'=>$document->hn]);
-        if ($appointmentList["success"]) {
-            $appList = collect($appointmentList["returnModels"]["appointmentList"]);
-            $appList = $appList->where('sdloc','ODI01')->filter(function($value) use ($document) {
-                            return \Carbon\Carbon::createFromFormat('Y-m-d',$value["appointmentDate"])->isAfter($document->created_at);
-                        })->first();
-            if ($appList) {
-                $appointmentDetail = \App\Http\Controllers\ApiController::RemoteRESTApi('PatientAppointmentDetail',['mrn'=>$document->hn,'appointmentId'=>$appList['appointmentId'],'appointmentType'=>$appList['appointmentTypeCode'],'language'=>'TH']);
-                $appointmentDetail = $appointmentDetail['returnModels'];
-
-                if (!empty($appointmentDetail)) {
-                    $personnel = \App\Http\Controllers\ApiController::RemoteSOAPApiRaw('http://staffservice.rama.mahidol.ac.th:8080/StaffService/services/StaffService?wsdl','getStaffInfoById',[['staffId'=>$appointmentDetail['staffId']]],null,null,30*60);
-                    $personnel = $personnel["returnModels"];
-
-                    return [
-                        [
-                            "appointment_ref_code" => $appointmentDetail['appointmentId'],
-                            "appointment_datetime" => $appointmentDetail['appointmentDate'].' '.$appointmentDetail['appointmentTime'],
-                            "appointment_note" => $appointmentDetail['moreDetail'],
-                            "appointment_cause" => $appointmentDetail['activityName'],
-                            "provis_aptype_code" => "C19",
-                            "practitioner" => [
-                               "license_number" => $personnel["LICENSE_NUMBER"],
-                               "name" => $personnel["FIRSTNAME"]." ".$personnel["LASTNAME"],
-                               "role" => "แพทย์"
-                            ]
-                        ]
-                    ];
-                } else {
-                    return [];
-                }
-            } else {
-                return [];
-            }
+        $appointment = \App\Models\Appointment\Appointments::where('hn',$hn)->whereDate('appointmentDateTime','>',\Carbon\Carbon::now())->orderBy('appointmentDateTime')->first();
+        if ($appointment) {
+            $doctor = \App\Models\Master\Doctors::find($appointment->doctorCode);
+            return [
+                [
+                    "appointment_ref_code" => $appointment->id,
+                    "appointment_datetime" => $appointment->appointmentDateTime->format('Y-m-d H:i:s'),
+                    "appointment_note" => $appointment->note,
+                    "appointment_cause" => MasterController::translateMaster('$AppointmentActivity',$appointment->appointmentActivity),
+                    "provis_aptype_code" => "C19",
+                    "practitioner" => [
+                       "license_number" => ($doctor) ? $doctor->licenseNo : " ",
+                       "name" => ($doctor) ? $doctor->nameTH : " ",
+                       "role" => "แพทย์"
+                    ]
+                ]
+            ];
         } else {
             return [];
         }
@@ -727,7 +711,7 @@ class MOPHExportController extends Controller
 
         $requestData['query'] = [
             "cid" => $cid,
-            "hospital_code" => "13781",
+            "hospital_code" => env('HOSPITAL_CODE', '13781'),
         ];
 
         try {

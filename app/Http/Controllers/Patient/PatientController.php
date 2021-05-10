@@ -17,7 +17,7 @@ class PatientController extends Controller
 
       $success = true;
       $errorTexts = [];
-      $returnModels = null;
+      $returnModels = [];
 
       $createDataValidator = Validator::make($data,[
         'patient' => 'required|array',
@@ -125,11 +125,11 @@ class PatientController extends Controller
               $returnModels = \App\Models\Patient\Patients::find($hn);
             } else {
               DB::rollBack();
-              $returnModels = null;
+              $returnModels = [];
             }
           } catch (\Exception $e) {
             DB::rollBack();
-            $returnModels = null;
+            $returnModels = [];
             $success = false;
             array_push($errorTexts,["errorText" => $e->getMessage()]);
           }
@@ -204,5 +204,33 @@ class PatientController extends Controller
       }
 
       return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
+    }
+
+    public static function getVitalSigns($hn,$vitalSignDate=null) {
+      $vitalSignDate = ($vitalSignDate) ? \Carbon\Carbon::parse($vitalSignDate) : \Carbon\Carbon::now();
+
+      $result = [
+        'temperature'=> null,
+        'heartRate'=> null,
+        'respiratoryRate'=> null,
+        'bloodPressureSystolic'=> null,
+        'bloodPressureDiastolic'=> null,
+        'oxygenSaturation'=> null,
+        'height'=> null,
+        'weight'=> null,
+        'painScore'=> null,
+      ];
+
+      $vitalSigns = \App\Models\Patient\PatientsVitalsigns::where('hn',$hn)->whereDate('vitalSignDateTime',$vitalSignDate)->orderBy('vitalSignDateTime','desc')->get();
+
+      foreach($vitalSigns as $vitalSign) {
+        foreach($result as $key=>$value) {
+          if (!$value && $vitalSign->$key) $result[$key] = $vitalSign->$key;
+        }
+      }
+
+      $result['vitalSignDate'] = $vitalSignDate->format('Y-m-d');
+
+      return $result;
     }
 }

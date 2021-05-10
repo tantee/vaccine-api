@@ -26,7 +26,6 @@ class VaccineController extends Controller
 
     public static function checkReadiness($hn) {
         $checkList = [
-            "covid19Risk" => 'nodata',
             "consentCheck" => 'no-consent',
             "mophTargetCheck" => false,
             "morhTargetDetail" => null,
@@ -34,8 +33,6 @@ class VaccineController extends Controller
             "previousVaccine" => null,
             "cautions" => [],
         ];
-
-        $checkList["covid19Risk"] = RiskController::checkRisk($hn);
 
         $checkList["consentCheck"] = self::checkConsentReady($hn);
 
@@ -98,6 +95,8 @@ class VaccineController extends Controller
                     ->orderBy('created_at','asc')
                     ->get();
 
+        $productCode = null;
+
         $template = \App\Models\Document\DocumentsTemplates::find('cv19-vaccine-passport');
 
         $passportData = [];
@@ -116,6 +115,7 @@ class VaccineController extends Controller
                     'adminSiteOther'.$i=> isset($adminForms[$i-1]->data["adminSiteOther"]) ? $adminForms[$i-1]->data["adminSiteOther"] : null,
                     'created_by'.$i=>$adminForms[$i-1]->created_by,
                 ]);
+                $productCode = isset($adminForms[$i-1]->data["productCode"]) ? $adminForms[$i-1]->data["productCode"] : null;
             } else {
                 $passportData = array_merge($passportData,[
                     'productCode'.$i=>null,
@@ -129,6 +129,30 @@ class VaccineController extends Controller
                     'adminSiteOther'.$i=>null,
                     'created_by'.$i=>null,
                 ]);
+            }
+        }
+
+        if ($productCode) {
+            $vaccine = \App\Models\Master\MasterItems::where('groupKey','covid19Vaccine')->where('itemCode',$productCode)->first();
+            if ($vaccine) {
+                $totalDose = (isset($vaccine->properties["vaccine_total_dose"]) && !empty($vaccine->properties["vaccine_total_dose"])) ? $vaccine->properties["vaccine_total_dose"] : 2;
+                $vaccineInterval = (isset($vaccine->properties["vaccine_interval"]) && !empty($vaccine->properties["vaccine_interval"])) ? $vaccine->properties["vaccine_interval"] : 4;
+
+                if (count($adminForms)<$totalDose) {
+                    $appointment = \App\Models\Appointment\Appointments::where('hn',$hn)
+                            ->whereDate('appointmentDateTime',\Carbon\Carbon::now()->addWeeks($vaccineInterval))
+                            ->first();
+
+                    if (!$appointment) {
+                        $appointment = new \App\Models\Appointment\Appointments();
+                        $appointment->hn = $hn;
+                        $appointment->clinicCode = 'BKK001';
+                        $appointment->appointmentDateTime = \Carbon\Carbon::now()->addWeeks($vaccineInterval)->startOfHour();
+                        $appointment->save();
+                    }
+
+                    $passportData["appointmentDate"] = \Carbon\Carbon::now()->addWeeks($vaccineInterval)->format('Y-m-d');
+                }
             }
         }
 
