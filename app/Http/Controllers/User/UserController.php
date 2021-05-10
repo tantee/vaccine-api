@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 
 class UserController extends Controller
@@ -73,10 +74,13 @@ class UserController extends Controller
 
         $dataItem = [
             'name' => $name,
-            'password' => $password,
-            'password_confirmation' =>$password_confirmation,
             'position' => $position,
         ];
+
+        if (!empty($password)) {
+            $dataItem['password'] = $password;
+            $dataItem['password_confirmation'] = $password_confirmation;
+        }
 
         $validator = Validator::make($dataItem, $validatorRule);
         if ($validator->fails()) {
@@ -88,7 +92,7 @@ class UserController extends Controller
 
         if ($success) {
             if (Auth::guard('api')->user()->username == $username) {
-                $user = \App\Models\User\Users::find($username);
+                $user = \App\Models\User\Users::where('username',$username)->first();
                 if ($user) {
                     if ($password) $user->password = Hash::make($password);
                     $user->name = $name;
@@ -103,8 +107,6 @@ class UserController extends Controller
                 $success = false;
                 array_push($errorTexts,["errorText" => 'Invalid username and credential']);
             }
-
-            $returnModels = $newUser;
         }
 
         return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
