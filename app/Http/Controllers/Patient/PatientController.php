@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\Asset\AssetController;
+use App\Http\Controllers\Export\MOPHExportController;
 use App\Utilities\ArrayType;
 
 class PatientController extends Controller
@@ -44,7 +45,18 @@ class PatientController extends Controller
             $returnModels = \App\Models\Patient\Patients::find($data['patient']['personId']);
           }
         } else {
+          if (isset($data['patient']['personId']) && isset($data['patient']['nationality'])) {
+            $mophResult = MOPHExportController::getCIDFromPassport($data['patient']['personId'],$data['patient']['nationality']);
+            if ($mophResult && isset($mophResult["passport"]) && isset($mophResult["passport"]["cid"])) {
+              $data['patient']['hn'] = $mophResult["passport"]["cid"];
 
+              $existPatient = \App\Models\Patient\Patients::find($data['patient']['hn']);
+              if ($existPatient) {
+                $returnModels = $existPatient;
+                $success = false;
+              }
+            }
+          }
         }
       }
 
@@ -137,7 +149,7 @@ class PatientController extends Controller
         }
       }
 
-      if ($returnModels) $success = true;
+      if (!empty($returnModels)) $success = true;
       
       return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }

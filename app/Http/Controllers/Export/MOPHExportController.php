@@ -31,7 +31,6 @@ class MOPHExportController extends Controller
         if ($force) {
             $documents = \App\Models\Document\Documents::where('templateCode','cv19-vaccine-administration')
                         ->where('status','approved')
-                        ->whereNotNull('encounterId')
                         ->where(function ($query) {
                             $query->where(function ($query) {
                                 $query->where('created_at','<=',\Carbon\Carbon::now()->subMinutes(70))
@@ -45,7 +44,6 @@ class MOPHExportController extends Controller
         } else {
             $documents = \App\Models\Document\Documents::where('templateCode','cv19-vaccine-administration')
                         ->where('status','approved')
-                        ->whereNotNull('encounterId')
                         ->where('created_at','<=',\Carbon\Carbon::now()->subMinutes(70))
                         ->doesntHave('mophsent')->get();
         }
@@ -131,13 +129,12 @@ class MOPHExportController extends Controller
     }
 
     public static function buildVisit($document) {
-        $mophEncounter = \App\Models\Moph\MophEncounters::firstOrCreate(['encounterId'=>$document['encounterId']],['guid'=>Str::uuid()->toString()]);
+        $mophEncounter = \App\Models\Moph\MophEncounters::firstOrCreate(['encounterId'=>$document->created_at->format('Ymd').$document->hn],['guid'=>Str::uuid()->toString()]);
 
         $previousVisitCount = \App\Models\Document\Documents::where('hn',$document->hn)
                         ->where('templateCode','cv19-vaccine-administration')
                         ->where('status','approved')
                         ->whereDate('created_at','<',$document->created_at)
-                        ->whereNotNull('encounterId')
                         ->count();
         
         if ($previousVisitCount==0) {
@@ -152,7 +149,6 @@ class MOPHExportController extends Controller
                         ->where('templateCode','cv19-vaccine-administration')
                         ->where('status','approved')
                         ->whereDate('created_at','>',$document->created_at)
-                        ->whereNotNull('encounterId')
                         ->orderBy('id')
                         ->first();
 
@@ -160,21 +156,19 @@ class MOPHExportController extends Controller
                         ->where('templateCode','cv19-vaccine-discharge')
                         ->where('status','approved')
                         ->whereDate('created_at',$document->created_at)
-                        ->whereNotNull('encounterId')
                         ->get();
 
         $reactions = \App\Models\Document\Documents::where('hn',$document->hn)
                         ->where('templateCode','cv19-vaccine-adverseevents')
                         ->where('status','approved')
-                        ->whereDate('created_at','>=',$document->created_at)
-                        ->whereNotNull('encounterId');
+                        ->whereDate('created_at','>=',$document->created_at);
         if ($nextVisit) $reactions = $reactions->whereDate('created_at','<',$nextVisit->created_at);
         $reactions = $reactions->get();
 
         $vaccine = \App\Models\Master\MasterItems::where('groupKey','covid19Vaccine')->where('itemCode',$document->data["productCode"])->first();
         $vaccineRoute = \App\Models\Master\MasterItems::where('groupKey','covid19VaccineAdminRoute')->where('itemCode',$document->data["adminRoute"])->first();
 
-        $personnel = \App\Models\User\Users::find($document->created_by);
+        $personnel = \App\Models\User\Users::where('username',$document->created_by)->first();
 
         $visit = [
            "visit_guid" => '{'.strtoupper($mophEncounter->guid).'}',
@@ -624,15 +618,16 @@ class MOPHExportController extends Controller
     }
 
     public static function buildAppointment($document) {
-        $appointment = \App\Models\Appointment\Appointments::where('hn',$hn)->whereDate('appointmentDateTime','>',\Carbon\Carbon::now())->orderBy('appointmentDateTime')->first();
+        $appointment = \App\Models\Appointment\Appointments::where('hn',$document->hn)->whereDate('appointmentDateTime','>',\Carbon\Carbon::now())->orderBy('appointmentDateTime')->first();
+        $appointmentActivity = MasterController::translateMaster('$AppointmentActivity',$appointment->appointmentActivity);
         if ($appointment) {
             $doctor = \App\Models\Master\Doctors::find($appointment->doctorCode);
             return [
                 [
                     "appointment_ref_code" => $appointment->id,
                     "appointment_datetime" => $appointment->appointmentDateTime->format('Y-m-d H:i:s'),
-                    "appointment_note" => $appointment->note,
-                    "appointment_cause" => MasterController::translateMaster('$AppointmentActivity',$appointment->appointmentActivity),
+                    "appointment_note" => ($appointment->note) ? $appointment->note : "-",
+                    "appointment_cause" => ($appointmentActivity) ? $appointmentActivity : "นัดมารับวัคซีนต่อเนื่อง",
                     "provis_aptype_code" => "C19",
                     "practitioner" => [
                        "license_number" => ($doctor) ? $doctor->licenseNo : " ",
@@ -751,6 +746,46 @@ class MOPHExportController extends Controller
 
         $requestData['query'] = [
             "cid" => $cid
+        ];
+
+        try {
+            $client = new \GuzzleHttp\Client();
+            $res = $client->request($ApiMethod,$ApiUrl,$requestData);
+
+            $httpResponseCode = $res->getStatusCode();
+            $httpResponseReason = $res->getReasonPhrase();
+
+            if ($httpResponseCode==200) {
+                $ApiData = json_decode((String)$res->getBody(),true);
+
+                if ($ApiData["MessageCode"]==200) return $ApiData["result"];
+                else return null;
+            } else {
+                return null;
+            }
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+          log::error("Error calling to $ApiMethod $ApiUrl.",["Message"=>$e->getMessage(),"RequestData"=>$requestData]);
+
+          return null;
+        }
+    }
+
+    public static function getCIDFromPassport($passportNo,$nationality) {
+        $ApiUrl = "https://cvp1.moph.go.th/api/GetCIDFromPassportNumber";
+        $ApiMethod = "GET";
+
+        $requestData = [
+            'headers' => [
+              'Accept' => 'application/json',
+              'Content-Type' => 'application/json',
+              'Authorization' => 'Bearer '.self::getToken(),
+            ],
+            'verify' => false
+          ];
+
+        $requestData['query'] = [
+            "passport_number" => $passportNo,
+            "nationality" => $nationality
         ];
 
         try {

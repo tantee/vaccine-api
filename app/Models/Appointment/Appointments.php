@@ -31,6 +31,10 @@ class Appointments extends Model
         return $this->hasMany('App\Models\Registration\Encounters','fromAppointmentId','id')->without('fromAppointment');
     }
 
+    protected $dates = [
+        'appointmentDateTime'
+    ];
+
     protected $casts = [
       'additionalDetail' => 'array',
     ];
