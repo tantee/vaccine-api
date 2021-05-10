@@ -33,6 +33,24 @@ class Kernel extends ConsoleKernel
         })->daily()
             ->name('AutoCloseEncounterOPD')
             ->onOneServer();
+
+        $schedule->call(function() {
+            return \App\Http\Controllers\Covid19\VaccineController::autoDischarge();
+        })->everyTenMinutes()
+            ->name('Covid19VaccienAutoDischarge')
+            ->onOneServer();
+            
+        $schedule->call(function() {
+            return \App\Http\Controllers\Export\MOPHExportController::sendUpdateImmunizationData(false);
+        })->everyFifteenMinutes()
+            ->name('MOPHSendUpdateImmunizationData')
+            ->onOneServer();
+
+        $schedule->call(function() {
+            return \App\Http\Controllers\Export\MOPHExportController::sendUpdateImmunizationData(true);
+        })->dailyAt('00:00')
+            ->name('MOPHSendUpdateImmunizationDataForce')
+            ->onOneServer();
     }
 
     /**
