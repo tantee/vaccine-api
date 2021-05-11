@@ -67,6 +67,7 @@ class MOPHExportController extends Controller
                 $CallData['visit'] = self::buildVisit($document);
 
                 $requestData['json'] = $CallData;
+                $requestData['timeout'] = 5;
 
                 $client = new \GuzzleHttp\Client();
                 $res = $client->request($ApiMethod,$ApiUrl,$requestData);
@@ -670,6 +671,7 @@ class MOPHExportController extends Controller
             "password_hash" => $hash,
             "hospital_code" => env('HOSPITAL_CODE', '13781'),
         ];
+        $requestData['timeout'] = 5;
         try {
             $client = new \GuzzleHttp\Client();
             $res = $client->request($ApiMethod,$ApiUrl,$requestData);
@@ -708,7 +710,7 @@ class MOPHExportController extends Controller
             "cid" => $cid,
             "hospital_code" => env('HOSPITAL_CODE', '13781'),
         ];
-
+        $requestData['timeout'] = 5;
         try {
             $client = new \GuzzleHttp\Client();
             $res = $client->request($ApiMethod,$ApiUrl,$requestData);
@@ -747,7 +749,7 @@ class MOPHExportController extends Controller
         $requestData['query'] = [
             "cid" => $cid
         ];
-
+        $requestData['timeout'] = 5;
         try {
             $client = new \GuzzleHttp\Client();
             $res = $client->request($ApiMethod,$ApiUrl,$requestData);
@@ -787,7 +789,7 @@ class MOPHExportController extends Controller
             "passport_number" => $passportNo,
             "nationality" => $nationality
         ];
-
+        $requestData['timeout'] = 5;
         try {
             $client = new \GuzzleHttp\Client();
             $res = $client->request($ApiMethod,$ApiUrl,$requestData);

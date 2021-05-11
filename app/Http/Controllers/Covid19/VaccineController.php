@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Covid19;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Export\MOPHExportController;
 
@@ -44,10 +45,10 @@ class VaccineController extends Controller
             $age = \Carbon\Carbon::now()->diffAsCarbonInterval($patient->dateOfBirth);
             if ($age->y>59 || ($age->y==59 && $age->m>=10)) $checkList["cautions"][] = '> 59 ปี 10 เดือน';
 
-            #$mophTarget = MOPHExportController::getTarget($patient->hn);
-            #$checkList['mophTargetCheck'] = isset($mophTarget['person']) && (!empty($mophTarget['person']));
-            #$checkList['morhTargetDetail'] = (isset($mophTarget['person'])) ? $mophTarget['person'] : null;
-            #$checkList['mophVaccineHistory'] = (isset($mophTarget['vaccine_history'])) ? $mophTarget['vaccine_history'] : [];
+            $mophTarget = MOPHExportController::getTarget($patient->hn);
+            $checkList['mophTargetCheck'] = isset($mophTarget['person']) && (!empty($mophTarget['person']));
+            $checkList['morhTargetDetail'] = (isset($mophTarget['person'])) ? $mophTarget['person'] : null;
+            $checkList['mophVaccineHistory'] = (isset($mophTarget['vaccine_history'])) ? $mophTarget['vaccine_history'] : [];
         }
 
         return $checkList;

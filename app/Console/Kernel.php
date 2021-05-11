@@ -40,17 +40,17 @@ class Kernel extends ConsoleKernel
             ->name('Covid19VaccienAutoDischarge')
             ->onOneServer();
             
-        // $schedule->call(function() {
-        //     return \App\Http\Controllers\Export\MOPHExportController::sendUpdateImmunizationData(false);
-        // })->everyFifteenMinutes()
-        //     ->name('MOPHSendUpdateImmunizationData')
-        //     ->onOneServer();
+        $schedule->call(function() {
+            return \App\Http\Controllers\Export\MOPHExportController::sendUpdateImmunizationData(false);
+        })->everyFifteenMinutes()
+            ->name('MOPHSendUpdateImmunizationData')
+            ->onOneServer();
 
-        // $schedule->call(function() {
-        //     return \App\Http\Controllers\Export\MOPHExportController::sendUpdateImmunizationData(true);
-        // })->dailyAt('00:00')
-        //     ->name('MOPHSendUpdateImmunizationDataForce')
-        //     ->onOneServer();
+        $schedule->call(function() {
+            return \App\Http\Controllers\Export\MOPHExportController::sendUpdateImmunizationData(true);
+        })->dailyAt('00:00')
+            ->name('MOPHSendUpdateImmunizationDataForce')
+            ->onOneServer();
     }
 
     /**
