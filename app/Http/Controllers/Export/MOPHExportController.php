@@ -118,8 +118,8 @@ class MOPHExportController extends Controller
             "moo" => ($address && $address->moo) ? trim(ltrim($address->moo,'หมู่ที่')) : "",
             "road" => ($address && $address->street) ? $address->street : "",
             "chw_code" => ($address && $address->province) ? $address->province : "",
-            "amp_code" => ($address && $address->district) ? ltrim($address->district,$address->province) : "",
-            "tmb_code" => ($address && $address->subdistrict) ? ltrim($address->subdistrict,$address->district) : "",
+            "amp_code" => ($address && $address->district) ? substr($address->district,-2) : "",
+            "tmb_code" => ($address && $address->subdistrict) ? substr($address->subdistrict,-2) : "",
             "mobile_phone" => $patient->primaryMobileNo
         ];
 
