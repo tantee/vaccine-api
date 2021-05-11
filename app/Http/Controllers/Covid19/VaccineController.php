@@ -201,4 +201,52 @@ class VaccineController extends Controller
 
         return $documents;
     }
+
+    public static function getTargetToPatient($personId) {
+        $returnModels = [];
+
+        $namePrefix = [
+            "ด.ช."=>"001",
+            "ด.ญ."=>"002",
+            "นาย"=>"003",
+            "น.ส."=>"004",
+            "นาง"=>"005",
+        ];
+
+        $mophTarget = MOPHExportController::getTarget($personId);
+
+        if ($mophTarget) {
+            $returnModels = [
+                "patient"=>[
+                    "personId"=>$personId,
+                    "personIdType"=>1,
+                    "dateOfBirth"=>$mophTarget["person"]["birth_date"],
+                    "sex"=>$mophTarget["person"]["gender"],
+                    "primaryMobileNo"=>$mophTarget["person"]["mobile_phone"]
+                ],
+                "name"=>[
+                    [
+                        "namePrefix"=>$namePrefix[$mophTarget["person"]["prefix"]],
+                        "nameType"=>"TH",
+                        "firstName"=>$mophTarget["person"]["first_name"],
+                        "middleName"=>null,
+                        "lastName"=>$mophTarget["person"]["last_name"],
+                    ]
+                ],
+                "address"=>[
+                    [
+                        "addressType"=>"census",
+                        "address"=>$mophTarget["person"]["Address"],
+                        "moo"=>$mophTarget["person"]["address_moo"],
+                        "street"=>$mophTarget["person"]["address_road"],
+                        "subdistrict"=>null,
+                        "district"=>$mophTarget["person"]["province_code"].$mophTarget["person"]["district_code"],
+                        "province"=>$mophTarget["person"]["province_code"],                  
+                    ]
+                ]
+            ];
+        }
+
+        return $returnModels;
+    }
 }

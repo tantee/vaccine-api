@@ -34,7 +34,7 @@ class MOPHExportController extends Controller
                         ->where(function ($query) {
                             $query->where(function ($query) {
                                 $query->where('created_at','<=',\Carbon\Carbon::now()->subMinutes(70))
-                                    ->where('created_at','>=',\Carbon\Carbon::now()->subWeek()->startOfDay());
+                                    ->where('created_at','>=',\Carbon\Carbon::now()->subWeeks(2)->startOfDay());
                             })
                             ->orWhere(function ($query) {
                                 $query->doesntHave('mophsentsuccess');
@@ -101,7 +101,8 @@ class MOPHExportController extends Controller
 
     public static function buildPatient($patient) {
         $mophPatient = \App\Models\Moph\MophPatients::firstOrCreate(['hn'=>$patient->hn],['guid'=>Str::uuid()->toString()]);
-        $target = self::getTarget($patient->hn);
+
+        $address = $patient->Addresses()->orderBy('addressType')->first();
 
         $patientData = [
             "CID" => $patient->hn,
@@ -110,21 +111,17 @@ class MOPHExportController extends Controller
             "prefix" => MasterController::translateMaster('$NamePrefix',$patient->name_th->namePrefix),
             "first_name" => $patient->name_th->firstName,
             "last_name" => $patient->name_th->lastName,
-            "gender" => (isset($target["person"]["gender"])) ? $target["person"]["gender"] : "",
-            "birth_date" => (isset($target["person"]["birth_date"])) ? $target["person"]["birth_date"] : "",
+            "gender" => $patient->sex,
+            "birth_date" => $patient->dateOfBirth->format('Y-m-d'),
             "marital_status_id" =>  null,
-            "address" => "",
-            "moo" => "",
-            "road" => "",
-            "chw_code" => "",
-            "amp_code" => (isset($target["person"]["district_code"])) ? $target["person"]["district_code"] : "",
-            "tmb_code" => (isset($target["person"]["province_code"])) ? $target["person"]["province_code"] : "",
-            "mobile_phone" => (isset($target["person"]["mobile_phone"])) ? $target["person"]["mobile_phone"] : ""
+            "address" => ($address && trim($address->address." ".$address->soi)) ? trim($address->address." ".$address->soi) : "",
+            "moo" => ($address && $address->moo) ? $address->moo : "",
+            "road" => ($address && $address->street) ? $address->street : "",
+            "chw_code" => ($address && $address->province) ? $address->province : "",
+            "amp_code" => ($address && $address->district) ? substr($address->district,-1,2) : "",
+            "tmb_code" => ($address && $address->subdistrict) ? substr($address->subdistrict,-1,2) : "",
+            "mobile_phone" => $patient->primaryMobileNo
         ];
-
-        if ($patientData["gender"] == "") $patientData["gender"] = $patient->sex;
-        if ($patientData["birth_date"] == "") $patientData["birth_date"] = $patient->dateOfBirth->format('Y-m-d');
-        if ($patientData["mobile_phone"] == "") $patientData["mobile_phone"] = $patient->primaryMobileNo;
 
         return $patientData;
     }
