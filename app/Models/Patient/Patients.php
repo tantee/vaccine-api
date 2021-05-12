@@ -63,7 +63,25 @@ class Patients extends Model
 
     public function getNameEnAttribute() {
       $name = \App\Models\Patient\PatientsNames::where('hn',$this->hn)->where('nameType','EN')->orWhere('nameType','ALIAS_EN')->orderBy('nameType')->orderBy('id','desc')->first();
-      return ($name==null) ? $this->name_th : $name;
+      if ($name==null) $name = \App\Models\Patient\PatientsNames::where('hn',$this->hn)->where('nameType','TH')->orWhere('nameType','ALIAS_TH')->orderBy('nameType')->orderBy('id','desc')->first();
+      if ($name==null) {
+        if ($this->sex==1) {
+          $name = new \App\Models\Patient\PatientsNames();
+          $name->hn = $this->hn;
+          $name->nameType = 'EN';
+          $name->namePrefix = '003'
+          $name->firstName = 'John';
+          $name->lastName = 'Doe';
+        } else {
+          $name = new \App\Models\Patient\PatientsNames();
+          $name->hn = $this->hn;
+          $name->nameType = 'EN';
+          $name->namePrefix = '004'
+          $name->firstName = 'Jane';
+          $name->lastName = 'Doe';
+        }
+      }
+      return $name;
     }
 
     public function getNameRealThAttribute() {
@@ -73,7 +91,25 @@ class Patients extends Model
 
     public function getNameRealEnAttribute() {
       $name = \App\Models\Patient\PatientsNames::where('hn',$this->hn)->where('nameType','EN')->orderBy('id','desc')->first();
-      return ($name==null) ? $this->name_real_th : $name;
+      if ($name==null) $name = \App\Models\Patient\PatientsNames::where('hn',$this->hn)->where('nameType','TH')->orderBy('id','desc')->first();
+      if ($name==null) {
+        if ($this->sex==1) {
+          $name = new \App\Models\Patient\PatientsNames();
+          $name->hn = $this->hn;
+          $name->nameType = 'EN';
+          $name->namePrefix = '003'
+          $name->firstName = 'John';
+          $name->lastName = 'Doe';
+        } else {
+          $name = new \App\Models\Patient\PatientsNames();
+          $name->hn = $this->hn;
+          $name->nameType = 'EN';
+          $name->namePrefix = '004'
+          $name->firstName = 'Jane';
+          $name->lastName = 'Doe';
+        }
+      }
+      return $name;
     }
 
     public function getAgeAttribute() {
