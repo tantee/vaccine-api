@@ -69,14 +69,14 @@ class Patients extends Model
           $name = new \App\Models\Patient\PatientsNames();
           $name->hn = $this->hn;
           $name->nameType = 'EN';
-          $name->namePrefix = '003'
+          $name->namePrefix = '003';
           $name->firstName = 'John';
           $name->lastName = 'Doe';
         } else {
           $name = new \App\Models\Patient\PatientsNames();
           $name->hn = $this->hn;
           $name->nameType = 'EN';
-          $name->namePrefix = '004'
+          $name->namePrefix = '004';
           $name->firstName = 'Jane';
           $name->lastName = 'Doe';
         }
@@ -97,14 +97,14 @@ class Patients extends Model
           $name = new \App\Models\Patient\PatientsNames();
           $name->hn = $this->hn;
           $name->nameType = 'EN';
-          $name->namePrefix = '003'
+          $name->namePrefix = '003';
           $name->firstName = 'John';
           $name->lastName = 'Doe';
         } else {
           $name = new \App\Models\Patient\PatientsNames();
           $name->hn = $this->hn;
           $name->nameType = 'EN';
-          $name->namePrefix = '004'
+          $name->namePrefix = '004';
           $name->firstName = 'Jane';
           $name->lastName = 'Doe';
         }
