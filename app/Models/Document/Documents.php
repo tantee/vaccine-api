@@ -36,8 +36,8 @@ class Documents extends Model
 
     public function getPatientAgeAttribute() {
       if ($this->patient) {
-        if ($this->patient->dateOfDeath!==null && $this->created_at->greaterThan($this->patient->dateOfDeath)) $interval = $this->patient->dateOfDeath->diffAsCarbonInterval($this->patient->dateOfBirth);
-        else $interval = $this->created_at->diffAsCarbonInterval($this->patient->dateOfBirth);
+        if ($this->patient->dateOfDeath!==null && $this->created_at->greaterThan($this->patient->dateOfDeath)) $interval = $this->patient->dateOfDeath->diffAsCarbonInterval(\Carbon\Carbon::parse($this->patient->dateOfBirth));
+        else $interval = $this->created_at->diffAsCarbonInterval(\Carbon\Carbon::parse($this->patient->dateOfBirth));
       } else {
         $interval = $this->created_at->diffAsCarbonInterval(\Carbon\Carbon::now());
       }

@@ -678,7 +678,7 @@ class MOPHExportController extends Controller
 
             if ($httpResponseCode==200) {
                 $result = (String)$res->getBody();
-                Cache::put($cacheKey,$result,15*60);
+                Cache::put($cacheKey,$result,5*60);
                 return $result;
             } else {
                 return null;
