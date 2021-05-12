@@ -62,7 +62,8 @@ class Patients extends Model
     }
 
     public function getNameEnAttribute() {
-      return \App\Models\Patient\PatientsNames::where('hn',$this->hn)->where('nameType','EN')->orWhere('nameType','ALIAS_EN')->orderBy('nameType')->orderBy('id','desc')->first();
+      $name = \App\Models\Patient\PatientsNames::where('hn',$this->hn)->where('nameType','EN')->orWhere('nameType','ALIAS_EN')->orderBy('nameType')->orderBy('id','desc')->first();
+      return ($name==null) ? $this->name_th : $name;
     }
 
     public function getNameRealThAttribute() {
@@ -71,7 +72,8 @@ class Patients extends Model
     }
 
     public function getNameRealEnAttribute() {
-      return \App\Models\Patient\PatientsNames::where('hn',$this->hn)->where('nameType','EN')->orderBy('id','desc')->first();
+      $name = App\Models\Patient\PatientsNames::where('hn',$this->hn)->where('nameType','EN')->orderBy('id','desc')->first();
+      return ($name==null) ? $this->name_real_th : $name;
     }
 
     public function getAgeAttribute() {
