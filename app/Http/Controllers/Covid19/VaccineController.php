@@ -236,12 +236,12 @@ class VaccineController extends Controller
                 "address"=>[
                     [
                         "addressType"=>"census",
-                        "address"=>$mophTarget["person"]["Address"],
-                        "moo"=>$mophTarget["person"]["address_moo"],
-                        "street"=>$mophTarget["person"]["address_road"],
+                        "address"=>(isset($mophTarget["person"]["Address"])) ? $mophTarget["person"]["Address"] : "",
+                        "moo"=>(isset($mophTarget["person"]["address_moo"])) ? $mophTarget["person"]["address_moo"] : "",
+                        "street"=>(isset($mophTarget["person"]["address_moo"])) ? $mophTarget["person"]["address_road"] : "",
                         "subdistrict"=>null,
-                        "district"=>$mophTarget["person"]["province_code"].$mophTarget["person"]["district_code"],
-                        "province"=>$mophTarget["person"]["province_code"],                  
+                        "district"=>(isset($mophTarget["person"]["province_code"]) && isset($mophTarget["person"]["district_code"])) ? $mophTarget["person"]["province_code"].$mophTarget["person"]["district_code"] : "",
+                        "province"=>(isset($mophTarget["person"]["province_code"])) ? $mophTarget["person"]["province_code"] : "",                  
                     ]
                 ]
             ];
