@@ -46,6 +46,12 @@ class MasterGroupsSeeder extends Seeder
             'propertiesTemplate' =>  '<v-text-field v-model="data.abbr" label="Abbreviation"></v-text-field>',
           ],
           [
+            'groupKey' => '$NameSuffix',
+            'groupName' => 'คำลงท้ายชื่อ',
+            'description' => 'คำลงท้ายชื่อ สำหรับชื่อผู้ป่วย',
+            'propertiesTemplate' => null,
+          ],
+          [
             'groupKey' => '$Occupation',
             'groupName' => 'อาชีพ',
             'description' => 'รายการอาชีพ',
