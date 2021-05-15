@@ -75,7 +75,7 @@ class clsPlugin
 
         if (!empty($Value['namePrefix'])) $tmpName[] = MasterController::translateMaster('$NamePrefix',$Value['namePrefix'],$English);
         if (!empty($Value['firstName'])) $tmpName[] = $Value['firstName'];
-        if (!empty($Value['middleName'])) $tmpName[] = ($forcedFullname) ? $Value['middleName'] : $Value['middleName'][0].'.';
+        if (!empty($Value['middleName'])) $tmpName[] = ($forcedFullname) ? $Value['middleName'] :  iconv_substr(mb_ereg_replace("เ|แ|โ|ไ|ใ","",$Value['middleName']),0,1).'.';
         if (!empty($Value['lastName'])) $tmpName[] = $Value['lastName'];
         if (!empty($Value['nameSuffix'])) $tmpName[] = MasterController::translateMaster('$NameSuffix',$Value['nameSuffix'],$English);
 
