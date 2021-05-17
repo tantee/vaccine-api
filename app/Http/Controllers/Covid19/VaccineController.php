@@ -152,7 +152,7 @@ class VaccineController extends Controller
                         $appointment->save();
                     }
 
-                    $passportData["appointmentDate"] = \Carbon\Carbon::now()->addWeeks($vaccineInterval)->format('Y-m-d');
+                    $passportData["appointmentDate"] = \Carbon\Carbon::now()->addWeeks($vaccineInterval)->startOfHour();
                 }
             }
         }
