@@ -4,7 +4,8 @@ namespace App\Models\Registration;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Traits\UserStamps;
+use Illuminate\Support\Arr;
+use TaNteE\LaravelModelApi\Traits\UserStamps;
 use App\Http\Controllers\Master\IdController;
 use Awobaz\Compoships\Compoships;
 use Carbon\Carbon;
@@ -109,14 +110,14 @@ class Encounters extends Model
                         data_fill($autoCharges,"*.encounterId",$model->encounterId);
 
                         $autoCharges = array_map(function ($value) {
-                            return array_only($value,['encounterId','productCode','quantity','repeatHour','roundHour','limitPerEncounter','limitPerDay']);
+                            return Arr::only($value,['encounterId','productCode','quantity','repeatHour','roundHour','limitPerEncounter','limitPerDay']);
                         }, $autoCharges);
 
                         $validationRule = [
                           'encounterId' => 'required',
                           'productCode' => 'required',
                         ];
-                        \App\Http\Controllers\DataController::createModel($autoCharges,\App\Models\Registration\EncountersAutocharges::class,$validationRule);
+                        \TaNteE\LaravelModelApi\LaravelModelApi::createModel($autoCharges,\App\Models\Registration\EncountersAutocharges::class,$validationRule);
                     }
                     
                     \App\Http\Controllers\Encounter\TransactionController::addTransactions($model->hn,$model->encounterId,$model->Clinic->autoCharge);
@@ -127,7 +128,7 @@ class Encounters extends Model
         static::updating(function($model) {
             $original = $model->getOriginal();
             if ($model->status != $original['status'] || $model->currectLocation != $original['currentLocation']) {
-                $tempStatusLog =  array_wrap($model->statusLog);
+                $tempStatusLog =  Arr::wrap($model->statusLog);
                 array_push($tempStatusLog,[
                     "status"=>$model->status,
                     "location"=>$model->currectLocation,
@@ -137,7 +138,7 @@ class Encounters extends Model
             }
 
             if ($model->clinicCode != $original['clinicCode'] || $model->doctorCode != $original['doctorCode'] || $model->locationCode != $original['locationCode'] || $model->locationSubunitCode != $original['locationSubunitCode']) {
-                $tempLocationLog = array_wrap($model->locationLog); 
+                $tempLocationLog = Arr::wrap($model->locationLog); 
                 array_push($tempLocationLog,["clinicCode"=>$model->clinicCode,
                 "doctorCode"=>$model->doctorCode,
                 "locationCode"=>$model->locationCode,

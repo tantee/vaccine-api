@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Document;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\App;
@@ -14,7 +15,7 @@ use App\Document\clsMasterItem;
 use App\Document\clsPlugin;
 use App\Http\Controllers\Patient\PatientController;
 use App\Http\Controllers\Document\DocumentController;
-use App\Utilities\ArrayType;
+use TaNteE\PhpUtilities\ArrayType;
 
 use TheCodingMachine\Gotenberg\Client;
 use TheCodingMachine\Gotenberg\DocumentFactory;
@@ -36,7 +37,7 @@ class PrintController extends Controller
       $documentIds = [];
 
       if (!is_array($documentTemplate)) $documentTemplate = [$documentTemplate];
-      if (ArrayType::isMultiDimension($documentTemplate)) $documentTemplate = array_pluck($documentTemplate,'templateCode');
+      if (ArrayType::isMultiDimension($documentTemplate)) $documentTemplate = Arr::pluck($documentTemplate,'templateCode');
 
       $documentTemplates = \App\Models\Document\DocumentsTemplates::whereIn('templateCode',$documentTemplate)->get();
 
@@ -127,8 +128,8 @@ class PrintController extends Controller
       Storage::makeDirectory($tmpDirectory);
 
       if (ArrayType::isMultiDimension($documentIds)) {
-        if (ArrayType::keyExists('documentId',$documentIds)) $documentIds = array_pluck($documentIds,'documentId');
-        else $documentIds = array_pluck($documentIds,'id');
+        if (ArrayType::keyExists('documentId',$documentIds)) $documentIds = Arr::pluck($documentIds,'documentId');
+        else $documentIds = Arr::pluck($documentIds,'id');
       }
 
       $toPdf = (boolean)\App\Models\Document\Documents::whereIn('id',$documentIds)->where('data->isVoid',true)->count();
@@ -166,7 +167,7 @@ class PrintController extends Controller
       $returnData = null;
 
       $data['print_date'] = Carbon::now();
-      $data['print_user'] = (Auth::guard('api')->check()) ? Auth::guard('api')->user()->username : 'Unidentified';
+      $data['print_user'] = (Auth::check()) ? Auth::user()->username : 'Unidentified';
 
       if (!isset($data['qrCodeData'])) $data['qrCodeData'] = \json_encode([]);
 
@@ -262,7 +263,9 @@ class PrintController extends Controller
 
         $TBS->Show(\OPENTBS_FILE,storage_path('app/'.$tmpFilename));
 
-        if (isset($hn) && isset($templateCode) && isset($documentId)) Storage::copy($tmpFilename,'/documents/'.$hn.'/'.$templateCode.'/raw/'.$documentId.'_'.$tmpUniqId.'.docx');
+        if (config('app.env')=="DEV") {
+          if (isset($hn) && isset($templateCode) && isset($documentId)) Storage::copy($tmpFilename,'/documents/'.$hn.'/'.$templateCode.'/raw/'.$documentId.'_'.$tmpUniqId.'.docx');
+        }
 
         if ($toPdf && self::convertToPDF($tmpFilename,$tmpFilenamePDF)) {
           if (isset($data['isVoid']) && $data['isVoid']) {
@@ -323,7 +326,7 @@ class PrintController extends Controller
 
       if (($UnoconvServ != null) && ($UnoconvServ != "")) {
         try {
-          $client = new Client($UnoconvServ, new \Http\Adapter\Guzzle6\Client());
+          $client = new Client($UnoconvServ, new \Http\Adapter\Guzzle7\Client());
           $files = [];
           foreach($filenames as $filename) {
             $files[] = DocumentFactory::makeFromPath(basename($filename), storage_path('app/'.$filename));
@@ -354,7 +357,7 @@ class PrintController extends Controller
 
       if (($UnoconvServ != null) && ($UnoconvServ != "")) {
         try {
-          $client = new Client($UnoconvServ, new \Http\Adapter\Guzzle6\Client());
+          $client = new Client($UnoconvServ, new \Http\Adapter\Guzzle7\Client());
           $files = [];
           foreach($filenames as $filename) {
             $files[] = DocumentFactory::makeFromPath(basename($filename), storage_path('app/'.$filename));

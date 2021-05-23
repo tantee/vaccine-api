@@ -91,7 +91,7 @@ class UserController extends Controller
         }
 
         if ($success) {
-            if (Auth::guard('api')->user()->username == $username) {
+            if (Auth::user()->username == $username) {
                 $user = \App\Models\User\Users::where('username',$username)->first();
                 if ($user) {
                     if ($password) $user->password = Hash::make($password);

@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Document;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\DataController;
 use App\Http\Controllers\Master\IdController;
 use App\Http\Controllers\Patient\PatientController;
 use Carbon\Carbon;
+use TaNteE\LaravelModelApi\LaravelModelApi;
 
 class DocumentController extends Controller
 {
@@ -28,11 +29,11 @@ class DocumentController extends Controller
     }
 
     public static function addDocuments($documents) {
-      return DataController::createModel($documents,\App\Models\Document\Documents::class);
+      return LaravelModelApi::createModel($documents,\App\Models\Document\Documents::class);
     }
 
     public static function approveDocuments($documents) {
-      if (is_array($documents)) $documents = array_pluck($documents,'id');
+      if (is_array($documents)) $documents = Arr::pluck($documents,'id');
       else $documents = [$documents];
 
       $documents = \App\Models\Document\Documents::whereIn('id',$documents)->update(["status" => "approved"]);
@@ -61,7 +62,7 @@ class DocumentController extends Controller
 
           $tmpData = base64_decode($tmpData);
           try {
-            $tmpData = \App\Utilities\Image::scaleBlobImage($tmpData,1000,1000);
+            $tmpData = \TaNteE\PhpUtilities\Image::scaleBlobImage($tmpData,1000,1000);
             $QRCodeReader = new \Zxing\QrReader($tmpData,\Zxing\QrReader::SOURCE_TYPE_BLOB);
             $QRCodeData = $QRCodeReader->text();
             $QRCodeData = \json_decode($QRCodeData,true);
@@ -97,10 +98,10 @@ class DocumentController extends Controller
             if (isset($data['referenceId']) && $data['referenceId']!=null && $data['referenceId']!='') $document->referenceId = $data['referenceId'];
             if (isset($data['folder']) && $data['folder']!=null && $data['folder']!='') $document->folder = $data['folder'];
 
-            $data = array_only($data,['base64string']);
+            $data = Arr::only($data,['base64string']);
             
             if ($document->isScanned && ($isAppend || Carbon::now()->diffInMinutes($document->updated_at)<=5)) {
-              $oldData = array_wrap($document->data);
+              $oldData = Arr::wrap($document->data);
               array_push($oldData,$data);
               $document->data = $oldData;
             } else {
@@ -136,7 +137,7 @@ class DocumentController extends Controller
       $returnModels = [];
       
       if (PatientController::isExistPatient($hn)) {
-        return DataController::searchModelByRequest($request,\App\Models\Document\Documents::class);
+        return LaravelModelApi::searchModelByRequest($request,\App\Models\Document\Documents::class);
       } else {
         $success = false;
         array_push($errorTexts,["errorText" => 'No patient for HN '.$hn]);

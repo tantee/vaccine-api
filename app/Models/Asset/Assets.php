@@ -4,8 +4,8 @@ namespace App\Models\Asset;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Traits\UserStamps;
-use App\Http\Controllers\Asset\AssetController;
+use TaNteE\LaravelModelApi\Traits\UserStamps;
+use TaNteE\LaravelModelApi\Http\Controllers\Asset\AssetController;
 
 class Assets extends Model
 {

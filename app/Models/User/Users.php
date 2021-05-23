@@ -3,6 +3,7 @@
 namespace App\Models\User;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 
 class Users extends Model
 {
@@ -24,7 +25,7 @@ class Users extends Model
 
         $tmpPermissions = collect($this->permissions)->pluck('permissionId');
 
-        foreach(array_wrap($this->roles) as $role) {
+        foreach(Arr::wrap($this->roles) as $role) {
             if (isset($role["roleId"])) {
                 $tmpRole = \App\Models\User\Roles::find($role["roleId"]);
                 if ($tmpRole != null) {

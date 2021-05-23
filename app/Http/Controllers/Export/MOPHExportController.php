@@ -6,18 +6,36 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use App\Models\Document\Documents;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Master\MasterController;
 
 class MOPHExportController extends Controller
 {
-    public static function sendUpdateImmunizationData($force=false) {
-        Log::info('Begin export data to MOPH IC');
+    public static function sendBatchUpdateData() {
+        Log::info('Nightly export data to MOPH IC');
 
+        $documents = \App\Models\Document\Documents::where('templateCode','cv19-vaccine-administration')
+                        ->where('status','approved')
+                        ->where(function ($query) {
+                            $query->where(function ($query) {
+                                $query->where('created_at','<=',\Carbon\Carbon::now()->subMinutes(60))
+                                    ->where('created_at','>=',\Carbon\Carbon::now()->subWeeks(2)->startOfDay());
+                            })
+                            ->orWhere(function ($query) {
+                                $query->doesntHave('mophsentsuccess');
+                            });
+                        })
+                        ->get();
+
+        foreach($documents as $document) {
+            \App\Jobs\Covid19\SendDataToMoph::dispatch($document);
+        }
+    }
+
+    public static function sendSingleData(Documents $document) {
         $ApiMethod = "POST";
         $ApiUrl = (config('app.env')=="PROD") ? 'https://cvp1.moph.go.th/api/UpdateImmunization' : 'https://cloud4.hosxp.net/api/moph/UpdateImmunization';
-        
-        Log::info($ApiUrl);
 
         $requestData = [
           'headers' => [
@@ -28,75 +46,52 @@ class MOPHExportController extends Controller
           'verify' => false
         ];
 
-        if ($force) {
-            $documents = \App\Models\Document\Documents::where('templateCode','cv19-vaccine-administration')
-                        ->where('status','approved')
-                        ->where(function ($query) {
-                            $query->where(function ($query) {
-                                $query->where('created_at','<=',\Carbon\Carbon::now()->subMinutes(70))
-                                    ->where('created_at','>=',\Carbon\Carbon::now()->subWeeks(2)->startOfDay());
-                            })
-                            ->orWhere(function ($query) {
-                                $query->doesntHave('mophsentsuccess');
-                            });
-                        })
-                        ->get();
-        } else {
-            $documents = \App\Models\Document\Documents::where('templateCode','cv19-vaccine-administration')
-                        ->where('status','approved')
-                        ->where('created_at','<=',\Carbon\Carbon::now()->subMinutes(70))
-                        ->doesntHave('mophsent')->get();
-        }
+        try {
+            $CallData = [
+                "hospital" => [
+                    "hospital_code" => env('HOSPITAL_CODE', ''),
+                    "hospital_name" => env('HOSPITAL_NAME', '')
+                ]
+            ];
 
-        foreach($documents as $document) {
-            
-            if (!$force) {
-                $document->refresh();
-                if (count($document->mophsent)>0) continue;
+            $CallData['patient'] = self::buildPatient($document->patient);
+            $CallData['visit'] = self::buildVisit($document);
+
+            $requestData['json'] = $CallData;
+            $requestData['timeout'] = 5;
+
+            $client = new \GuzzleHttp\Client();
+            $res = $client->request($ApiMethod,$ApiUrl,$requestData);
+
+            $httpResponseCode = $res->getStatusCode();
+            $httpResponseReason = $res->getReasonPhrase();
+            $ApiData = json_decode((String)$res->getBody(),true);
+
+            $mophApiSent = new \App\Models\Moph\MophApiSents();
+            $mophApiSent->documentId = $document->id;
+            $mophApiSent->requestData = $CallData;
+            $mophApiSent->responseData = $ApiData;
+            $mophApiSent->isSuccess = (isset($ApiData["result"]["immunization_data_error"])) ? false : true;
+            $mophApiSent->save();
+
+            Log::info('Export data to MOPH IC, document ID '.$document->id);
+        } catch(\Exception $e) {
+
+            $mophApiSent = new \App\Models\Moph\MophApiSents();
+            $mophApiSent->documentId = $document->id;
+            $mophApiSent->requestData = $CallData;
+            $responseData = ["Message"=>$e->getMessage(),"Document"=>$document];
+            if ($e instanceof \GuzzleHttp\Exception\RequestException) {
+                if ($e->hasResponse()) {
+                    $responseData["Response"] = json_decode((String)$e->getResponse()->getBody(),true);
+                }
             }
+            $mophApiSent->responseData = $responseData;
+            $mophApiSent->isSuccess = false;
+            $mophApiSent->save();
 
-            try {
-                $CallData = [
-                    "hospital" => [
-                        "hospital_code" => env('HOSPITAL_CODE', '13781'),
-                        "hospital_name" => env('HOSPITAL_NAME', 'โรงพยาบาลรามาธิบดี มหาวิทยาลัยมหิดล')
-                    ]
-                ];
-
-                $CallData['patient'] = self::buildPatient($document->patient);
-                $CallData['visit'] = self::buildVisit($document);
-
-                $requestData['json'] = $CallData;
-                $requestData['timeout'] = 5;
-
-                $client = new \GuzzleHttp\Client();
-                $res = $client->request($ApiMethod,$ApiUrl,$requestData);
-
-                $httpResponseCode = $res->getStatusCode();
-                $httpResponseReason = $res->getReasonPhrase();
-                $ApiData = json_decode((String)$res->getBody(),true);
-
-                $mophApiSent = new \App\Models\Moph\MophApiSents();
-                $mophApiSent->documentId = $document->id;
-                $mophApiSent->requestData = $CallData;
-                $mophApiSent->responseData = $ApiData;
-                $mophApiSent->isSuccess = (isset($ApiData["result"]["immunization_data_error"])) ? false : true;
-                $mophApiSent->save();
-
-                Log::info('Export data to MOPH IC, document ID '.$document->id);
-            } catch(\Exception $e) {
-
-                $mophApiSent = new \App\Models\Moph\MophApiSents();
-                $mophApiSent->documentId = $document->id;
-                $mophApiSent->requestData = $CallData;
-                $mophApiSent->responseData = ["Message"=>$e->getMessage(),"Document"=>$document];
-                $mophApiSent->isSuccess = false;
-                $mophApiSent->save();
-
-                log::error("Error MOPH Export for document ID ".$document->id,["Message"=>$e->getMessage(),"Document"=>$document]);
-            }
+            log::error("Error MOPH Export for document ID ".$document->id,["Message"=>$e->getMessage(),"Document"=>$document]);
         }
-        Log::info('Finish export data to MOPH IC');
     }
 
     public static function buildPatient($patient) {
@@ -139,7 +134,7 @@ class MOPHExportController extends Controller
             $target = self::getTarget($document->hn);
             $history = collect($target["vaccine_history"]);
             $previousVisitCount = $history->filter(function($value) use ($document) {
-                                        return \Carbon\Carbon::parse($value["immunization_datetime"])->endOfDay()->isBefore($document->created_at);
+                                        return \Carbon\Carbon::parse($value["immunization_datetime"])->timezone(config('app.timezone'))->endOfDay()->isBefore($document->created_at);
                                     })->count();
         }
 
@@ -806,6 +801,69 @@ class MOPHExportController extends Controller
           log::error("Error calling to $ApiMethod $ApiUrl.",["Message"=>$e->getMessage(),"RequestData"=>$requestData]);
 
           return null;
+        }
+    }
+
+    public static function checkWhitelists() {
+        $whitelists = \App\Models\Moph\Whitelists::whereNull('mophTarget')->limit(250000)->get();
+        
+        foreach($whitelists as $whitelist) {
+            \App\Jobs\Covid19\CheckWhiteList::dispatch($whitelist);
+        }
+    }
+
+    public static function checkWhitelistSingle($whitelist) {
+        $ApiUrl = "https://cvp1.moph.go.th/api/ImmunizationTarget";
+        $ApiMethod = "GET";
+
+        $requestData = [
+            'headers' => [
+              'Accept' => 'application/json',
+              'Content-Type' => 'application/json',
+              'Authorization' => 'Bearer '.self::getToken(),
+            ],
+            'verify' => false
+          ];
+
+        $requestData['query'] = [
+            "cid" => $whitelist->cid,
+            "hospital_code" => env('HOSPITAL_CODE', '13781'),
+        ];
+        $requestData['timeout'] = 5;
+        try {
+            $client = new \GuzzleHttp\Client();
+            $res = $client->request($ApiMethod,$ApiUrl,$requestData);
+
+            $httpResponseCode = $res->getStatusCode();
+            $httpResponseReason = $res->getReasonPhrase();
+
+            $mophTarget = json_decode((String)$res->getBody(),true);
+
+            $whitelist->mophTarget = $mophTarget;
+            $whitelist->isAppoint = 0;
+            $whitelist->isVaccine = 0;
+
+            if ($mophTarget["MessageCode"]==200) {
+                $result = $mophTarget["result"];
+                if (isset($result["confirm_appointment_slot_count"]) && $result["confirm_appointment_slot_count"]>0) {
+                    $whitelist->isAppoint = 1;
+                }
+                if (isset($result["vaccine_history_count"]) && $result["vaccine_history_count"]>0) {
+                    $whitelist->isVaccine = 1;
+                }
+            }
+            $whitelist->save();
+            log::info($whitelist->cid);
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            if ($e->hasResponse()) {
+                $mophTarget = json_decode((String)$e->getResponse()->getBody(),true);
+
+                $whitelist->mophTarget = $mophTarget;
+                $whitelist->isAppoint = 0;
+                $whitelist->isVaccine = 0;
+                $whitelist->save();
+                log::error($whitelist->cid);
+            }
         }
     }
 }

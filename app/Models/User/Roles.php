@@ -4,7 +4,7 @@ namespace App\Models\User;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Traits\UserStamps;
+use TaNteE\LaravelModelApi\Traits\UserStamps;
 
 class Roles extends Model
 {

@@ -4,8 +4,9 @@ namespace App\Models\Document;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Traits\UserStamps;
-use App\Models\Traits\StoreToAsset;
+use Illuminate\Support\Arr;
+use TaNteE\LaravelModelApi\Traits\UserStamps;
+use TaNteE\LaravelModelApi\Traits\StoreToAsset;
 
 class Documents extends Model
 {
@@ -36,8 +37,8 @@ class Documents extends Model
 
     public function getPatientAgeAttribute() {
       if ($this->patient) {
-        if ($this->patient->dateOfDeath!==null && $this->created_at->greaterThan($this->patient->dateOfDeath)) $interval = $this->patient->dateOfDeath->diffAsCarbonInterval(\Carbon\Carbon::parse($this->patient->dateOfBirth));
-        else $interval = $this->created_at->diffAsCarbonInterval(\Carbon\Carbon::parse($this->patient->dateOfBirth));
+        if ($this->patient->dateOfDeath!==null && $this->created_at->greaterThan($this->patient->dateOfDeath)) $interval = $this->patient->dateOfDeath->diffAsCarbonInterval($this->patient->dateOfBirth);
+        else $interval = $this->created_at->diffAsCarbonInterval($this->patient->dateOfBirth);
       } else {
         $interval = $this->created_at->diffAsCarbonInterval(\Carbon\Carbon::now());
       }
@@ -86,13 +87,13 @@ class Documents extends Model
         static::updating(function($model) {
             $original = $model->getOriginal();
             //If exist electronic data, move scan data to log
-            if (!empty(json_decode($original['data'])) && !$original['isScanned'] && $original['status']=='approved' && $model->isScanned) {
+            if (!empty($original['data']) && !$original['isScanned'] && $original['status']=='approved' && $model->isScanned) {
               
               $tmpData = $model->data;
               if (isset($model->hn)) \array_walk($tmpData,['self','storeToAsset'],$model->hn);
               $model->data = $tmpData;
 
-              $oldRevision =  array_wrap($model->revision);
+              $oldRevision =  Arr::wrap($model->revision);
               array_push($oldRevision,[
                 "data" => json_encode($model->data),
                 "isScanned" => $model->isScanned,
@@ -103,31 +104,19 @@ class Documents extends Model
               $model->revision = $oldRevision;
               $model->status = $original['status'];
 
-              $model->data = json_decode($original['data'],true);
+              $model->data = $original['data'];
               $model->isScanned = false;
 
-            } else if ($model->data != json_decode($original['data'],true)) {
-                $oldRevision =  array_wrap($model->revision);
+            } else if ($model->data != $original['data']) {
+                $oldRevision =  Arr::wrap($model->revision);
                 array_push($oldRevision,[
                   "data" => $original['data'],
                   "isScanned" => $original['isScanned'],
-                  "isPdf" => ($original['isScanned']) ? self::checkPdf(json_decode($original['data'],true)) : false,
+                  "isPdf" => ($original['isScanned']) ? self::checkPdf($original['data']) : false,
                   "updated_by" => ($original['updated_by']!==null) ? $original['updated_by'] : $original['created_by'],
                   "updated_at" => $original['updated_at'],
                 ]);
                 $model->revision = $oldRevision;
-            }
-        });
-
-        static::saved(function($model) {
-            if ($model->templateCode=='cv19-vaccine-administration' && $model->status=='approved') {
-              \App\Models\Document\Documents::where('templateCode','cv19-vaccine-administration')
-                ->where('hn',$model->hn)
-                ->whereDate('created_at',$model->created_at)
-                ->where('created_at','<',$model->created_at)
-                ->where('created_by',$model->created_by)
-                ->where('status','approved')
-                ->update(['status'=>'review']);
             }
         });
 

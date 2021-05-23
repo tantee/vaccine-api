@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Patient;
 use Validator;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\DataController;
-use App\Http\Controllers\Asset\AssetController;
 use App\Http\Controllers\GenericAPIController;
 use Illuminate\Support\Facades\Route;
+use TaNteE\LaravelModelApi\LaravelModelApi;
+use TaNteE\LaravelModelApi\Http\Controllers\Asset\AssetController;
 
 class PatientPhotoController extends Controller
 {

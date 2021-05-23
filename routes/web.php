@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,11 +16,3 @@
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::get('/phpinfo',function () {
-  phpinfo();
-});
-
-Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');

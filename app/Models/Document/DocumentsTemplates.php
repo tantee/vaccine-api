@@ -5,8 +5,8 @@ namespace App\Models\Document;
 use Watson\Rememberable\Rememberable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Traits\UserStamps;
-use App\Utilities\File;
+use TaNteE\LaravelModelApi\Traits\UserStamps;
+use TaNteE\PhpUtilities\File;
 
 class DocumentsTemplates extends Model
 {

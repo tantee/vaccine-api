@@ -54,26 +54,21 @@ class VaccineController extends Controller
         return $checkList;
     }
 
-    public static function autoDischarge($backMinute=90) {
-        $adminForms = \App\Models\Document\Documents::where('templateCode','cv19-vaccine-administration')
-                    ->whereBetween('created_at',[\Carbon\Carbon::now()->subMinutes($backMinute),\Carbon\Carbon::now()->subMinutes(60)])
-                    ->where('status','approved')
-                    ->orderBy('created_at','desc')
-                    ->get();
+    public static function autoDischarge($adminForm) {
+        if ($adminForm->status=='approved') {
+            $template = \App\Models\Document\DocumentsTemplates::find('cv19-vaccine-discharge');
 
-        $template = \App\Models\Document\DocumentsTemplates::find('cv19-vaccine-discharge');
-
-        foreach($adminForms as $adminForm) {
             $dischargeFormExist = \App\Models\Document\Documents::where('hn',$adminForm->hn)->where('templateCode','cv19-vaccine-discharge')
-                            ->where('created_at','>=',$adminForm->created_at)
-                            ->where('status','approved')
-                            ->exists();
+                    ->where('created_at','>=',$adminForm->created_at)
+                    ->where('status','approved')
+                    ->exists();
+
             if (!$dischargeFormExist && $template) {
                 $vaccinePassport = \App\Models\Document\Documents::where('hn',$adminForm->hn)->where('templateCode','cv19-vaccine-passport')
-                                ->where('created_at','>=',$adminForm->created_at)
-                                ->where('status','approved')
-                                ->orderBy('created_at','desc')
-                                ->first();
+                            ->where('created_at','>=',$adminForm->created_at)
+                            ->where('status','approved')
+                            ->orderBy('created_at','desc')
+                            ->first();
                 $createUser = ($vaccinePassport) ? $vaccinePassport->created_by : $adminForm->created_by;
                 $dischargeForm = new \App\Models\Document\Documents();
                 $dischargeForm->hn = $adminForm->hn;
@@ -109,8 +104,8 @@ class VaccineController extends Controller
                     'lotNo'.$i=> isset($adminForms[$i-1]->data["lotNo"]) ? $adminForms[$i-1]->data["lotNo"] : null,
                     'serialNo'.$i=> isset($adminForms[$i-1]->data["serialNo"]) ? $adminForms[$i-1]->data["serialNo"] : null,
                     'expDate'.$i=> isset($adminForms[$i-1]->data["expDate"]) ? $adminForms[$i-1]->data["expDate"] : null,
-                    'adminDateTime'.$i=> isset($adminForms[$i-1]->data["adminDateTime"]) ? \Carbon\Carbon::parse($adminForms[$i-1]->data["adminDateTime"])->toDateTimeString() : null,
-                    'dischargeDateTime'.$i=> isset($adminForms[$i-1]->data["adminDateTime"]) ? \Carbon\Carbon::parse($adminForms[$i-1]->data["adminDateTime"])->addMinutes(30)->toDateTimeString() : null,
+                    'adminDateTime'.$i=> isset($adminForms[$i-1]->data["adminDateTime"]) ? \Carbon\Carbon::parse($adminForms[$i-1]->data["adminDateTime"])->timezone(config('app.timezone'))->toDateTimeString() : null,
+                    'dischargeDateTime'.$i=> isset($adminForms[$i-1]->data["adminDateTime"]) ? \Carbon\Carbon::parse($adminForms[$i-1]->data["adminDateTime"])->timezone(config('app.timezone'))->addMinutes(30)->toDateTimeString() : null,
                     'adminRoute'.$i=> isset($adminForms[$i-1]->data["adminRoute"]) ? $adminForms[$i-1]->data["adminRoute"] : null,
                     'adminSite'.$i=> isset($adminForms[$i-1]->data["adminSite"]) ? $adminForms[$i-1]->data["adminSite"] : null,
                     'adminSiteOther'.$i=> isset($adminForms[$i-1]->data["adminSiteOther"]) ? $adminForms[$i-1]->data["adminSiteOther"] : null,
@@ -173,8 +168,8 @@ class VaccineController extends Controller
     }
 
     public static function getAdministration($beginDate,$endDate=null) {
-        $from = \Carbon\Carbon::parse($beginDate)->startOfDay()->toDateTimeString();
-        $to = ($endDate) ? \Carbon\Carbon::parse($endDate)->endOfDay()->toDateTimeString() : $from;
+        $from = \Carbon\Carbon::parse($beginDate)->timezone(config('app.timezone'))->startOfDay()->toDateTimeString();
+        $to = ($endDate) ? \Carbon\Carbon::parse($endDate)->timezone(config('app.timezone'))->endOfDay()->toDateTimeString() : $from;
 
         $documents = \App\Models\Document\Documents::where('templateCode','cv19-vaccine-administration')
                     ->where('status','approved')

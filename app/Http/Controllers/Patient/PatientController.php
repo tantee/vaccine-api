@@ -7,10 +7,10 @@ use Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\DataController;
-use App\Http\Controllers\Asset\AssetController;
 use App\Http\Controllers\Export\MOPHExportController;
-use App\Utilities\ArrayType;
+use TaNteE\PhpUtilities\ArrayType;
+use TaNteE\LaravelModelApi\LaravelModelApi;
+use TaNteE\LaravelModelApi\Http\Controllers\Asset\AssetController;
 
 class PatientController extends Controller
 {
@@ -92,7 +92,7 @@ class PatientController extends Controller
             $returnResults = [];
             if (isset($data['patient'])) {
               $validator = [];
-              $returnResults['patient'] = DataController::createModel($data['patient'],\App\Models\Patient\Patients::class,$validator,[],true);
+              $returnResults['patient'] = LaravelModelApi::createModel($data['patient'],\App\Models\Patient\Patients::class,$validator,[],true);
             }
             if (isset($data['name'])) {
               $names = [];
@@ -103,7 +103,7 @@ class PatientController extends Controller
                 'hn' => 'required',
                 'nameType' => 'required',
               ];
-              $returnResults['name'] = DataController::createModel($names,\App\Models\Patient\PatientsNames::class,$validator,[],true);
+              $returnResults['name'] = LaravelModelApi::createModel($names,\App\Models\Patient\PatientsNames::class,$validator,[],true);
             }
             if (isset($data['address'])) {
               $addresses = [];
@@ -114,7 +114,7 @@ class PatientController extends Controller
                 'hn' => 'required',
                 'address' => 'required',
               ];
-              $returnResults['address'] = DataController::createModel($addresses,\App\Models\Patient\PatientsAddresses::class,$validator,[],true);
+              $returnResults['address'] = LaravelModelApi::createModel($addresses,\App\Models\Patient\PatientsAddresses::class,$validator,[],true);
             }
 
             $docApplicationData = [
@@ -123,7 +123,7 @@ class PatientController extends Controller
               'data' => $data,
               'folder' => 'personal',
             ];
-            $returnResults['document_application'] = DataController::createModel($docApplicationData,\App\Models\Document\Documents::class,[],[],true);
+            $returnResults['document_application'] = LaravelModelApi::createModel($docApplicationData,\App\Models\Document\Documents::class,[],[],true);
 
             foreach($returnResults as $key=>$returnResult) {
               $success = $success && $returnResult['success'];
@@ -219,7 +219,7 @@ class PatientController extends Controller
     }
 
     public static function getVitalSigns($hn,$vitalSignDate=null) {
-      $vitalSignDate = ($vitalSignDate) ? \Carbon\Carbon::parse($vitalSignDate) : \Carbon\Carbon::now();
+      $vitalSignDate = ($vitalSignDate) ? \Carbon\Carbon::parse($vitalSignDate)->timezone(config('app.timezone')) : \Carbon\Carbon::now();
 
       $result = [
         'temperature'=> null,

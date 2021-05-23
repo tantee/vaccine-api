@@ -14,7 +14,6 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         //
-        Commands\PassportPersonalClientCommand::class,
     ];
 
     /**
@@ -25,31 +24,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+        $schedule->command('horizon:snapshot')->everyFiveMinutes();
 
         $schedule->call(function() {
-            return \App\Http\Controllers\Encounter\OPDController::autoCloseEncounter();
-        })->daily()
-            ->name('AutoCloseEncounterOPD')
-            ->onOneServer();
-
-        $schedule->call(function() {
-            return \App\Http\Controllers\Covid19\VaccineController::autoDischarge();
-        })->everyTenMinutes()
-            ->name('Covid19VaccienAutoDischarge')
-            ->onOneServer();
-            
-        $schedule->call(function() {
-            return \App\Http\Controllers\Export\MOPHExportController::sendUpdateImmunizationData(false);
-        })->everyFifteenMinutes()
-            ->name('MOPHSendUpdateImmunizationData')
-            ->onOneServer();
-
-        $schedule->call(function() {
-            return \App\Http\Controllers\Export\MOPHExportController::sendUpdateImmunizationData(true);
-        })->dailyAt('00:00')
-            ->name('MOPHSendUpdateImmunizationDataForce')
+            return \App\Http\Controllers\Export\MOPHExportController::sendBatchUpdateData();
+        })->dailyAt('23:00')
+            ->name('MOPHSendBatchUpdateData')
             ->onOneServer();
     }
 

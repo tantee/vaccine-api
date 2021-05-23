@@ -5,8 +5,8 @@ namespace App\Models\Master;
 use Watson\Rememberable\Rememberable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Traits\UserStamps;
-use App\Models\Traits\StoreToAsset;
+use TaNteE\LaravelModelApi\Traits\UserStamps;
+use TaNteE\LaravelModelApi\Traits\StoreToAsset;
 
 class Doctors extends Model
 {

@@ -29,7 +29,7 @@ class Image
         $content = base64_decode($content);
         if (!isset($mimeType)) $mimeType = finfo_buffer(finfo_open(), $content, FILEINFO_MIME_TYPE);
 
-        $tmpImageFile = storage_path('app/'.$tmpDirectory.'/'.$tmpUniqId.'.'.\App\Utilities\File::guessExtension($mimeType));
+        $tmpImageFile = storage_path('app/'.$tmpDirectory.'/'.$tmpUniqId.'.'.\TaNteE\PhpUtilities\File::guessExtension($mimeType));
 
         file_put_contents($tmpImageFile,$content);
 
@@ -42,7 +42,7 @@ class Image
       $tmpDirectory = $TBS->TplVars['tmpDirectory'];
 
       $asset = \App\Models\Asset\Assets::find($CurrVal);
-      $tmpFilename = $tmpDirectory.'/'.$tmpUniqId.'.'.\App\Utilities\File::guessExtension($asset->mimeType);
+      $tmpFilename = $tmpDirectory.'/'.$tmpUniqId.'.'.\TaNteE\PhpUtilities\File::guessExtension($asset->mimeType);
 
       if ($asset !== null) {
         $content = Storage::disk($asset->storage)->get($asset->storagePath);

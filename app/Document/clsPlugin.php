@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use App\Http\Controllers\Master\MasterController;
 use Rundiz\Number\NumberThai;
 use Rundiz\Number\NumberEng;
-use App\Utilities\ArrayType;
+use TaNteE\PhpUtilities\ArrayType;
 
 define('TBS_CAHPLUGIN','\App\Document\clsPlugin');
 
@@ -32,15 +32,15 @@ class clsPlugin
         else $locale = 'th_TH';
 
         if ($FieldName == "patientData.dateOfBirth" && substr($format, -5) == " YYYY") {
-          $byear = Carbon::parse($Value)->year + 543;
+          $byear = Carbon::parse($Value)->timezone(config('app.timezone'))->year + 543;
           $format = \str_replace(" YYYY"," YYYY (".$byear.")",$format);
         } else if ($locale = 'th_TH') {
-          $byear = Carbon::parse($Value)->year + 543;
+          $byear = Carbon::parse($Value)->timezone(config('app.timezone'))->year + 543;
           $format = \str_replace("YYYY",$byear,$format);
           $format = \str_replace("YY",substr($byear, -2),$format);
         }
 
-        $Value = Carbon::parse($Value)->locale($locale)->isoFormat($format);
+        $Value = Carbon::parse($Value)->timezone(config('app.timezone'))->locale($locale)->isoFormat($format);
       }
     }
 
@@ -53,15 +53,15 @@ class clsPlugin
       else $locale = 'th_TH';
 
       if ($FieldName == "patientData.dateOfBirth" && substr($format, -5) == " YYYY") {
-        $byear = Carbon::parse($Value)->year + 543;
+        $byear = Carbon::parse($Value)->timezone(config('app.timezone'))->year + 543;
         $format = \str_replace(" YYYY"," YYYY (".$byear.")",$format);
       } else if ($locale = 'th_TH') {
-        $byear = Carbon::parse($Value)->year + 543;
+        $byear = Carbon::parse($Value)->timezone(config('app.timezone'))->year + 543;
         $format = \str_replace("YYYY",$byear,$format);
         $format = \str_replace("YY",substr($byear, -2),$format);
       }
 
-      $Value = Carbon::parse($Value)->locale($locale)->isoFormat($format);
+      $Value = Carbon::parse($Value)->timezone(config('app.timezone'))->locale($locale)->isoFormat($format);
     }
     
     if ($ope == 'formatname') {
