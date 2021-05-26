@@ -131,4 +131,6 @@ class Documents extends Model
     protected $toStores = ['data'];
 
     protected $appends = ['patient_age'];
+
+    protected $with = ['patient'];
 }

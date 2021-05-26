@@ -110,7 +110,7 @@ class MOPHExportController extends Controller
             "birth_date" => $patient->dateOfBirth->format('Y-m-d'),
             "marital_status_id" =>  null,
             "address" => ($address && trim($address->address." ".$address->soi)) ? trim($address->address." ".$address->soi) : "",
-            "moo" => ($address && $address->moo) ? trim(ltrim($address->moo,'หมู่ที่')) : "",
+            "moo" => ($address && $address->moo) ? trim(preg_replace('/(หมู่(?:ที่)?[\s]*)/m','',$address->moo)) : "",
             "road" => ($address && $address->street) ? $address->street : "",
             "chw_code" => ($address && $address->province) ? $address->province : "",
             "amp_code" => ($address && $address->district) ? substr($address->district,-2) : "",
@@ -190,7 +190,7 @@ class MOPHExportController extends Controller
                  "vaccine_plan_no" => $previousVisitCount+1,
                  "vaccine_route_name" => $vaccineRoute->itemValue,
                  "practitioner" => [
-                    "license_number" => $personnel->licenseNo,
+                    "license_number" => $personnel->licenseNo ?? " ",
                     "name" => $personnel->name,
                     "role" => MasterController::translateMaster('$UserPosition',$personnel->position),
                  ],
@@ -612,8 +612,8 @@ class MOPHExportController extends Controller
 
     public static function buildAppointment($document) {
         $appointment = \App\Models\Appointment\Appointments::where('hn',$document->hn)->whereDate('appointmentDateTime','>',\Carbon\Carbon::now())->orderBy('appointmentDateTime')->first();
-        $appointmentActivity = MasterController::translateMaster('$AppointmentActivity',$appointment->appointmentActivity);
         if ($appointment) {
+            $appointmentActivity = MasterController::translateMaster('$AppointmentActivity',$appointment->appointmentActivity);
             $doctor = \App\Models\Master\Doctors::find($appointment->doctorCode);
             return [
                 [
@@ -805,7 +805,7 @@ class MOPHExportController extends Controller
     }
 
     public static function checkWhitelists() {
-        $whitelists = \App\Models\Moph\Whitelists::whereNull('mophTarget')->limit(250000)->get();
+        $whitelists = \App\Models\Moph\Whitelists::whereNull('mophTarget')->limit(500000)->get();
         
         foreach($whitelists as $whitelist) {
             \App\Jobs\Covid19\CheckWhiteList::dispatch($whitelist);

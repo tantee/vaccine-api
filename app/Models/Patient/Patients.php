@@ -9,6 +9,12 @@ use Carbon\Carbon;
 
 class Patients extends Model
 {
+    private $_name = null;
+    private $_name_th = null;
+    private $_name_real_th = null;
+    private $_name_en = null;
+    private $_name_real_en = null;
+
     use SoftDeletes,UserStamps;
     protected $primaryKey = 'hn';
     public $incrementing = false;
@@ -57,59 +63,73 @@ class Patients extends Model
 
 
     public function getNameThAttribute() {
-      $name = \App\Models\Patient\PatientsNames::where('hn',$this->hn)->where('nameType','TH')->orWhere('nameType','ALIAS_TH')->orderBy('nameType')->orderBy('id','desc')->first();
-      if ($name==null) $name = \App\Models\Patient\PatientsNames::where('hn',$this->hn)->where('nameType','EN')->orWhere('nameType','ALIAS_EN')->orderBy('nameType')->orderBy('id','desc')->first();
-      if ($name==null) {
+      if ($this->_name==null) $this->_name = \App\Models\Patient\PatientsNames::where('hn',$this->hn)->get();
+
+      $this->_name_th = $this->_name->whereIn('nameType',['TH','ALIAS_TH'])->sortBy([['nameType','asc'],['id','desc']])->first();
+
+      if ($this->_name_th==null) $this->_name_th = $this->_name->whereIn('nameType',['EN','ALIAS_EN'])->sortBy([['nameType','asc'],['id','desc']])->first();
+      if ($this->_name_th==null) {
         if ($this->sex==1) {
-          $name = new \App\Models\Patient\PatientsNames();
-          $name->hn = $this->hn;
-          $name->nameType = 'EN';
-          $name->namePrefix = '003';
-          $name->firstName = 'John';
-          $name->lastName = 'Doe';
+          $this->_name_th = new \App\Models\Patient\PatientsNames();
+          $this->_name_th->hn = $this->hn;
+          $this->_name_th->nameType = 'EN';
+          $this->_name_th->namePrefix = '003';
+          $this->_name_th->firstName = 'John';
+          $this->_name_th->lastName = 'Doe';
         } else {
-          $name = new \App\Models\Patient\PatientsNames();
-          $name->hn = $this->hn;
-          $name->nameType = 'EN';
-          $name->namePrefix = '004';
-          $name->firstName = 'Jane';
-          $name->lastName = 'Doe';
+          $this->_name_th = new \App\Models\Patient\PatientsNames();
+          $this->_name_th->hn = $this->hn;
+          $this->_name_th->nameType = 'EN';
+          $this->_name_th->namePrefix = '004';
+          $this->_name_th->firstName = 'Jane';
+          $this->_name_th->lastName = 'Doe';
         }
       }
-      return $name;
+      return $this->_name_th;
     }
 
     public function getNameEnAttribute() {
-      $name = \App\Models\Patient\PatientsNames::where('hn',$this->hn)->where('nameType','EN')->orWhere('nameType','ALIAS_EN')->orderBy('nameType')->orderBy('id','desc')->first();
-      return ($name==null) ? $this->name_th : $name;
+      if ($this->_name==null) $this->_name = \App\Models\Patient\PatientsNames::where('hn',$this->hn)->get();
+
+      $this->_name_en = $this->_name->whereIn('nameType',['EN','ALIAS_EN'])->sortBy([['nameType','asc'],['id','desc']])->first();
+      if ($this->_name_en==null) $this->_name_en = $this->_name_th;
+
+      return $this->_name_en;
     }
 
     public function getNameRealThAttribute() {
-      $name = \App\Models\Patient\PatientsNames::where('hn',$this->hn)->where('nameType','TH')->orderBy('id','desc')->first();
-      if ($name==null) $name = \App\Models\Patient\PatientsNames::where('hn',$this->hn)->where('nameType','EN')->orderBy('id','desc')->first();
-      if ($name==null) {
+      if ($this->_name==null) $this->_name = \App\Models\Patient\PatientsNames::where('hn',$this->hn)->get();
+
+      $this->_name_real_th = $this->_name->where('nameType','TH')->sortBy([['nameType','asc'],['id','desc']])->first();
+
+      if ($this->_name_real_th==null) $this->_name_real_th = $this->_name->where('nameType','EN')->sortBy([['nameType','asc'],['id','desc']])->first();
+      if ($this->_name_real_th==null) {
         if ($this->sex==1) {
-          $name = new \App\Models\Patient\PatientsNames();
-          $name->hn = $this->hn;
-          $name->nameType = 'EN';
-          $name->namePrefix = '003';
-          $name->firstName = 'John';
-          $name->lastName = 'Doe';
+          $this->_name_real_th = new \App\Models\Patient\PatientsNames();
+          $this->_name_real_th->hn = $this->hn;
+          $this->_name_real_th->nameType = 'EN';
+          $this->_name_real_th->namePrefix = '003';
+          $this->_name_real_th->firstName = 'John';
+          $this->_name_real_th->lastName = 'Doe';
         } else {
-          $name = new \App\Models\Patient\PatientsNames();
-          $name->hn = $this->hn;
-          $name->nameType = 'EN';
-          $name->namePrefix = '004';
-          $name->firstName = 'Jane';
-          $name->lastName = 'Doe';
+          $this->_name_real_th = new \App\Models\Patient\PatientsNames();
+          $this->_name_real_th->hn = $this->hn;
+          $this->_name_real_th->nameType = 'EN';
+          $this->_name_real_th->namePrefix = '004';
+          $this->_name_real_th->firstName = 'Jane';
+          $this->_name_real_th->lastName = 'Doe';
         }
       }
-      return $name;
+      return $this->_name_real_th;
     }
 
     public function getNameRealEnAttribute() {
-      $name = \App\Models\Patient\PatientsNames::where('hn',$this->hn)->where('nameType','EN')->orderBy('id','desc')->first();
-      return ($name==null) ? $this->name_real_th : $name;
+      if ($this->_name==null) $this->_name = \App\Models\Patient\PatientsNames::where('hn',$this->hn)->get();
+
+      $this->_name_real_en = $this->_name->where('nameType','EN')->sortBy([['nameType','asc'],['id','desc']])->first();
+      if ($this->_name_real_en==null) $this->_name_real_en = $this->_name_real_th;
+
+      return $this->_name_real_en;
     }
 
     public function getAgeAttribute() {
@@ -117,6 +137,22 @@ class Patients extends Model
       else $interval = Carbon::now()->diffAsCarbonInterval($this->dateOfBirth);
 
       return $interval->locale('th_TH')->forHumans(['parts'=>2]);
+    }
+
+    public function setDateOfBirthAttribute($value) {
+        $birthDate = \Carbon\Carbon::parse($value)->timezone(config('app.timezone'));
+        if ($birthDate->year - \Carbon\Carbon::now()->year > 300) {
+          $birthDate->year = $birthDate->year - 543;
+        }
+        $this->attributes['dateOfBirth'] = $birthDate->format("Y-m-d");
+    }
+
+    public function setDateOfDeathAttribute($value) {
+        $deathDate = \Carbon\Carbon::parse($value)->timezone(config('app.timezone'));
+        if ($deathDate->year - \Carbon\Carbon::now()->year > 300) {
+          $deathDate->year = $deathDate->year - 543;
+        }
+        $this->attributes['dateOfDeath'] = $deathDate->format("Y-m-d");
     }
 
     public function Photos() {
@@ -134,7 +170,7 @@ class Patients extends Model
       'personIdDetail' => 'array',
     ];
 
-    protected $appends = ['name_th','name_en','name_real_th','name_real_en','age'];
+    protected $appends = ['name_th','name_en','age'];
 
     protected $hidden = ['personIdDetail'];
 }

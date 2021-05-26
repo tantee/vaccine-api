@@ -245,4 +245,20 @@ class PatientController extends Controller
 
       return $result;
     }
+
+    public static function trackerStamp($hn,$module,$location=null,$clientId=null) {
+      try {
+        $tracking = new \App\Models\Patient\PatientsTrackers();
+
+        $tracking->hn = $hn;
+        $tracking->module = $module;
+        $tracking->location = $location;
+        $tracking->clientId = $clientId;
+        $tracking->save();
+      } catch(\Exception $e) {
+          $tracking = null;
+      }
+      
+      return $tracking;
+    }
 }

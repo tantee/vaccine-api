@@ -15,10 +15,14 @@ class CreatePatientsTrackersTable extends Migration
     {
         Schema::create('patients_trackers', function (Blueprint $table) {
             $table->id();
-            $table->string('hn',20);
-            $table->string('module');
+            $table->string('hn',20)->index();
+            $table->string('module')->index();
             $table->string('location',50)->nullable();
-            $table->string('clientId')->nullable();
+            $table->string('clientId')->nullable()->index();
+            $table->string('created_by')->nullable();
+            $table->string('updated_by')->nullable();
+            $table->string('deleted_by')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
