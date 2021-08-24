@@ -33,6 +33,26 @@ class MOPHExportController extends Controller
         }
     }
 
+    public static function resendFailedData() {
+        Log::info('Resend failed data to MOPH IC');
+
+        $documents = \App\Models\Document\Documents::where('templateCode','cv19-vaccine-administration')
+                        ->where('status','approved')
+                        ->doesntHave('mophsentsuccess')
+                        ->get();
+
+        foreach($documents as $document) {
+            \App\Jobs\Covid19\SendDataToMoph::dispatch($document);
+        }
+    }
+
+    public static function sendSingleDataFromId($documentId) {
+        $document = \App\Models\Document\Documents::find($documentId);
+        if ($document && $document->templateCode=='cv19-vaccine-administration' && $document->status=='approved') {
+            self::sendSingleData($document);
+        }
+    }
+
     public static function sendSingleData(Documents $document) {
         $ApiMethod = "POST";
         $ApiUrl = (config('app.env')=="PROD") ? 'https://cvp1.moph.go.th/api/UpdateImmunization' : 'https://cloud4.hosxp.net/api/moph/UpdateImmunization';
@@ -49,13 +69,18 @@ class MOPHExportController extends Controller
         try {
             $CallData = [
                 "hospital" => [
-                    "hospital_code" => env('HOSPITAL_CODE', ''),
-                    "hospital_name" => env('HOSPITAL_NAME', '')
+                    "hospital_code" => env('HOSPITAL_CODE',''),
+                    "hospital_name" => env('HOSPITAL_NAME','')
                 ]
             ];
 
             $CallData['patient'] = self::buildPatient($document->patient);
             $CallData['visit'] = self::buildVisit($document);
+
+            $previousSent = \App\Models\Moph\MophApiSents::where('documentId',$document->id)->orderBy('id','desc')->first();
+            if ($previousSent) {
+                if ($CallData == $previousSent->requestData && $previousSent->isSuccess) return;
+            }
 
             $requestData['json'] = $CallData;
             $requestData['timeout'] = 5;
@@ -129,14 +154,21 @@ class MOPHExportController extends Controller
                         ->where('status','approved')
                         ->whereDate('created_at','<',$document->created_at)
                         ->count();
-        
-        if ($previousVisitCount==0) {
-            $target = self::getTarget($document->hn);
-            $history = collect($target["vaccine_history"]);
-            $previousVisitCount = $history->filter(function($value) use ($document) {
-                                        return \Carbon\Carbon::parse($value["immunization_datetime"])->timezone(config('app.timezone'))->endOfDay()->isBefore($document->created_at);
-                                    })->count();
+
+        $target = self::getTarget($document->hn);
+        $previousMophVisitCount = 0;
+        if ($target) {
+            try {
+                $history = collect($target["vaccine_history"]);
+                $previousMophVisitCount = $history->filter(function($value) use ($document) {
+                                            return \Carbon\Carbon::parse($value["immunization_datetime"])->timezone(config('app.timezone'))->endOfDay()->isBefore($document->created_at);
+                                        })->count();
+            } catch(\Exception $e) {
+                $previousMophVisitCount = 0;
+            }
         }
+        
+        if ($previousVisitCount<$previousMophVisitCount) $previousVisitCount = $previousMophVisitCount;
 
         $nextVisit = \App\Models\Document\Documents::where('hn',$document->hn)
                         ->where('templateCode','cv19-vaccine-administration')
@@ -199,7 +231,7 @@ class MOPHExportController extends Controller
               ]
            ],
            "visit_immunization_reaction" => [],
-           "appointment" => self::buildAppointment($document)
+           "appointment" => ($previousVisitCount<1) ? self::buildAppointment($document) : []
         ];
 
         foreach($discharges as $discharge) $visit["visit_immunization_reaction"] = array_merge($visit["visit_immunization_reaction"],self::buildReactionDischarge($discharge,$document->hn."-".$document->created_at->format('Ymd')));
@@ -490,7 +522,7 @@ class MOPHExportController extends Controller
                "visit_immunization_reaction_ref_code" => $document->hn.'-'.$document->created_at->format('Ymd').'-MildOthers_'.$document->id,
                "visit_immunization_ref_code" => $visitImmunizationRefCode,
                "report_datetime" => $document->created_at->format('Y-m-d H:i:s'),
-               "reaction_detail_text" => (!empty($document->data["isSymptomMildOthersDetail"])) ? $document->data["isSymptomMildOthersDetail"] : null,
+               "reaction_detail_text" => (!empty($document->data["isSymptomMildOthersDetail"])) ? $document->data["isSymptomMildOthersDetail"] : "",
                "vaccine_reaction_type_id" => 1,
                "reaction_date" => $document->created_at->format('Y-m-d'),
                "vaccine_reaction_stage_id" => 2,
@@ -599,7 +631,7 @@ class MOPHExportController extends Controller
                "visit_immunization_reaction_ref_code" => $document->hn.'-'.$document->created_at->format('Ymd').'-SevereOthers_'.$document->id,
                "visit_immunization_ref_code" => $visitImmunizationRefCode,
                "report_datetime" => $document->created_at->format('Y-m-d H:i:s'),
-               "reaction_detail_text" => (!empty($document->data["isSymptomSevereOthersDetail"])) ? $document->data["isSymptomSevereOthersDetail"] : null,
+               "reaction_detail_text" => (!empty($document->data["isSymptomSevereOthersDetail"])) ? $document->data["isSymptomSevereOthersDetail"] : "",
                "vaccine_reaction_type_id" => 2,
                "reaction_date" => $document->created_at->format('Y-m-d'),
                "vaccine_reaction_stage_id" => 2,
@@ -661,7 +693,7 @@ class MOPHExportController extends Controller
             "Action" => "get_moph_access_token",
             "user" => $username,
             "password_hash" => $hash,
-            "hospital_code" => env('HOSPITAL_CODE', '13781'),
+            "hospital_code" => env('HOSPITAL_CODE', ''),
         ];
         $requestData['timeout'] = 5;
         try {
@@ -700,7 +732,7 @@ class MOPHExportController extends Controller
 
         $requestData['query'] = [
             "cid" => $cid,
-            "hospital_code" => env('HOSPITAL_CODE', '13781'),
+            "hospital_code" => env('HOSPITAL_CODE', ''),
         ];
         $requestData['timeout'] = 5;
         try {
@@ -804,6 +836,99 @@ class MOPHExportController extends Controller
         }
     }
 
+    public static function getAppointments($appointmentDate=null) {
+        if ($appointmentDate) $appointmentDate = \Carbon\Carbon::parse($appointmentDate)->timezone(config('app.timezone'));
+        else $appointmentDate = \Carbon\Carbon::now();
+        
+        $ApiUrl = "https://cvp1.moph.go.th/api/ImmunizationHospitalSlot";
+        $ApiMethod = "GET";
+
+        $hospitalCode = (!empty(env('FIELD_HOSPITAL_CODE',''))) ? env('FIELD_HOSPITAL_CODE','') : env('HOSPITAL_CODE', '');
+
+        $requestData = [
+            'headers' => [
+              'Accept' => 'application/json',
+              'Content-Type' => 'application/json',
+              'Authorization' => 'Bearer '.self::getToken(),
+            ],
+            'verify' => false
+          ];
+
+        $requestData['query'] = [
+            "Action" => "GetHospitalSlotConfirmScheduleByDate",
+            "date" => $appointmentDate->format("Y-m-d"),
+            "hospital_code" => $hospitalCode,
+        ];
+        $requestData['timeout'] = 5;
+        try {
+            $client = new \GuzzleHttp\Client();
+            $res = $client->request($ApiMethod,$ApiUrl,$requestData);
+
+            $httpResponseCode = $res->getStatusCode();
+            $httpResponseReason = $res->getReasonPhrase();
+
+            if ($httpResponseCode==200) {
+                $ApiData = json_decode((String)$res->getBody(),true);
+
+                if ($ApiData["MessageCode"]==200) return $ApiData["result"];
+                else return null;
+            } else {
+                return null;
+            }
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+          log::error("Error calling to $ApiMethod $ApiUrl.",["Message"=>$e->getMessage(),"RequestData"=>$requestData]);
+
+          return null;
+        }
+    }
+
+    public static function cancelAppointments($appointmentDate=null) {
+        if ($appointmentDate) $appointmentDate = \Carbon\Carbon::parse($appointmentDate)->timezone(config('app.timezone'));
+        else $appointmentDate = \Carbon\Carbon::now();
+
+        $appointments = self::getAppointments($appointmentDate);
+
+        $ApiUrl = "https://cvp1.moph.go.th/api/ImmunizationHospitalSlot";
+        $ApiMethod = "GET";
+
+        $hospitalCode = (!empty(env('FIELD_HOSPITAL_CODE',''))) ? env('FIELD_HOSPITAL_CODE','') : env('HOSPITAL_CODE', '');
+
+        $requestData = [
+            'headers' => [
+              'Accept' => 'application/json',
+              'Content-Type' => 'application/json',
+              'Authorization' => 'Bearer '.self::getToken(),
+            ],
+            'verify' => false
+        ];
+
+        $requestData['query'] = [
+            "Action" => "CancelAppointmentSlot",
+            "hospital_code" => $hospitalCode,
+        ];
+
+        $requestData['timeout'] = 5;
+
+        foreach ($appointments as $appointment) {
+            $requestData["query"]["cid"] = $appointment["cid"];
+            $requestData["query"]["hospital_appointment_slot_id "] = $appointment["hospital_appointment_slot_id"];
+
+            try {
+                $client = new \GuzzleHttp\Client();
+                $res = $client->request($ApiMethod,$ApiUrl,$requestData);
+
+                $httpResponseCode = $res->getStatusCode();
+                $httpResponseReason = $res->getReasonPhrase();
+
+                log::info('Remove appointment for '.$appointment["cid"]);
+            } catch (\GuzzleHttp\Exception\RequestException $e) {
+              log::error("Error calling to $ApiMethod $ApiUrl.",["Message"=>$e->getMessage(),"RequestData"=>$requestData]);
+            }
+        }
+
+        return self::getAppointments($appointmentDate);
+    }
+
     public static function checkWhitelists() {
         $whitelists = \App\Models\Moph\Whitelists::whereNull('mophTarget')->limit(500000)->get();
         
@@ -827,7 +952,7 @@ class MOPHExportController extends Controller
 
         $requestData['query'] = [
             "cid" => $whitelist->cid,
-            "hospital_code" => env('HOSPITAL_CODE', '13781'),
+            "hospital_code" => env('HOSPITAL_CODE', ''),
         ];
         $requestData['timeout'] = 5;
         try {

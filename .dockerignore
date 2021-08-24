@@ -10,3 +10,7 @@ yarn-error.log
 .env
 .phpunit.result.cache
 database/migrations/2021_05_21_065128_create_whitelists_table.php
+storage/logs/*
+storage/app/documents/*
+storage/app/templates/*
+vaccinedb.sql

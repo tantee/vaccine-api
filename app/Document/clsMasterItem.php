@@ -21,7 +21,7 @@ class clsMasterItem
       $groupKey = substr($ope,3,strlen($ope)-3);
       if (isset($PrmLst['lang']) && $PrmLst['lang']=="en") $English = true;
       else $English = false;
-      $Value = \App\Http\Controllers\Master\MasterController::translateMaster($groupKey,$Value,$English);
+      $Value = \App\Http\Controllers\Master\MasterController::translateMaster($groupKey,$Value,$English,false);
     }
   }
 }

@@ -34,7 +34,7 @@ class clsPlugin
         if ($FieldName == "patientData.dateOfBirth" && substr($format, -5) == " YYYY") {
           $byear = Carbon::parse($Value)->timezone(config('app.timezone'))->year + 543;
           $format = \str_replace(" YYYY"," YYYY (".$byear.")",$format);
-        } else if ($locale = 'th_TH') {
+        } else if ($locale == 'th_TH') {
           $byear = Carbon::parse($Value)->timezone(config('app.timezone'))->year + 543;
           $format = \str_replace("YYYY",$byear,$format);
           $format = \str_replace("YY",substr($byear, -2),$format);
@@ -108,56 +108,6 @@ class clsPlugin
       $Value = number_format(floatval($Value),2);
     }
 
-    if ($ope == 'formatinsurance') {
-      if (isset($PrmLst['full'])) $full = (boolean)$PrmLst['full'];
-      else $full = false;
-
-      if (isset($PrmLst['lang']) && $PrmLst['lang']=="en") $English=true;
-      else $English=false;
-
-      if (is_array($Value)) {
-        if (count($Value)>0) {
-          if (ArrayType::isAssociative($Value))$Value = [$Value];
-
-          $tmpInsuranceNames = [];
-          foreach($Value as $insurance) {
-            if (isset($insurance["payerType"])) {
-              $tmpInsuranceName = \App\Http\Controllers\Master\MasterController::translateMaster('$PayerType',$insurance["payerType"],$English);
-              if ($insurance["payer"] !== null && $full) {
-                $tmpInsuranceName .= " (".$insurance["payer"]["payerName"].")";
-              }
-              $tmpInsuranceNames[] = $tmpInsuranceName;
-            } else if (isset($insurance["condition"])) {
-              $tmpInsuranceNames[] = $insurance["condition"]["insuranceName"];
-            }
-          }
-
-          $Value = implode(",",array_unique($tmpInsuranceNames));
-        } else {
-          $Value = ($English) ? "Cash" : "เงินสด";
-        }
-      }
-    }
-
-    if ($ope == 'formatallergies') {
-      if (is_array($Value)) {
-        if (count($Value)>0) {
-          if (ArrayType::isAssociative($Value)) $Value = [$Value];
-
-          $tmpAllergyProducts = [];
-          foreach($Value as $allergy) {
-            if (isset($allergy["suspectedProduct"])) $tmpAllergyProducts[] = $allergy["suspectedProduct"];
-          }
-
-          $Value = implode(",",array_unique($tmpAllergyProducts));
-        } else {
-          $Value = 'ไม่มีประวัติแพ้ยา';
-        }
-      } else {
-        $Value = 'ไม่มีประวัติแพ้ยา';
-      }
-    }
-
     if ($ope == 'currtext') {
       if (isset($PrmLst['lang']) && $PrmLst['lang']=="en") {
         $convert = new NumberEng();
@@ -179,20 +129,6 @@ class clsPlugin
       if ($doctor !== null) {
         $Value = ($English) ? $doctor->nameEN : $doctor->nameTH;
         if ($withCode) $Value = $Value.' '.(($English) ? 'License No. ' : 'เลขที่ใบประกอบวิชาชีพ ').$doctor->licenseNo;
-      }
-    }
-
-    if ($ope == 'formatproduct') {
-      if (isset($PrmLst['lang']) && $PrmLst['lang']=="en") $English=true;
-      else $English=false;
-
-      if (isset($PrmLst['withCode'])) $withCode=true;
-      else $withCode=false;
-
-      $product = \App\Models\Master\Products::find($Value);
-      if ($product !== null) {
-        if ($withCode) $Value = $Value = $Value." ".(($English) ? $product->productNameEN : $product->productName);
-        else $Value = ($English) ? $product->productNameEN : $product->productName;
       }
     }
 

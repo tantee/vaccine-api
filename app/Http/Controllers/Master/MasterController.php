@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Master;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Master\MasterGroupsCollection;
 
 class MasterController extends Controller
 {
@@ -69,12 +68,12 @@ class MasterController extends Controller
       return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }
 
-    public static function translateMaster($groupKey,$itemCode,$English=false) {
+    public static function translateMaster($groupKey,$itemCode,$English=false,$NullIfNotFound=true) {
       $masterItem = self::getMasterValue($groupKey,$itemCode);
       if ($masterItem["success"]) {
         return ($English) ? $masterItem["returnModels"][0]->itemValueEN : $masterItem["returnModels"][0]->itemValue;
       } else {
-        return null;
+        return ($NullIfNotFound) ? null : $itemCode;
       }
     }
 }

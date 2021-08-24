@@ -2184,16 +2184,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "2.48.0",
+            "version": "2.48.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "d3c447f21072766cddec3522f9468a5849a76147"
+                "reference": "8d1f50f1436fb4b05e7127360483dd9c6e73da16"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/d3c447f21072766cddec3522f9468a5849a76147",
-                "reference": "d3c447f21072766cddec3522f9468a5849a76147",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/8d1f50f1436fb4b05e7127360483dd9c6e73da16",
+                "reference": "8d1f50f1436fb4b05e7127360483dd9c6e73da16",
                 "shasum": ""
             },
             "require": {
@@ -2273,7 +2273,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-05-07T10:08:30+00:00"
+            "time": "2021-05-26T22:08:38+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -6204,16 +6204,16 @@
         },
         {
             "name": "tantee/laravel-model-api",
-            "version": "1.0.5.3",
+            "version": "1.0.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tantee/laravel-model-api.git",
-                "reference": "5c17bd0541bbdbf77697cb706b116b60ed460d0d"
+                "reference": "085cff34468062018ee8e113a64e44a6ecb7e3b2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tantee/laravel-model-api/zipball/5c17bd0541bbdbf77697cb706b116b60ed460d0d",
-                "reference": "5c17bd0541bbdbf77697cb706b116b60ed460d0d",
+                "url": "https://api.github.com/repos/tantee/laravel-model-api/zipball/085cff34468062018ee8e113a64e44a6ecb7e3b2",
+                "reference": "085cff34468062018ee8e113a64e44a6ecb7e3b2",
                 "shasum": ""
             },
             "require": {
@@ -6268,7 +6268,7 @@
             ],
             "support": {
                 "issues": "https://github.com/tantee/laravel-model-api/issues",
-                "source": "https://github.com/tantee/laravel-model-api/tree/1.0.5.3"
+                "source": "https://github.com/tantee/laravel-model-api/tree/1.0.5.4"
             },
             "funding": [
                 {
@@ -6276,7 +6276,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-05-26T16:56:33+00:00"
+            "time": "2021-05-27T01:53:40+00:00"
         },
         {
             "name": "tantee/laravel-searchy-fork",

@@ -173,13 +173,14 @@ return [
             'memory' => 128,
             'tries' => 1,
             'nice' => 0,
+            'timeout' => 60*60,
         ],
     ],
 
     'environments' => [
         'production' => [
             'supervisor-1' => [
-                'maxProcesses' => 10,
+                'maxProcesses' => 2,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],
@@ -187,15 +188,13 @@ return [
 
         'PROD' => [
             'supervisor-1' => [
-                'maxProcesses' => 10,
-                'balanceMaxShift' => 1,
-                'balanceCooldown' => 3,
+                'maxProcesses' => 2,
             ],
         ],
 
         'local' => [
             'supervisor-1' => [
-                'maxProcesses' => 6,
+                'maxProcesses' => 3,
             ],
         ],
 

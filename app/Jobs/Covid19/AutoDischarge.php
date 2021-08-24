@@ -9,7 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Document\Documents;
-use \App\Http\Controllers\Covid19\VaccineController;
+use App\Http\Controllers\Covid19\VaccineController;
 
 class AutoDischarge implements ShouldQueue
 {

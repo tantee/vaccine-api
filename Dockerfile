@@ -1,4 +1,4 @@
-FROM php:8-fpm-alpine
+FROM php:8.0.7-fpm-alpine3.13
 
 ENV RUN_SCRIPTS 1
 ENV PHP_MEM_LIMIT 384

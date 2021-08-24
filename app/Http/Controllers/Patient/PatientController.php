@@ -55,6 +55,9 @@ class PatientController extends Controller
                 $returnModels = $existPatient;
                 $success = false;
               }
+            } else {
+              $success = false;
+              array_push($errorTexts,["errorText" => 'Cannot issue temporary CID from MOPH IC.']);
             }
           }
         }
@@ -260,5 +263,23 @@ class PatientController extends Controller
       }
       
       return $tracking;
+    }
+
+    public static function updateNamePrefix() {
+      $names = \App\Models\Patient\PatientsNames::where('namePrefix','001')->get();
+      foreach($names as $name) {
+        if ($name->patient && $name->patient->dateOfBirth->isBefore(\Carbon\Carbon::now()->subYears(15)->startOfDay())) {
+          $name->namePrefix = "003";
+          $name->save();
+        }
+      }
+
+      $names = \App\Models\Patient\PatientsNames::where('namePrefix','002')->get();
+      foreach($names as $name) {
+        if ($name->patient && $name->patient->dateOfBirth->isBefore(\Carbon\Carbon::now()->subYears(15)->startOfDay())) {
+          $name->namePrefix = "004";
+          $name->save();
+        }
+      }
     }
 }

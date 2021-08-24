@@ -206,6 +206,11 @@ class PrintController extends Controller
         if ($patient->Photos->count()>0) $patientData['photo'] = storage_path('app/'.$patient->Photos->first()->storagePath);
 
         $data['patientData'] = $patientData;
+
+        if (!empty($patient->nationality) && $patient->nationality!="001") {
+          $templateEnglish = \App\Models\Document\DocumentsTemplates::where('templateCode',$templateCode.".en")->where('isPrintable',true)->first();
+          if ($templateEnglish) $template = $templateEnglish; 
+        }
       }
 
       $encounter = \App\Models\Registration\Encounters::find($encounterId);
